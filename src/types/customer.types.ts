@@ -4,6 +4,9 @@ export interface Customer {
  name?: string;
  email?: string;
  avatar?: string;
+ ordersCount?: number;
+ totalSpent?: number;
+ savedAddressesCount?: number;
 }
 
 export interface AuthResponse {

@@ -63,6 +63,7 @@ export interface CartResponse {
  subTotal: number;
  tax: number;
  total: number;
+ totalPayableAmount?: number;
  customerPhoneNo: string;
  outlet: string;
 }
