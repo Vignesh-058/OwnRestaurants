@@ -3,25 +3,23 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 export const EmptyCart = () => {
- const navigate = useNavigate();
+  const navigate = useNavigate();
 
- return (
- <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-card rounded-3xl border border-border shadow-sm min-h-[50vh]">
- <div className="w-32 h-32 bg-primary/5 rounded-full flex items-center justify-center mb-8 relative">
- <div className="absolute inset-0 bg-primary/10 rounded-full animate-ping opacity-20"></div>
- <ShoppingBag className="w-16 h-16 text-primary" />
- </div>
- <h2 className="text-3xl font-black mb-3 text-foreground">Your cart is empty</h2>
- <p className="text-muted-foreground mb-10 max-w-sm text-lg">
- Looks like you haven't added anything to your cart yet. Let's fix that!
- </p>
- <Button 
- onClick={() => navigate('/shop')} 
- size="lg" 
- className="rounded-full px-12 h-14 text-lg font-bold shadow-premium hover:shadow-premium-hover transition-all"
- >
- Browse Menu
- </Button>
- </div>
- );
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center text-center p-10 bg-white rounded-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-[#E5E7EB] min-h-[50vh]">
+      <div className="w-40 h-40 bg-[#FFF7ED] rounded-full flex items-center justify-center mb-8">
+        <ShoppingBag className="w-16 h-16 text-[#FF6B00]" strokeWidth={1.5} />
+      </div>
+      <h2 className="text-[34px] font-bold mb-3 text-[#111827]">Your cart is empty</h2>
+      <p className="text-[#6B7280] mb-10 text-[15px] max-w-[300px]">
+        Looks like you haven't added anything yet.
+      </p>
+      <Button 
+        onClick={() => navigate('/products')} 
+        className="rounded-full px-12 h-[54px] text-[16px] font-bold bg-[#FF6B00] hover:bg-[#E65C00] text-white shadow-[0_8px_25px_rgba(255,107,0,0.25)] hover:-translate-y-1 transition-all duration-300 border-0"
+      >
+        Browse Products
+      </Button>
+    </div>
+  );
 };

@@ -11,8 +11,8 @@ export const useCoupons = () => {
 
  return useQuery({
  queryKey: ['coupons', organization?._id, selectedOutlet?._id],
- queryFn: () => couponService.getUserDiscounts(organization!._id, selectedOutlet?._id),
- enabled: isAuthenticated && !!organization?._id,
+ queryFn: () => couponService.getUserDiscounts(selectedOutlet!._id),
+ enabled: isAuthenticated && !!organization?._id && useOutletStore.getState().storeStatus?.storeStatus === true,
  staleTime: 5 * 60 * 1000,
  retry: 1,
  });

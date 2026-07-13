@@ -1,265 +1,528 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
- X, MapPin, Search, Navigation, Home, Briefcase, Clock, Map, Loader2 
+  X, MapPin, Search, Loader2, Home, Briefcase, ChevronLeft, AlertCircle, CheckCircle2, Plus
 } from 'lucide-react';
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { toast } from 'sonner';
+import { useRequestBrowserLocation, extractAddressParts } from '@/hooks/queries/useLocation';
+import { useAddressSearch } from '@/hooks/queries/useAddressSearch';
+import { useCreateAddress } from '@/hooks/mutations/useCreateAddress';
+import { useAddresses } from '@/hooks/queries/useAddresses';
+import type { AddressType, CustomerAddress } from '@/types/customer.types';
+import { Button } from '@/components/ui/button';
+import { useAuthStore } from '@/store/AuthStore';
 
-// Mock geocoding directory matching sample backend locations
-const MOCK_LOCATIONS = [
- { city: 'Anna nagar, Chennai', address: 'Anna Nagar West, Chennai, Tamil Nadu', lat: 13.0827, lng: 80.2707 },
- { city: 'Noida, Sector 62', address: 'Sector 62, Noida, Uttar Pradesh', lat: 28.5355, lng: 77.3910 },
- { city: 'Cyber City, Gurugram', address: 'Cyber City, DLF Phase 2, Gurugram, Haryana', lat: 28.4595, lng: 77.0266 },
- { city: 'Mumbai Central', address: 'Mumbai Central Station, Mumbai, Maharashtra', lat: 19.0760, lng: 72.8777 },
- { city: 'Connaught Place, Delhi', address: 'Rajiv Chowk, Connaught Place, New Delhi, Delhi', lat: 28.7041, lng: 77.1025 },
-];
+// Helper function to generate readable title
+const getReadableTitle = (addr: CustomerAddress) => {
+  if ((addr as any).title) return (addr as any).title;
+  
+  const part1 = (addr.address1 || '').trim();
+  // If the first part is purely numeric or very short, combine it
+  if (/^\d+$/.test(part1) || part1.length <= 3) {
+    const part2 = (addr.address2 || '').split(',')[0].trim();
+    if (part1 && part2) return `${part1}, ${part2}`;
+    if (part2) return part2;
+  }
+  
+  if (part1) return part1;
+  return 'Saved Address';
+};
+
+const AddressIcon = ({ type }: { type: string }) => {
+  switch (type.toLowerCase()) {
+    case 'home': return <Home className="w-5 h-5" />;
+    case 'work': return <Briefcase className="w-5 h-5" />;
+    default: return <MapPin className="w-5 h-5" />;
+  }
+};
 
 export const LocationSelectorModal = () => {
- const { isOpen, closeModal } = useLocationModalStore();
- const { setLocation } = useLocationStore();
- const setSelectedOutlet = useOutletStore((state) => state.setSelectedOutlet);
+  const { user } = useAuthStore();
+  const { isOpen, closeModal, openModal } = useLocationModalStore();
+  const { setLocation, loading: isLocating, permissionGranted, locationLoaded } = useLocationStore();
+  const setSelectedOutlet = useOutletStore((state) => state.setSelectedOutlet);
 
- const [searchQuery, setSearchQuery] = useState('');
- const [isLocating, setIsLocating] = useState(false);
- const [recentAddresses, setRecentAddresses] = useState<typeof MOCK_LOCATIONS>([]);
+  const [view, setView] = useState<'search' | 'add-address'>('search');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
- // Load recent addresses from localStorage on mount
- useEffect(() => {
- const saved = localStorage.getItem('recent_addresses');
- if (saved) {
- try {
- setRecentAddresses(JSON.parse(saved));
- } catch (e) {
- console.error(e);
- }
- }
- }, [isOpen]);
+  const { data: addressesData, isLoading: isLoadingAddresses, isSuccess } = useAddresses();
+  const savedAddresses = addressesData || [];
 
- const saveToRecent = (loc: typeof MOCK_LOCATIONS[0]) => {
- const updated = [loc, ...recentAddresses.filter(r => r.address !== loc.address)].slice(0, 5);
- setRecentAddresses(updated);
- localStorage.setItem('recent_addresses', JSON.stringify(updated));
- };
+  const hasAutoOpened = useRef(false);
 
- const handleSelectLocation = (lat: number, lng: number, address: string) => {
- // Clear previously selected outlet so nearby query forces a clean re-fetch and auto-selection
- setSelectedOutlet(null as any);
- 
- // Set new location in store
- setLocation(lat, lng, address);
- toast.success(`Location set to: ${address}`);
- 
- // Save to recents if not already there
- const matchedMock = MOCK_LOCATIONS.find(m => m.address === address);
- if (matchedMock) {
- saveToRecent(matchedMock);
- } else {
- saveToRecent({ city: address.split(',')[0], address, lat, lng });
- }
+  useEffect(() => {
+    if (!hasAutoOpened.current) {
+      hasAutoOpened.current = true;
+      if (!locationLoaded && !isOpen) {
+        openModal();
+      } else if (user && isSuccess && addressesData && addressesData.length > 0 && !isOpen && !locationLoaded) {
+        openModal();
+      }
+    }
+  }, [locationLoaded, isSuccess, addressesData, isOpen, openModal, user]);
 
- closeModal();
- };
+  const [pendingAddress, setPendingAddress] = useState<any>(null);
+  const [address1, setAddress1] = useState('');
+  const [landMark, setLandMark] = useState('');
+  const [type, setType] = useState<AddressType>('home');
+  const [validationError, setValidationError] = useState('');
 
- const handleUseCurrentLocation = () => {
- if (!navigator.geolocation) {
- toast.error('Geolocation is not supported by your browser.');
- return;
- }
+  const { data: searchResults, isLoading: isSearching } = useAddressSearch(searchQuery);
+  const { mutate: createAddress, isPending: isCreating } = useCreateAddress();
+  const requestBrowserLocation = useRequestBrowserLocation();
 
- setIsLocating(true);
- navigator.geolocation.getCurrentPosition(
- (position) => {
- const { latitude, longitude } = position.coords;
- // Mock a friendly address label for raw GPS coordinates
- const address = `GPS Position (${latitude.toFixed(4)}°N, ${longitude.toFixed(4)}°E)`;
- handleSelectLocation(latitude, longitude, address);
- setIsLocating(false);
- },
- (error) => {
- console.error('Error fetching GPS position:', error);
- setIsLocating(false);
- toast.error('Unable to fetch GPS location. Please choose manually.');
- },
- { enableHighAccuracy: true, timeout: 8000 }
- );
- };
+  useEffect(() => {
+    if (isOpen) {
+      setView('search');
+      setValidationError('');
+      setAddress1('');
+      setLandMark('');
+      setPendingAddress(null);
+      setSelectedAddressId(null);
+      setSearchQuery('');
+    }
+  }, [isOpen]);
 
- // Filter list of locations based on user search
- const filteredMockLocations = MOCK_LOCATIONS.filter(loc => 
- loc.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
- loc.address.toLowerCase().includes(searchQuery.toLowerCase())
- );
+  const handleUseCurrentLocation = () => {
+    requestBrowserLocation();
+    closeModal();
+  };
 
- if (!isOpen) return null;
+  const handleSelectSearchResult = (result: any) => {
+    const { lat, lng } = result.geometry?.location || result;
+    const parts = extractAddressParts(result.address_components || []);
+    setPendingAddress({
+      latitude: lat,
+      longitude: lng,
+      placeId: result.place_id,
+      ...parts,
+      formattedAddress: result.formatted_address || parts.formattedAddress,
+    });
+    setView('add-address');
+  };
 
- return (
- <AnimatePresence>
- <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
- {/* Dark overlay with blur */}
- <motion.div 
- initial={{ opacity: 0 }}
- animate={{ opacity: 1 }}
- exit={{ opacity: 0 }}
- onClick={closeModal}
- className="absolute inset-0 bg-black/60 backdrop-blur-sm"
- />
+  const handleSelectSavedAddress = (addr: CustomerAddress) => {
+    setSelectedAddressId(addr._id);
+  };
 
- {/* Modal content container */}
- <motion.div 
- initial={{ opacity: 0, scale: 0.95, y: 30 }}
- animate={{ opacity: 1, scale: 1, y: 0 }}
- exit={{ opacity: 0, scale: 0.95, y: 30 }}
- transition={{ type: 'spring', stiffness: 350, damping: 30 }}
- className="bg-background dark:bg-slate-900 border border-border dark:border-white/10 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl z-10"
- >
- {/* Header */}
- <div className="p-6 border-b border-border/60 flex items-center justify-between">
- <div>
- <h2 className="text-xl font-black text-foreground">Choose Delivery Location</h2>
- <p className="text-xs text-muted-foreground mt-1">Select where you want your food delivered</p>
- </div>
- <button 
- onClick={closeModal}
- className="h-10 w-10 bg-muted hover:bg-muted/80 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-all"
- >
- <X className="h-5 w-5" />
- </button>
- </div>
+  const handleContinue = () => {
+    if (!selectedAddressId) return;
+    const addr = savedAddresses.find(a => a._id === selectedAddressId);
+    if (!addr) return;
+    
+    setLocation({
+      latitude: addr.latitude,
+      longitude: addr.longitude,
+      placeId: undefined,
+      street: addr.address2,
+      city: addr.city,
+      state: addr.state,
+      postalCode: addr.pincode,
+      country: addr.country,
+      formattedAddress: [addr.address1, addr.address2, addr.city].filter(Boolean).join(', '),
+      locationLoaded: false
+    });
+    
+    setSelectedOutlet(null as any);
+    closeModal();
+  };
 
- <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto scrollbar-none">
- 
- {/* Search Input */}
- <div className="relative flex items-center">
- <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
- <input 
- type="text"
- value={searchQuery}
- onChange={(e) => setSearchQuery(e.target.value)}
- placeholder="Search for street, area, city..."
- className="w-full h-14 pl-12 pr-4 bg-muted/65 dark:bg-white/5 border border-border/80 dark:border-white/10 rounded-2xl text-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground placeholder:text-muted-foreground"
- />
- </div>
+  const handleSaveAddress = () => {
+    if (!address1.trim()) {
+      setValidationError('House / Flat No is required.');
+      return;
+    }
 
- {/* Core Action: Use GPS Location */}
- <button 
- onClick={handleUseCurrentLocation}
- disabled={isLocating}
- className="w-full h-14 bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground border border-primary/20 hover:border-transparent rounded-2xl flex items-center justify-between px-5 transition-all duration-300 font-extrabold text-sm shadow-sm group disabled:opacity-75"
- >
- <div className="flex items-center gap-3">
- {isLocating ? (
- <Loader2 className="h-5 w-5 animate-spin" />
- ) : (
- <Navigation className="h-5 w-5 stroke-[2.5] group-hover:animate-pulse" />
- )}
- <span>{isLocating ? 'Locating...' : 'Use Current GPS Location'}</span>
- </div>
- <span className="text-xs font-black opacity-80 group-hover:translate-x-1 transition-transform">GPS</span>
- </button>
+    const payload = {
+      address1,
+      address2: pendingAddress.street || pendingAddress.city,
+      city: pendingAddress.city || '',
+      state: pendingAddress.state || '',
+      country: pendingAddress.country || '',
+      pincode: pendingAddress.postalCode || '',
+      latitude: pendingAddress.latitude,
+      longitude: pendingAddress.longitude,
+      landMark,
+      type
+    };
 
- {/* Results or Sections */}
- {searchQuery.trim().length > 0 ? (
- <div className="space-y-3">
- <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest px-1">Search Results</h3>
- <div className="space-y-1">
- {filteredMockLocations.length > 0 ? (
- filteredMockLocations.map((loc, idx) => (
- <button 
- key={idx}
- onClick={() => handleSelectLocation(loc.lat, loc.lng, loc.address)}
- className="w-full text-left p-3.5 hover:bg-muted/80 rounded-2xl transition-all border border-transparent hover:border-border/60 flex items-start gap-3.5"
- >
- <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
- <div>
- <span className="font-extrabold text-sm text-foreground block leading-tight">{loc.city}</span>
- <span className="text-xs text-muted-foreground block mt-1">{loc.address}</span>
- </div>
- </button>
- ))
- ) : (
- <div className="text-center py-8 text-sm text-muted-foreground">
- No matching addresses found. Try "Noida", "Chennai", or "Delhi".
- </div>
- )}
- </div>
- </div>
- ) : (
- <>
- {/* Saved Locations */}
- <div className="space-y-3">
- <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest px-1">Saved Addresses</h3>
- <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
- <button 
- onClick={() => handleSelectLocation(28.5355, 77.3910, 'Sector 62, Noida, Uttar Pradesh')}
- className="text-left p-4 bg-muted/40 hover:bg-muted rounded-2xl transition-all border border-border/50 flex items-center gap-3.5"
- >
- <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
- <Home className="h-5 w-5 text-primary" />
- </div>
- <div>
- <span className="font-extrabold text-sm text-foreground block leading-tight">Home</span>
- <span className="text-[10px] text-muted-foreground block mt-0.5">Noida Sector 62</span>
- </div>
- </button>
+    if (!user) {
+      // Guest bypass: Just set the local location state without making API call
+      setSelectedOutlet(null as any);
+      setLocation({
+        latitude: payload.latitude,
+        longitude: payload.longitude,
+        placeId: pendingAddress.placeId,
+        street: payload.address2,
+        city: payload.city,
+        state: payload.state,
+        postalCode: payload.pincode,
+        country: payload.country,
+        formattedAddress: [payload.address1, payload.address2, payload.city].filter(Boolean).join(', '),
+        locationLoaded: false
+      });
+      closeModal();
+      return;
+    }
 
- <button 
- onClick={() => handleSelectLocation(28.4595, 77.0266, 'Cyber City, DLF Phase 2, Gurugram, Haryana')}
- className="text-left p-4 bg-muted/40 hover:bg-muted rounded-2xl transition-all border border-border/50 flex items-center gap-3.5"
- >
- <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
- <Briefcase className="h-5 w-5 text-blue-500" />
- </div>
- <div>
- <span className="font-extrabold text-sm text-foreground block leading-tight">Work</span>
- <span className="text-[10px] text-muted-foreground block mt-0.5">Cyber City, Gurugram</span>
- </div>
- </button>
- </div>
- </div>
+    createAddress(payload, {
+      onSuccess: (data) => {
+        setSelectedOutlet(null as any);
+        const finalAddr = data.address || payload;
+        setLocation({
+          latitude: finalAddr.latitude,
+          longitude: finalAddr.longitude,
+          placeId: pendingAddress.placeId,
+          street: payload.address2,
+          city: payload.city,
+          state: payload.state,
+          postalCode: payload.pincode,
+          country: payload.country,
+          formattedAddress: [payload.address1, payload.address2, payload.city].filter(Boolean).join(', '),
+          locationLoaded: false
+        });
+        closeModal();
+      }
+    });
+  };
 
- {/* Recent Searches */}
- {recentAddresses.length > 0 && (
- <div className="space-y-3">
- <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest px-1">Recent Searches</h3>
- <div className="space-y-1">
- {recentAddresses.map((loc, idx) => (
- <button 
- key={idx}
- onClick={() => handleSelectLocation(loc.lat, loc.lng, loc.address)}
- className="w-full text-left p-3 hover:bg-muted/80 rounded-xl transition-all flex items-center gap-3"
- >
- <Clock className="h-4.5 w-4.5 text-muted-foreground shrink-0" />
- <div className="flex-1 min-w-0">
- <span className="font-bold text-xs text-foreground block truncate">{loc.city}</span>
- <span className="text-[10px] text-muted-foreground block truncate mt-0.5">{loc.address}</span>
- </div>
- </button>
- ))}
- </div>
- </div>
- )}
+  if (!isOpen) return null;
 
- {/* Pick on Map */}
- <button 
- onClick={() => {
- // Simulating a map picking flow by selecting Connaught Place Delhi
- handleSelectLocation(28.7041, 77.1025, 'Rajiv Chowk, Connaught Place, New Delhi, Delhi');
- toast.info('Selected location on Map');
- }}
- className="w-full h-12 bg-muted/50 hover:bg-muted border border-border/40 rounded-2xl flex items-center justify-center gap-2 transition-all text-xs font-extrabold text-muted-foreground hover:text-foreground"
- >
- <Map className="h-4 w-4" />
- <span>Choose Location from Map Marker</span>
- </button>
- </>
- )}
- 
- </div>
- </motion.div>
- </div>
- </AnimatePresence>
- );
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={closeModal}
+          className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
+        />
+
+        <motion.div 
+          initial={{ opacity: 0, y: "100%" }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: "100%" }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="bg-slate-900 border border-white/10 w-full sm:max-w-[520px] rounded-t-[24px] sm:rounded-[24px] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] z-10 flex flex-col max-h-[90vh] sm:max-h-[85vh] relative"
+        >
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-slate-900/80 backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              {view === 'add-address' && (
+                <button onClick={() => setView('search')} className="p-1.5 hover:bg-white/10 rounded-full transition-colors">
+                  <ChevronLeft className="h-6 w-6 text-slate-400" />
+                </button>
+              )}
+              <div className="flex flex-col justify-center">
+                <h2 className="text-2xl font-black text-white tracking-tight leading-tight">
+                  {view === 'search' ? 'Select Delivery Address' : 'Add New Address'}
+                </h2>
+                <p className="text-[14px] text-slate-400 font-medium mt-1 leading-tight">
+                  {view === 'search' ? 'Choose your preferred delivery address to continue.' : 'Enter specific details for this location'}
+                </p>
+              </div>
+            </div>
+            <button 
+              onClick={closeModal}
+              className="h-10 w-10 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-all"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            {view === 'search' ? (
+              <div className="p-6 space-y-8">
+                {/* Search Bar */}
+                <div className="relative group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-[#FF6B00] transition-colors" />
+                  <input 
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search by area, street or landmark..."
+                    className="w-full h-[56px] pl-12 pr-4 bg-slate-800/50 border border-white/10 shadow-sm rounded-2xl text-[16px] font-medium focus:outline-none focus:border-[#FF6B00] focus:bg-slate-900 transition-all text-white placeholder:text-slate-500"
+                  />
+                </div>
+
+                {/* Search Results */}
+                {searchQuery.trim().length >= 3 ? (
+                  <div className="space-y-4">
+                    <h3 className="text-[13px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">Search Results</h3>
+                    <div className="space-y-2">
+                      {isSearching ? (
+                        <div className="flex justify-center py-8">
+                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        </div>
+                      ) : (searchResults?.results?.length ?? 0) > 0 ? (
+                        searchResults?.results?.map((loc: any, idx: number) => (
+                          <button 
+                            key={idx}
+                            onClick={() => handleSelectSearchResult(loc)}
+                            className="w-full text-left p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-2xl transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700 flex items-start gap-4 group"
+                          >
+                            <div className="mt-0.5 p-2 bg-slate-100 dark:bg-slate-800 rounded-full group-hover:bg-white dark:group-hover:bg-slate-700 transition-colors">
+                              <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                            </div>
+                            <div>
+                              <span className="font-bold text-[15px] text-slate-900 dark:text-white block leading-tight">
+                                {loc.address_components?.[0]?.long_name || loc.formatted_address.split(',')[0]}
+                              </span>
+                              <span className="text-[13px] font-medium text-slate-500 dark:text-slate-400 block mt-1 leading-relaxed line-clamp-2">
+                                {loc.formatted_address}
+                              </span>
+                            </div>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-[15px] font-medium text-slate-500">
+                          No matching addresses found.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Current Location Action */}
+                    <div className="space-y-4">
+                      {permissionGranted === false ? (
+                        <div className="flex flex-col gap-3 p-5 bg-slate-800 text-orange-400 rounded-[18px] border border-orange-500/20 shadow-md">
+                          <div className="flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                            <div>
+                              <h4 className="font-bold text-[15px]">Location Permission Required</h4>
+                              <p className="text-[14px] font-medium leading-relaxed mt-1 opacity-90">
+                                Allow location access to find nearby restaurants and calculate accurate delivery estimates.
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            <Button size="sm" onClick={handleUseCurrentLocation} className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl">Enable Location</Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={handleUseCurrentLocation}
+                          disabled={isLocating}
+                          className="w-full text-left p-5 bg-slate-800/50 hover:bg-slate-800 text-orange-400 border border-white/10 hover:border-orange-500/30 rounded-[18px] flex items-center justify-between transition-all duration-300 group disabled:opacity-75"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="mt-0.5">
+                              {isLocating ? (
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                              ) : (
+                                <MapPin className="h-5 w-5 stroke-[2.5]" />
+                              )}
+                            </div>
+                            <div>
+                              <span className="font-bold text-[15px] block">{isLocating ? 'Locating...' : 'Use Current Location'}</span>
+                              <span className="text-[13px] font-medium text-slate-400 block mt-0.5">Using GPS to find your address</span>
+                            </div>
+                          </div>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Saved Addresses */}
+                    <div className="space-y-4">
+                      <h3 className="text-[13px] font-bold text-slate-500 uppercase tracking-wider px-1">Saved Addresses</h3>
+                      
+                      {isLoadingAddresses ? (
+                        <div className="flex justify-center py-8">
+                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        </div>
+                      ) : savedAddresses.length > 0 ? (
+                        <div className="space-y-4">
+                          {savedAddresses.map((addr: CustomerAddress) => {
+                            const isSelected = selectedAddressId === addr._id;
+                            const readableTitle = getReadableTitle(addr);
+                            
+                            // Construct full address
+                            const addressParts = [addr.address1, addr.address2, addr.city, addr.state ? `${addr.state} - ${addr.pincode}` : addr.pincode].filter(Boolean);
+                            const fullAddressStr = addressParts.join(', ');
+                            const secondaryInfo = [addr.address2?.split(',')[0], addr.city, addr.state].filter(Boolean).join(', ');
+
+                            return (
+                              <motion.button 
+                                whileHover={{ y: -2, scale: 1.01 }}
+                                whileTap={{ scale: 0.98 }}
+                                key={addr._id}
+                                onClick={() => handleSelectSavedAddress(addr)}
+                                className={`w-full text-left p-5 rounded-[18px] transition-all flex items-start gap-4 group relative overflow-hidden ${
+                                  isSelected 
+                                    ? 'bg-[#FF6B00]/10 border border-[#FF6B00] shadow-md' 
+                                    : 'bg-slate-800/80 border border-white/10 hover:border-white/20 hover:shadow-lg hover:bg-slate-800/90'
+                                }`}
+                              >
+                                {isSelected && (
+                                  <div className="absolute top-4 right-4 text-[#FF6B00]">
+                                    <CheckCircle2 className="w-5 h-5" />
+                                  </div>
+                                )}
+                                
+                                <div className={`mt-0.5 p-3 rounded-full transition-colors ${isSelected ? 'bg-[#FF6B00]/20 text-[#FF6B00]' : 'bg-slate-800 text-slate-400 group-hover:text-white'}`}>
+                                  <AddressIcon type={addr.type} />
+                                </div>
+                                <div className="flex-1 pr-6">
+                                  <div className="flex items-center gap-2 mb-1.5">
+                                    <span className="font-bold text-[11px] tracking-widest text-slate-300 bg-slate-900/80 px-2.5 py-0.5 rounded-full uppercase border border-white/5">
+                                      {addr.type}
+                                    </span>
+                                  </div>
+                                  <span className="font-semibold text-[18px] text-white block mb-1.5 leading-tight">
+                                    {readableTitle}
+                                  </span>
+                                  <span className="text-[15px] font-medium text-slate-300 leading-relaxed line-clamp-3 mb-2 whitespace-pre-wrap">
+                                    {fullAddressStr}
+                                  </span>
+                                  <span className="text-[13px] font-medium text-slate-400 block pt-2 border-t border-white/10">
+                                    {secondaryInfo}
+                                  </span>
+                                </div>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12 px-4 bg-slate-800/30 rounded-[18px] border border-white/10 flex flex-col items-center shadow-inner">
+                          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                            <MapPin className="w-8 h-8 text-slate-500" />
+                          </div>
+                          <h4 className="text-[16px] font-bold text-white mb-1.5">No Saved Addresses</h4>
+                          <p className="text-[14px] text-slate-400 font-medium mb-6">Add your first delivery address to continue.</p>
+                          <Button 
+                            onClick={() => setView('add-address')}
+                            variant="outline"
+                            className="h-12 px-6 rounded-xl border-white/10 hover:bg-slate-800 hover:text-white text-[14px] font-bold text-slate-300 transition-all"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add New Address
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              /* Add Address Form */
+              <div className="p-6 space-y-6">
+                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  <div className="font-bold text-[15px] text-slate-900 dark:text-white mb-1">
+                    {pendingAddress?.street || pendingAddress?.city}
+                  </div>
+                  <div className="text-[13px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-relaxed">
+                    {pendingAddress?.formattedAddress}
+                  </div>
+                </div>
+
+                <div className="space-y-5">
+                  <div>
+                    <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-2 block">House / Flat No *</label>
+                    <input 
+                      type="text"
+                      value={address1}
+                      onChange={(e) => {
+                        setAddress1(e.target.value);
+                        if (validationError) setValidationError('');
+                      }}
+                      placeholder="E.g. Flat 401, Galaxy Apts"
+                      className={`w-full h-14 px-4 bg-white dark:bg-slate-900 border rounded-2xl text-[15px] font-medium focus:outline-none focus:ring-4 transition-all ${validationError ? 'border-red-300 focus:border-red-500 focus:ring-red-500/10 dark:border-red-500/50' : 'border-slate-200 dark:border-slate-700 focus:border-primary focus:ring-primary/10'}`}
+                    />
+                    {validationError && <p className="text-[13px] text-red-500 font-bold mt-2 px-1">{validationError}</p>}
+                  </div>
+
+                  <div>
+                    <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-2 block">Landmark (Optional)</label>
+                    <input 
+                      type="text"
+                      value={landMark}
+                      onChange={(e) => setLandMark(e.target.value)}
+                      placeholder="E.g. Near Apollo Hospital"
+                      className="w-full h-14 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl text-[15px] font-medium focus:outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-2 block">Save As</label>
+                    <div className="flex gap-3">
+                      {(
+                        [
+                          { id: 'home', label: 'Home', icon: Home },
+                          { id: 'work', label: 'Work', icon: Briefcase },
+                          { id: 'other', label: 'Other', icon: MapPin }
+                        ] as { id: AddressType, label: string, icon: any }[]
+                      ).map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => setType(t.id)}
+                          className={`flex-1 h-12 rounded-xl border flex items-center justify-center gap-2 text-[14px] font-bold transition-all ${
+                            type === t.id 
+                              ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500' 
+                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
+                          }`}
+                        >
+                          <t.icon className="h-4 w-4" />
+                          <span>{t.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sticky Bottom Actions */}
+          <div className="p-6 border-t border-white/10 bg-slate-900/80 backdrop-blur-md shrink-0">
+            {view === 'search' ? (
+              <div className="flex flex-col gap-4">
+                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    onClick={handleContinue}
+                    disabled={!selectedAddressId}
+                    className="w-full h-[56px] rounded-2xl bg-gradient-to-r from-[#FF6B00] to-[#E85D00] hover:from-[#E85D00] hover:to-[#CC5200] text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(255,107,0,0.4)] disabled:opacity-50 disabled:shadow-none transition-all group relative overflow-hidden"
+                  >
+                    Continue
+                  </Button>
+                </motion.div>
+                
+                <Button 
+                  onClick={() => setView('add-address')}
+                  variant="outline"
+                  className="w-full h-[56px] rounded-2xl border-white/10 hover:bg-slate-800 hover:text-white text-[16px] font-bold text-slate-300 transition-all bg-transparent"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Add New Address
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => setView('search')}
+                  variant="outline"
+                  className="flex-1 h-[56px] rounded-[16px] border-white/10 hover:bg-slate-800 text-[15px] font-bold text-white transition-all"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSaveAddress}
+                  disabled={isCreating}
+                  className="flex-1 h-[56px] rounded-[16px] bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(249,115,22,0.4)] disabled:opacity-70 transition-all"
+                >
+                  {isCreating && <Loader2 className="h-5 w-5 animate-spin mr-2" />}
+                  Save Address
+                </Button>
+              </div>
+            )}
+          </div>
+
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
 };

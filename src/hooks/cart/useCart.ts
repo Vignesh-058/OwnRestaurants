@@ -4,8 +4,7 @@ import { useCartStore } from '@/store/CartStore';
 import type { GetCartDetailsPayload } from '@/types/cart.types';
 
 export const useCart = (payload: GetCartDetailsPayload) => {
- const setOrderId = useCartStore(state => state.setOrderId);
- const setCartDetails = useCartStore(state => state.setCartDetails);
+ const setCart = useCartStore(state => state.setCart);
  
  return useQuery({
  queryKey: ['cart', payload.customerPhoneNo, payload.outletId],
@@ -14,13 +13,13 @@ export const useCart = (payload: GetCartDetailsPayload) => {
  try {
  const data = await cartService.getCartDetails(payload);
  if (data) {
- setOrderId(data.orderId);
- setCartDetails(data);
+ setCart(data);
+ } else {
+ setCart(null);
  }
  return data;
  } catch {
- setOrderId(null);
- setCartDetails(null);
+ setCart(null);
  return null;
  }
  },

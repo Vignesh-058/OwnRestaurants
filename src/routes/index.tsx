@@ -14,6 +14,7 @@ import {
  CouponsPage,
  SearchPage,
  WishlistPage,
+ ProductsPage,
 } from '@/pages';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -21,17 +22,18 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 const router = createBrowserRouter([
  { path: '/login', element: <LoginPage /> },
  {
+ element: <ProtectedRoute />,
+ children: [
+ {
  path: '/',
  element: <MainLayout />,
  children: [
  { index: true, element: <LandingPage /> },
+ { path: 'products', element: <ProductsPage /> },
  { path: 'search', element: <SearchPage /> },
  { path: 'wishlist', element: <WishlistPage /> },
  { path: 'product/:id', element: <ProductPage /> },
  { path: 'cart', element: <CartPage /> },
- {
- element: <ProtectedRoute />,
- children: [
  { path: 'address', element: <AddressPage /> },
  { path: 'checkout', element: <CheckoutPage /> },
  { path: 'orders', element: <OrdersPage /> },
@@ -43,10 +45,10 @@ const router = createBrowserRouter([
  { path: 'coupons', element: <CouponsPage /> },
  { path: 'offers', element: <CouponsPage /> },
  { path: 'profile/coupons', element: <CouponsPage /> },
+ ],
+ }
  ]
  }
- ],
- },
 ]);
 
 export function AppRouter() {

@@ -1,11 +1,12 @@
 import { axiosInstance } from '@/api/axios';
+import ENV from '@/config/env';
 import type { Category } from '@/types/category.types';
 import type { ApiResponse } from '@/types/api.types';
 
 export const categoryService = {
  getCategories: async (outletId: string, belongsTo: string): Promise<Category[]> => {
  try {
- const response = await axiosInstance.post<ApiResponse<Category[]>>('/category/getCategory', {
+ const response = await axiosInstance.post<ApiResponse<Category[]>>(`${ENV.CATEGORY_API}/getCategory`, {
  outletId,
  belongsTo
  });

@@ -1,28 +1,53 @@
 import { axiosInstance } from '@/api/axios';
+import ENV from '@/config/env';
 import type { ApiResponse } from '@/types/api.types';
-import type { Order, OrdersApiResponse } from '@/types/order.types';
+import type { Order, CustomerOrdersResponse } from '@/types/order.types';
 
 export const orderService = {
- getOrdersByCustomer: async (page = 1, limit = 20): Promise<OrdersApiResponse> => {
- const response = await axiosInstance.get<ApiResponse<any>>(
- `/order/get-all-order-by-customer?page=${page}&limit=${limit}`
- );
- const payload = response.data.data ?? response.data;
- const orders: Order[] = Array.isArray(payload)
- ? payload
- : payload?.orders ?? [];
- return {
- orders,
- totalOrders: payload?.totalOrders,
- totalPages: payload?.totalPages,
- currentPage: payload?.currentPage ?? page,
- hasNextPage: payload?.hasNextPage,
- hasPrevPage: payload?.hasPrevPage,
- };
- },
+  getOrdersByCustomer: async (page = 1, limit = 20): Promise<CustomerOrdersResponse> => {
+    if (import.meta.env.DEV) {
+      console.warn('[DEV MODE] Bypassing getOrdersByCustomer API');
+      return {
+        data: [],
+        totalOrders: 0,
+        pagination: { totalOrders: 0, totalPages: 1, currentPage: 1, hasNextPage: false, hasPrevPage: false, limit }
+      };
+    }
+    const response = await axiosInstance.post<ApiResponse<CustomerOrdersResponse | any>>(
+      `${ENV.ORDER_API}/get-all-order-by-customer?page=${page}&limit=${limit}`,
+      {}
+    );
+    const payload = response.data.data ?? response.data;
+    const orders: Order[] = Array.isArray(payload)
+      ? payload
+      : payload?.orders ?? payload?.data ?? [];
+    
+    const totalOrders = payload?.totalOrders ?? payload?.pagination?.totalOrders ?? orders.length;
+    const totalPages = payload?.totalPages ?? payload?.pagination?.totalPages ?? 1;
+    const currentPage = payload?.currentPage ?? payload?.pagination?.currentPage ?? page;
+    const hasNextPage = payload?.hasNextPage ?? payload?.pagination?.hasNextPage ?? false;
+    const hasPrevPage = payload?.hasPrevPage ?? payload?.pagination?.hasPrevPage ?? false;
 
- getOrderById: async (orderId: string): Promise<Order> => {
- const response = await axiosInstance.get<ApiResponse<Order>>(`/order/${orderId}`);
- return response.data.data;
- },
+    return {
+      data: orders,
+      totalOrders,
+      pagination: {
+        totalOrders,
+        totalPages,
+        currentPage,
+        hasNextPage,
+        hasPrevPage,
+        limit,
+      }
+    };
+  },
+
+  getOrderById: async (orderId: string): Promise<Order> => {
+    if (import.meta.env.DEV) {
+      console.warn('[DEV MODE] Bypassing getOrderById API');
+      return { _id: orderId, orderStatus: "Placed" } as any;
+    }
+    const response = await axiosInstance.get<ApiResponse<Order>>(`${ENV.ORDER_API}/${orderId}`);
+    return response.data.data;
+  },
 };

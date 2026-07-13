@@ -1,10 +1,11 @@
 import { axiosInstance } from '@/api/axios';
+import ENV from '@/config/env';
 import type { OrganizationResponse, OutletResponse, StoreStatusResponse } from '@/types/organization.types';
 import type { ApiResponse } from '@/types/api.types';
 
 export const organizationService = {
  getOrganization: async (belongsTo: string): Promise<OrganizationResponse> => {
- const response = await axiosInstance.post<ApiResponse<any>>('/organization/get-org', { belongsTo });
+ const response = await axiosInstance.post<ApiResponse<any>>(`${ENV.STORE_API}/get-org`, { belongsTo });
  const orgData = response.data.data?.organization;
  if (orgData) {
  return {
@@ -22,24 +23,24 @@ export const organizationService = {
  },
 
  getOutlets: async (belongsTo: string, lat?: number, lng?: number): Promise<OutletResponse> => {
- const response = await axiosInstance.post<ApiResponse<any>>('/organization/outlets/get-all', {
+ const response = await axiosInstance.post<ApiResponse<any>>(`${ENV.STORE_API}/outlets/get-all`, {
  belongsTo,
  locationSorting: !!(lat && lng),
  lat,
  lng
  });
- console.log("[STAGE 1: API Response Raw]", response.data);
+
  const outletsData = Array.isArray(response.data.data) ? response.data.data : (response.data.data?.outlets || []);
- console.log("[STAGE 2: Service Data]", outletsData);
+
  return { outlets: outletsData };
  },
 
  getStoreStatus: async (belongsTo: string, outletId: string): Promise<StoreStatusResponse> => {
- const response = await axiosInstance.post<ApiResponse<StoreStatusResponse>>(`/organization/get-store-status/${belongsTo}`, {
+ const response = await axiosInstance.post<ApiResponse<{ organization: StoreStatusResponse }>>(`${ENV.STORE_API}/get-store-status/${belongsTo}`, {
  belongsTo,
  outletId
  });
- return response.data.data;
+ return response.data.data?.organization || { storeStatus: false } as any;
  }
 };
 

@@ -44,14 +44,14 @@ export const AccountPanel = () => {
  title: 'Profile Information',
  subtitle: 'View your account details',
  href: '/profile',
- gradient: 'from-blue-500 to-indigo-500',
+ gradient: 'from-[#FF6B00] to-[#E85D00]',
  },
  {
  icon: Package,
  title: 'Order History',
  subtitle: 'View and track previous purchases',
  href: '/profile/orders',
- gradient: 'from-sky-500 to-blue-500',
+ gradient: 'from-[#FF8A3D] to-[#FF6B00]',
  },
  {
  icon: MapPin,
@@ -93,14 +93,14 @@ export const AccountPanel = () => {
  return (
  <>
  <DropdownMenu>
- <DropdownMenuTrigger asChild>
- <Avatar className="h-9 w-9 border border-border/80 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all shadow-sm">
- <AvatarImage src={user?.avatar} alt={user?.name || 'User'} />
- <AvatarFallback className="bg-gradient-to-br from-primary to-blue-600 text-white font-extrabold">
- {user?.name?.charAt(0)?.toUpperCase() || 'U'}
- </AvatarFallback>
- </Avatar>
- </DropdownMenuTrigger>
+    <DropdownMenuTrigger asChild>
+      <Avatar className="h-[48px] w-[48px] border-2 border-[rgba(255,255,255,0.05)] bg-[#1F2937] cursor-pointer hover:border-[#FF6B00] transition-all duration-300 shadow-sm overflow-hidden">
+        <AvatarImage src={user?.avatar} alt={user?.name || 'User'} className="object-cover" />
+        <AvatarFallback className="bg-transparent text-[#94A3B8] font-bold">
+          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+        </AvatarFallback>
+      </Avatar>
+    </DropdownMenuTrigger>
  
  <DropdownMenuContent 
  align="end" 
@@ -119,7 +119,7 @@ export const AccountPanel = () => {
  
  <Avatar className="h-14 w-14 border-2 border-background shadow-md">
  <AvatarImage src={user?.avatar} alt={user?.name || 'User'} className="object-cover" />
- <AvatarFallback className="bg-gradient-to-br from-primary to-blue-600 text-white font-black text-lg">
+ <AvatarFallback className="bg-gradient-to-br from-primary to-[#E85D00] text-white font-black text-lg">
  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
  </AvatarFallback>
  </Avatar>

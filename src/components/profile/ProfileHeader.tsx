@@ -1,120 +1,145 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Phone, Mail, CalendarDays, Edit3, Award } from 'lucide-react';
+import { Phone, CalendarDays, Award, Package, Wallet, Heart, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { CustomerProfile } from '@/types/customer.types';
+import { useOrganizationStore } from '@/store/OrganizationStore';
 
 interface ProfileHeaderProps {
- profile: CustomerProfile | null;
+  profile: CustomerProfile | null;
 }
 
 export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
- const joinDate = profile?.createdAt 
- ? new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
- : new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
 
- // Calculate membership tier dynamically
- const ordersCount = profile?.ordersCount || 0;
- const { tier, badgeColor, gradient } = (() => {
- if (ordersCount > 15) {
- return { 
- tier: 'Platinum Member', 
- badgeColor: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/35', 
- gradient: 'from-indigo-500 via-purple-500 to-pink-500' 
- };
- }
- if (ordersCount > 5) {
- return { 
- tier: 'Gold Member', 
- badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/35', 
- gradient: 'from-amber-400 via-orange-500 to-yellow-600' 
- };
- }
- return { 
- tier: 'Silver Member', 
- badgeColor: 'bg-slate-400/20 text-slate-400 border-slate-400/35', 
- gradient: 'from-slate-400 via-zinc-500 to-slate-600' 
- };
- })();
+  const joinDate = profile?.createdAt 
+    ? new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    : new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
- return (
- <motion.div
- initial={{ opacity: 0, y: 20 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ duration: 0.5 }}
- >
- <Card className="rounded-[2rem] border border-border/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.25)] overflow-hidden relative">
- {/* Dynamic header background gradient */}
- <div className={`absolute top-0 left-0 w-full h-36 bg-gradient-to-r ${gradient} opacity-15 dark:opacity-25 pointer-events-none`} />
- 
- <CardContent className="pt-20 pb-8 px-6 sm:px-10 relative z-10 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
- <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
- 
- {/* Large circular avatar with badge overlay */}
- <div className="relative group">
- <Avatar className="h-28 w-28 border-4 border-background shadow-xl ring-4 ring-primary/10 bg-background group-hover:scale-105 transition-transform duration-300">
- <AvatarImage src={profile?.avatar} alt={profile?.name || 'User'} className="object-cover" />
- <AvatarFallback className="bg-gradient-to-br from-primary to-blue-600 text-white font-black text-4xl">
- {profile?.name?.charAt(0)?.toUpperCase() || 'U'}
- </AvatarFallback>
- </Avatar>
- <div className="absolute -bottom-2 -right-2 bg-background border border-border/60 p-2 rounded-full shadow-md">
- <Award className="h-4.5 w-4.5 text-primary" />
- </div>
- </div>
+  const ordersCount = profile?.ordersCount || 0;
+  const { tier, badgeColor } = (() => {
+    if (ordersCount > 15) {
+      return { 
+        tier: 'Platinum Member', 
+        badgeColor: 'bg-indigo-50 text-indigo-600 border-indigo-200' 
+      };
+    }
+    if (ordersCount > 5) {
+      return { 
+        tier: 'Gold Member', 
+        badgeColor: 'bg-amber-50 text-amber-600 border-amber-200' 
+      };
+    }
+    return { 
+      tier: 'Silver Member', 
+      badgeColor: 'bg-slate-50 text-slate-600 border-slate-200' 
+    };
+  })();
 
- {/* User credentials & membership information */}
- <div className="flex flex-col items-center sm:items-start text-center sm:text-left space-y-3.5">
- <div className="space-y-1">
- <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
- <h1 className="text-[28px] font-bold tracking-tight text-foreground">
- {profile?.name || 'Guest Customer'}
- </h1>
- <Badge variant="outline" className={`font-black rounded-full px-3.5 py-0.5 text-[10px] tracking-widest uppercase border ${badgeColor}`}>
- {tier}
- </Badge>
- </div>
+  const rewardPoints = Math.floor((profile?.totalSpent || 0) * 0.1);
 
- <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground justify-center sm:justify-start">
- <CalendarDays className="w-3.5 h-3.5 text-primary shrink-0" />
- <span>Member since {joinDate}</span>
- </div>
- </div>
- 
- {/* Phone & Email contacts */}
- <div className="flex flex-col sm:flex-row flex-wrap items-center sm:items-start gap-3 sm:gap-6 text-sm font-semibold text-muted-foreground">
- <div className="flex items-center gap-2">
- <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
- <Phone className="w-3.5 h-3.5 text-primary" />
- </div>
- <span>+91 {profile?.phone || 'Not provided'}</span>
- </div>
- {profile?.email && (
- <div className="flex items-center gap-2">
- <div className="h-7 w-7 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
- <Mail className="w-3.5 h-3.5 text-blue-500" />
- </div>
- <span>{profile.email}</span>
- </div>
- )}
- </div>
- </div>
- </div>
+  const stats = [
+    {
+      label: 'Orders',
+      value: ordersCount,
+      icon: Package,
+      iconColor: 'text-[#FF6B00]',
+      bgColor: 'bg-[#FF6B00]/10',
+    },
+    {
+      label: 'Wallet',
+      value: rewardPoints,
+      prefix: '⭐',
+      icon: Wallet,
+      iconColor: 'text-[#FF6B00]',
+      bgColor: 'bg-[#FF6B00]/10',
+    },
+    {
+      label: 'Favorites',
+      value: profile?.savedAddressesCount || 0, // Using as mock for favorites if actual count isn't available
+      icon: Heart,
+      iconColor: 'text-[#FF6B00]',
+      bgColor: 'bg-[#FF6B00]/10',
+    },
+    {
+      label: 'Addresses',
+      value: profile?.savedAddressesCount || 0,
+      icon: MapPin,
+      iconColor: 'text-[#FF6B00]',
+      bgColor: 'bg-[#FF6B00]/10',
+    }
+  ];
 
- {/* Edit Profile Button */}
- <Button 
- variant="outline" 
- size="sm" 
- className="rounded-full px-5 h-10 border-border dark:border-white/10 hover:bg-muted font-bold text-xs gap-1.5 shadow-sm shrink-0"
- >
- <Edit3 className="h-3.5 w-3.5" />
- Edit Profile
- </Button>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="w-full"
+    >
+      <div className="flex flex-col xl:flex-row gap-6 lg:gap-8 justify-between">
+        
+        {/* Left Side: Profile Info */}
+        <div className="flex items-center gap-6">
+          <div className="relative group shrink-0">
+            <Avatar className="h-[100px] w-[100px] border-[4px] border-white shadow-[0_8px_20px_rgba(0,0,0,0.08)] bg-white group-hover:scale-105 transition-transform duration-300">
+              <AvatarImage src={profile?.avatar} alt={profile?.name || 'User'} className="object-cover" />
+              <AvatarFallback className="bg-gradient-to-br from-[#FF6B00] to-[#E85D00] text-white font-black text-3xl">
+                {profile?.name?.charAt(0)?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-1 -right-1 bg-white border border-gray-100 p-1.5 rounded-full shadow-md">
+              <Award className="h-4 w-4 text-[#FF6B00]" />
+            </div>
+          </div>
 
- </CardContent>
- </Card>
- </motion.div>
- );
+          <div className="flex flex-col space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              <h1 className="text-[28px] font-bold tracking-tight text-[#101828] leading-none">
+                {profile?.name || 'Guest Customer'}
+              </h1>
+              <Badge variant="outline" className={`font-bold rounded-[8px] px-2.5 py-0.5 text-[11px] uppercase border shadow-sm ${badgeColor}`}>
+                {tier}
+              </Badge>
+            </div>
+
+            <div className="flex items-center gap-4 text-[14px] font-medium text-[#667085]">
+              <div className="flex items-center gap-1.5">
+                <Phone className="w-4 h-4 text-[#FF6B00]" />
+                <span>+91 {profile?.phone || 'Not provided'}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CalendarDays className="w-4 h-4 text-[#FF6B00]" />
+                <span>Since {joinDate}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side: Stat Cards */}
+        <div className="flex flex-wrap lg:flex-nowrap gap-4 shrink-0">
+          {stats.map((stat, idx) => (
+            <div 
+              key={idx} 
+              className="flex items-center gap-4 bg-white rounded-[16px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-[#E4E7EC] min-w-[150px] flex-1 lg:flex-none transition-transform hover:-translate-y-1 duration-200"
+            >
+              <div className={`w-12 h-12 rounded-[12px] flex items-center justify-center shrink-0 ${stat.bgColor}`}>
+                <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[22px] font-bold text-[#101828] leading-none mb-1">
+                  {stat.prefix}{stat.value.toLocaleString()}
+                </span>
+                <span className="text-[13px] font-medium text-[#667085]">
+                  {stat.label}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </motion.div>
+  );
 };

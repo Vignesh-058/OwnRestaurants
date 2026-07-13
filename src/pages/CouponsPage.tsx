@@ -2,10 +2,10 @@ import { useCoupons } from '@/hooks/queries/useCoupons';
 import { useAuthStore } from '@/store/AuthStore';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { CouponList } from '@/components/coupons/CouponList';
-import { CouponSkeleton } from '@/components/coupons/CouponSkeleton';
-import { EmptyCoupons } from '@/components/coupons/EmptyCoupons';
-import { AppliedCoupon } from '@/components/coupons/AppliedCoupon';
+import { CouponList } from '@/components/discount/CouponList';
+import { CouponSkeleton } from '@/components/discount/CouponSkeleton';
+import { EmptyCoupons } from '@/components/discount/EmptyCoupons';
+import { AppliedCoupon } from '@/components/discount/AppliedCoupon';
 import { ProfileMenu } from '@/components/profile/ProfileMenu';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Gift, AlertCircle } from 'lucide-react';
@@ -78,7 +78,7 @@ export const CouponsPage = () => {
  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
  
  <div className="flex items-center gap-4 relative z-10">
- <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/10 to-blue-500/10 text-primary flex items-center justify-center shadow-inner">
+ <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/10 to-[#FF6B00]/20 text-primary flex items-center justify-center shadow-inner">
  <Gift className="h-7 w-7" />
  </div>
  <div>

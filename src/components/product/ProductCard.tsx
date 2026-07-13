@@ -1,197 +1,370 @@
-import React from "react";
-import { cn } from "@/lib/utils";
-import { Star, Plus, Heart, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useOrganizationStore } from "@/store/OrganizationStore";
-import { useWishlist } from "@/hooks/useWishlist";
-import type { CategoryItem } from "@/types/category.types";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useCartStore } from '@/store/CartStore';
+import { useWishlist } from '@/hooks/useWishlist';
+import { useOrganizationStore } from '@/store/OrganizationStore';
+import type { CategoryItem } from '@/types/category.types';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Heart, Loader2, Check, Minus, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
+import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
+import { useAuthStore } from '@/store/AuthStore';
+import { useOutletStore } from '@/store/OutletStore';
 
 interface ProductCardProps {
- product: CategoryItem;
- className?: string;
- onClick?: (product: CategoryItem) => void;
+  product: CategoryItem;
+  className?: string;
+  onClick?: (product: CategoryItem) => void;
 }
 
-export const ProductCard = React.memo(
- ({ product, className, onClick }: ProductCardProps) => {
- const currency = useOrganizationStore(
- (state) => state.organization?.currency || "₹",
- );
- const { isInWishlist, toggleWishlist } = useWishlist();
+export const ProductCard = ({ product, className, onClick }: ProductCardProps) => {
+  const navigate = useNavigate();
+  const cartItems = useCartStore((state) => state.cartItems) || [];
+  const { wishlistItems, toggleWishlist: storeToggleWishlist } = useWishlist();
+  const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
+  
+  const { mutate: updateCart, isPending: isAdding } = useUpdateCart();
+  const { mutate: removeItem, isPending: isRemoving } = useDeleteCart();
+  const { orderId, orderType, optimisticSetQuantity } = useCartStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
 
- const inWishlist = isInWishlist(product._id);
- const hasDiscount = product.discount && product.discount.value;
+  const matchingCartItems = cartItems.filter((item) => {
+    const itemMatch = item.itemid?._id === product._id || 
+      (typeof item.itemid === 'string' && item.itemid === product._id);
+    return itemMatch;
+  });
+  
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      console.log("Cart Sync Log - Items:", cartItems.map(c => ({ id: c.itemid?._id || c.itemid, qty: c.quantity })), "Product ID:", product._id);
+    }
+  }, [cartItems, product._id]);
 
- let discountDisplay = null;
- let originalPrice = product.basePrice;
- let sellingPrice = product.sellingPrice;
+  const totalQuantity = matchingCartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const inWishlist = wishlistItems.some((item) => item._id === product._id);
 
- if (hasDiscount && product.discount) {
- if (product.discount.value.getDiscountPercent > 0) {
- discountDisplay = `${product.discount.value.getDiscountPercent}% OFF`;
- } else if (product.discount.value.amount > 0) {
- discountDisplay = `${currency}${product.discount.value.amount} OFF`;
- }
- }
+  // Use defaultSellingPrice if variations exist, fallback to sellingPrice
+  const sellingPrice = Number(product.defaultSellingPrice || product.sellingPrice || product.price || 0);
+  const originalPrice = Number(product.defaultBasePrice || product.basePrice || sellingPrice);
+  
+  // Calculate discount percentage if original price is greater than selling price
+  let discountDisplay = '';
+  if (originalPrice > sellingPrice && originalPrice > 0) {
+    const discountPercent = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
+    discountDisplay = `${discountPercent}% OFF`;
+  }
+  
+  const isVeg = product.dietryType?.toLowerCase() === 'veg';
 
- if (!discountDisplay && originalPrice > sellingPrice) {
- const calculatedPercent = Math.round(
- ((originalPrice - sellingPrice) / originalPrice) * 100,
- );
- if (calculatedPercent > 0) {
- discountDisplay = `${calculatedPercent}% OFF`;
- }
- }
+  const descText = product.description 
+    ? product.description.replace(/<[^>]*>?/gm, '').trim() 
+    : '';
 
- const isVeg =
- product.dietryType?.toLowerCase() === "veg" ||
- product.dietryType?.toLowerCase() === "vegan";
- const rating = product.rating || 4.5;
- const isBestseller = product.bestseller || false;
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
 
- return (
- <div
- className={cn(
- "group relative flex flex-row bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl rounded-[24px] border border-border/60 dark:border-white/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer w-full p-4 gap-4 md:gap-5",
- className,
- )}
- onClick={() => onClick?.(product)}
- >
- {/* Left Side: Content */}
- <div className="flex flex-col flex-1 min-w-0 justify-center">
- 
- {/* Top Indicators: Veg/NonVeg, Bestseller, Tag */}
- <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
- {product.dietryType && (
- <div
- className={cn(
- "flex items-center justify-center w-4 h-4 rounded-[4px] border shrink-0",
- isVeg ? "border-green-600 bg-green-50" : "border-red-600 bg-red-50"
- )}
- >
- <div className={cn("w-1.5 h-1.5 rounded-full", isVeg ? "bg-green-600" : "bg-red-600")} />
- </div>
- )}
- 
- {isBestseller && (
- <span className="text-[9px] uppercase tracking-wider font-extrabold text-orange-600 bg-orange-100 dark:bg-orange-950/40 px-1.5 py-0.5 rounded flex items-center gap-0.5 shrink-0">
- <Star className="h-2.5 w-2.5 fill-current" /> Bestseller
- </span>
- )}
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    
+    const hasVariations = product.variations && product.variations.length > 0;
+    if (hasVariations) {
+      onClick?.(product);
+      return;
+    }
 
- {product.tag && product.tag.length > 0 && (
- <span className="text-[9px] uppercase tracking-wider font-extrabold text-primary bg-primary/10 px-1.5 py-0.5 rounded shrink-0 line-clamp-1">
- {Array.isArray(product.tag) 
- ? product.tag.map((t: any) => t?.name || t).join(', ') 
- : (product.tag as any)?.name || product.tag}
- </span>
- )}
- </div>
+    if (!selectedOutlet) {
+      toast.error("Please select an outlet first.");
+      return;
+    }
 
- {/* Title */}
- <h3 className="font-extrabold text-base md:text-lg text-foreground line-clamp-2 leading-tight mb-1 group-hover:text-primary transition-colors pr-2">
- {product.name}
- </h3>
+    const cartCurrency = currency === '₹' ? 'INR' : currency;
 
- {/* Pricing */}
- <div className="flex items-center gap-2 mb-2">
- <span className="text-sm md:text-base font-black text-foreground leading-none tracking-tight">
- {currency}{sellingPrice.toLocaleString()}
- </span>
- {originalPrice > sellingPrice && (
- <span className="text-xs font-semibold text-muted-foreground line-through decoration-muted-foreground/50">
- {currency}{originalPrice.toLocaleString()}
- </span>
- )}
- </div>
+    // Build existing items payload
+    const existingItems = cartItems.map(c => ({
+      itemId: (c.itemid as any)._id || c.itemid,
+      quantity: c.quantity,
+      variationId: c.variation_id?._id || "",
+      addOnDetails: c.addons || [],
+      currency: cartCurrency
+    }));
 
- {/* Rating & Time */}
- <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-2">
- <div className="flex items-center gap-0.5 bg-green-600/10 text-green-700 dark:text-green-500 px-1.5 py-0.5 rounded-md">
- <Star className="w-3 h-3 fill-current" />
- <span className="font-bold">{rating}</span>
- </div>
- <span>•</span>
- <div className="flex items-center gap-1">
- <Clock className="w-3 h-3 opacity-70" /> 
- <span>25-30 min</span>
- </div>
- </div>
+    const matchingIndex = existingItems.findIndex(i => 
+      i.itemId === product._id && i.variationId === ""
+    );
 
- {/* Description */}
- {product.description && (
- <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-3">
- {product.description}
- </p>
- )}
+    if (matchingIndex !== -1) {
+      existingItems[matchingIndex].quantity += 1;
+    } else {
+      existingItems.push({
+        itemId: product._id,
+        quantity: 1,
+        variationId: "",
+        addOnDetails: [],
+        currency: cartCurrency
+      });
+    }
 
- {/* Customization Flag */}
- {(product.allowVariation || product.allowAddon) && (
- <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-auto flex items-center gap-1 opacity-70">
- <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Customizable
- </div>
- )}
- </div>
+    const payload: any = {
+      items: existingItems,
+      deliveryType: orderType || 'Takeaway',
+      orderType: orderType || 'Takeaway',
+      customerName: user?.name || 'Guest',
+      customerPhoneNo: user?.phone || '0000000000',
+      instruction: '',
+      outletId: selectedOutlet._id,
+    };
+    if (orderId) payload.orderId = orderId;
 
- {/* Right Side: Image & Actions */}
- <div className="relative w-[110px] h-[110px] md:w-[130px] md:h-[130px] shrink-0 self-center md:self-start flex flex-col items-center">
- 
- <div className="w-full h-full rounded-2xl overflow-hidden bg-muted relative shadow-sm border border-border/50">
- <img
- src={product.imageUrl?.[0] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
- alt={product.name}
- className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-110"
- loading="lazy"
- />
- <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
- 
- {/* Discount Overlay */}
- {discountDisplay && (
- <div className="absolute bottom-0 left-0 right-0 text-center pb-5 pt-3 bg-gradient-to-t from-black/80 to-transparent">
- <span className="text-white text-[10px] font-black tracking-wider uppercase drop-shadow-md">
- {discountDisplay}
- </span>
- </div>
- )}
- </div>
+    optimisticSetQuantity(product, 1);
 
- {/* Absolute Wishlist Button */}
- <button
- className={cn(
- "absolute -top-2 -right-2 h-7 w-7 rounded-full backdrop-blur-md flex items-center justify-center transition-all duration-300 z-10 shadow-sm border",
- inWishlist
- ? "bg-red-50 text-red-500 border-red-200 dark:bg-red-500/10 dark:border-red-500/20"
- : "bg-white dark:bg-slate-800 text-muted-foreground hover:text-primary hover:scale-110 border-border"
- )}
- onClick={(e) => {
- e.stopPropagation();
- toggleWishlist(product);
- }}
- >
- <Heart className={cn("h-3.5 w-3.5 transition-transform duration-300", inWishlist && "fill-current scale-110")} />
- </button>
+    updateCart(payload, {
+      onSuccess: () => {
+        toast.success("Product added to cart.");
+      }
+    });
+  };
 
- {/* Floating ADD Button */}
- <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[85%] z-20">
- <Button
- className="w-full rounded-xl bg-white dark:bg-slate-800 text-green-600 dark:text-green-500 hover:bg-green-50 dark:hover:bg-slate-700 font-black border border-green-600/20 shadow-md h-9 text-xs transition-all uppercase tracking-wide hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
- disabled={!product.inStock}
- onClick={(e) => {
- e.stopPropagation();
- onClick?.(product);
- }}
- >
- {product.inStock ? (
- <span className="flex items-center gap-1">
- ADD <Plus className="h-3 w-3 stroke-[3]" />
- </span>
- ) : (
- <span className="text-muted-foreground">OUT</span>
- )}
- </Button>
- </div>
- </div>
- </div>
- );
- },
-);
+  const handleDecrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (matchingCartItems.length === 0 || !selectedOutlet) return;
+    
+    const lastItem = matchingCartItems[matchingCartItems.length - 1];
+    const newQty = lastItem.quantity - 1;
+
+    if (newQty <= 0) {
+      optimisticSetQuantity(product, 0);
+      removeItem({
+        outletId: selectedOutlet._id,
+        orderId: orderId || '',
+        itemid: lastItem._id || lastItem.itemid?._id,
+        customerPhoneNo: user?.phone || '0000000000',
+        customerName: user?.name || 'Guest'
+      }, {
+        onSuccess: () => {
+          toast.success("Product removed from cart.");
+        }
+      });
+    } else {
+      const cartCurrency = currency === '₹' ? 'INR' : currency;
+      const updatedItems = cartItems.map(c => {
+        if (c._id === lastItem._id) {
+          return { ...c, quantity: newQty };
+        }
+        return c;
+      });
+
+      const payload: any = {
+        items: updatedItems.map(c => ({
+          itemId: (c.itemid as any)._id || c.itemid,
+          quantity: c.quantity,
+          variationId: c.variation_id?._id || "",
+          addOnDetails: c.addons || [],
+          currency: cartCurrency
+        })),
+        deliveryType: orderType || 'Takeaway',
+        orderType: orderType || 'Takeaway',
+        customerName: user?.name || 'Guest',
+        customerPhoneNo: user?.phone || '0000000000',
+        instruction: '',
+        outletId: selectedOutlet._id,
+      };
+      if (orderId) payload.orderId = orderId;
+      
+      optimisticSetQuantity(product, newQty);
+      updateCart(payload);
+    }
+  };
+
+  const handleIncrement = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (matchingCartItems.length === 0 || !selectedOutlet) return;
+
+    const lastItem = matchingCartItems[matchingCartItems.length - 1];
+    const newQty = lastItem.quantity + 1;
+    const cartCurrency = currency === '₹' ? 'INR' : currency;
+
+    const updatedItems = cartItems.map(c => {
+      if (c._id === lastItem._id) {
+        return { ...c, quantity: newQty };
+      }
+      return c;
+    });
+
+    const payload: any = {
+      items: updatedItems.map(c => ({
+        itemId: (c.itemid as any)._id || c.itemid,
+        quantity: c.quantity,
+        variationId: c.variation_id?._id || "",
+        addOnDetails: c.addons || [],
+        currency: cartCurrency
+      })),
+      deliveryType: orderType || 'Takeaway',
+      orderType: orderType || 'Takeaway',
+      customerName: user?.name || 'Guest',
+      customerPhoneNo: user?.phone || '0000000000',
+      instruction: '',
+      outletId: selectedOutlet._id,
+    };
+    if (orderId) payload.orderId = orderId;
+    
+    optimisticSetQuantity(product, newQty);
+    updateCart(payload);
+  };
+
+  const toggleWishlist = (product: CategoryItem) => {
+    storeToggleWishlist(product);
+    toast.success(
+      inWishlist ? 'Removed from wishlist' : 'Added to wishlist',
+      { description: product.name }
+    );
+  };
+
+  return (
+    <div
+      className={cn(
+        "group relative flex flex-col w-full h-full min-h-[340px] bg-white rounded-[16px] border border-[#ECECEC] shadow-[0_8px_25px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgba(0,0,0,0.12)] hover:-translate-y-[6px] transition-all duration-300 overflow-hidden cursor-pointer",
+        className,
+      )}
+      onClick={() => onClick?.(product)}
+    >
+      {/* 1. Large Product Image (Compact Height 200px) */}
+      <div className="relative w-full h-[200px] shrink-0 bg-[#F8F9FA] overflow-hidden">
+        <img
+          src={product.imageUrl?.[0] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          loading="lazy"
+        />
+
+        {/* Top Left: Veg/Non-Veg Badge */}
+        {product.dietryType && (
+          <div className="absolute top-2.5 left-2.5 z-10 flex items-center justify-center w-6 h-6 rounded bg-white/90 backdrop-blur-sm shadow-sm">
+            <div
+              className={cn(
+                "flex items-center justify-center w-3.5 h-3.5 border-[1.5px] rounded-[3px]",
+                isVeg ? "border-green-600" : "border-red-600"
+              )}
+            >
+              <div className={cn("w-1.5 h-1.5 rounded-full", isVeg ? "bg-green-600" : "bg-red-600")} />
+            </div>
+          </div>
+        )}
+
+        {/* Top Right: Wishlist Heart & Discount */}
+        <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1.5 items-end">
+          <button
+            className={cn(
+              "h-7 w-7 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center transition-all duration-300 hover:scale-110",
+              inWishlist ? "text-[#FF6B00]" : "text-[#667085] hover:text-[#FF6B00]"
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleWishlist(product);
+            }}
+          >
+            <Heart className={cn("h-3.5 w-3.5 transition-all duration-300", inWishlist && "fill-[#FF6B00]")} />
+          </button>
+          
+          {discountDisplay && (
+            <div className="bg-[#FF6B00] text-white text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-[4px] shadow-sm">
+              {discountDisplay}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 2. Product Information & Actions */}
+      <div className="flex flex-col flex-1 p-3.5 md:p-4">
+        {/* Title */}
+        <h3 className="font-semibold text-[18px] text-[#111827] line-clamp-2 leading-[22px] group-hover:text-[#FF6B00] transition-colors">
+          {product.name}
+        </h3>
+        
+        {/* Description */}
+        {descText && (
+          <p className="text-[#6B7280] font-medium text-[12px] line-clamp-1 mt-1">
+            {descText}
+          </p>
+        )}
+
+        <div className="flex-1" />
+
+        {/* Price & Add Button Row */}
+        <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-[#F3F4F6]">
+          {/* Price Column */}
+          <div className="flex flex-col">
+            <span className="text-[20px] font-bold text-[#FF6B00] leading-none tracking-tight">
+              {currency}{sellingPrice.toLocaleString()}
+            </span>
+            {originalPrice > sellingPrice && (
+              <span className="text-[12px] font-medium text-[#9CA3AF] line-through leading-none mt-1">
+                {currency}{originalPrice.toLocaleString()}
+              </span>
+            )}
+          </div>
+
+          {/* Add Button / Quantity Selector */}
+          <div className="relative h-[42px] lg:h-[46px] w-[130px] lg:w-[150px] shrink-0" onClick={(e) => e.stopPropagation()}>
+            <AnimatePresence mode="wait">
+              {totalQuantity > 0 ? (
+                <motion.div
+                  key="quantity"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute inset-0 flex items-center justify-between bg-white rounded-full p-1 border-[1.5px] border-[#FFE4E6] shadow-[0_4px_12px_rgba(255,107,0,0.08)]"
+                >
+                  <button
+                    onClick={handleDecrement}
+                    disabled={isAdding || isRemoving}
+                    className="w-[32px] h-[32px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-full bg-[#FFF0F2] text-[#FF6B00] transition-colors duration-200 hover:bg-[#FF6B00] hover:text-white disabled:opacity-50"
+                  >
+                    <Minus className="w-4 h-4 lg:w-4.5 lg:h-4.5 stroke-[3]" />
+                  </button>
+                  <span className="text-[16px] font-semibold text-[#FF6B00] select-none flex-1 text-center">
+                    {totalQuantity}
+                  </span>
+                  <button
+                    onClick={handleIncrement}
+                    disabled={isAdding || isRemoving}
+                    className="w-[32px] h-[32px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-full bg-[#FFF0F2] text-[#FF6B00] transition-colors duration-200 hover:bg-[#FF6B00] hover:text-white disabled:opacity-50"
+                  >
+                    <Plus className="w-4 h-4 lg:w-4.5 lg:h-4.5 stroke-[3]" />
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="add-btn"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.25 }}
+                  className="absolute inset-0"
+                >
+                  <Button
+                    className="w-full h-full rounded-full bg-[#FF6B00] hover:bg-[#E65C00] text-white font-bold text-[14px] lg:text-[15px] shadow-[0_4px_12px_rgba(255,107,0,0.18)] hover:shadow-[0_6px_16px_rgba(255,107,0,0.28)] transition-all duration-300 border-0"
+                    onClick={handleQuickAdd}
+                    disabled={isAdding}
+                  >
+                    {isAdding ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      "Add +"
+                    )}
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

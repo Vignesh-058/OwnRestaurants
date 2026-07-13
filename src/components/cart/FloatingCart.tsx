@@ -6,13 +6,12 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 
 export const FloatingCart = () => {
  const navigate = useNavigate();
- const cartDetails = useCartStore((state) => state.cartDetails);
+  const { cartItemCount, grandTotal } = useCartStore();
  const organization = useOrganizationStore((state) => state.organization);
  const currency = organization?.currency || '₹';
 
- const cartItems = cartDetails?.items || [];
- const itemCount = cartItems.length;
- const totalAmount = cartDetails?.totalPayableAmount || 0;
+ const itemCount = cartItemCount;
+ const totalAmount = grandTotal;
 
  return (
  <AnimatePresence>

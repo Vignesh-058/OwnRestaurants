@@ -1,24 +1,45 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { cartService } from '@/services/cart.service';
 import { useCartStore } from '@/store/CartStore';
+import { useLocationModalStore } from '@/store/LocationModalStore';
 import { toast } from 'sonner';
-import type { AddToCartPayload } from '@/types/cart.types';
+import type { CartCreateRequest } from '@/types/cart.types';
 
 export const useCreateCart = () => {
  const queryClient = useQueryClient();
- const setOrderId = useCartStore(state => state.setOrderId);
+ const { setOrderId } = useCartStore();
 
  return useMutation({
- mutationFn: (payload: AddToCartPayload) => cartService.createCart(payload),
- onSuccess: (data, variables) => {
- if (data?.data?.orderId) {
- setOrderId(data.data.orderId);
+ mutationFn: (payload: CartCreateRequest) => cartService.createCart(payload),
+ onSuccess: (data) => {
+ // Extract orderId from the response to save in global state
+ if (data?.data?.order?.orderId) {
+ setOrderId(data.data.order.orderId);
  }
- queryClient.invalidateQueries({ queryKey: ['cart', variables.customerPhoneNo, variables.outletId] });
- toast.success('Added to cart');
+ 
+ // Instantly refresh global cart
+ queryClient.invalidateQueries({ queryKey: ['cart'] });
  },
- onError: () => {
- toast.error('Failed to create cart');
+ onError: (error: any, variables: CartCreateRequest) => {
+ const errorMsg = error?.response?.data?.message?.toLowerCase() || '';
+
+ if (errorMsg.includes('item not found')) {
+ toast.error('Selected item is unavailable.');
+ } else if (errorMsg.includes('address not found')) {
+ toast.error('Please select a valid delivery address.');
+ useLocationModalStore.getState().openModal();
+ } else if (errorMsg.includes('outlet not found')) {
+ queryClient.invalidateQueries({ queryKey: ['nearby-outlets'] });
+ toast.error('Outlet not found. Reloading nearby outlets...');
+ } else {
+ // Generic / Validation / Network Error
+ toast.error('Unable to add item to cart. Please try again.', {
+ action: {
+ label: 'Retry',
+ onClick: () => queryClient.getMutationCache().build(queryClient, { mutationFn: (val: CartCreateRequest) => cartService.createCart(val) }).execute(variables)
+ }
+ });
+ }
  }
  });
 };

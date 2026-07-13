@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 import type { CategoryItem } from '@/types/category.types';
-import { ProductCard } from '@/components/ProductCard/ProductCard';
+import { ProductCard } from '@/components/product/ProductCard';
 import { EmptySearchResult } from './EmptySearchResult';
 import { useSearchStore } from '@/store/SearchStore';
 import { useFilters } from '@/hooks/useFilters';

@@ -22,10 +22,9 @@ export interface Coupon {
 }
 
 export interface ApplyCouponPayload {
- couponCode: string;
- orderId: string;
  outletId: string;
- belongsTo: string;
+ orderId: string;
+ code: string;
 }
 
 export interface ApplyCouponResponse {

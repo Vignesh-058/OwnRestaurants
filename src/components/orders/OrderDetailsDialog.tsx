@@ -9,7 +9,9 @@ import { OrderStatusBadge } from './OrderStatusBadge';
 import { PaymentBadge } from './PaymentBadge';
 import { OrderTimeline } from './OrderTimeline';
 import { Separator } from '@/components/ui/separator';
-import { MapPin, User, Phone, Package, CreditCard, Tag, Truck } from 'lucide-react';
+import { MapPin, User, Phone, Package, CreditCard, Tag, Truck, Download, FileText, Navigation, Info, EyeOff } from 'lucide-react';
+import { useSettingsStore } from '@/store/SettingsStore';
+import { Button } from '@/components/ui/button';
 
 const fmtDate = (iso: string) =>
  new Intl.DateTimeFormat('en-IN', {
@@ -39,7 +41,9 @@ const InfoRow = ({ icon: Icon, label, value }: { icon: any; label: string; value
 };
 
 export const OrderDetailsDialog = ({ order, open, onClose }: OrderDetailsDialogProps) => {
- if (!order) return null;
+  const settings = useSettingsStore((state) => state.settings);
+
+  if (!order) return null;
 
  const address = order.address ?? order.deliveryAddress;
  const total = order.grandTotal ?? order.totalAmount ?? 0;
@@ -69,6 +73,18 @@ export const OrderDetailsDialog = ({ order, open, onClose }: OrderDetailsDialogP
  </div>
 
  <div className="p-6 space-y-6">
+ {/* Invoice Actions */}
+ {settings?.isInvoicePdfGenerated && order.status === 'Delivered' && (
+   <div className="flex gap-3">
+     <Button variant="outline" className="flex-1 rounded-xl shadow-sm border-primary/20 hover:bg-primary/5 hover:text-primary gap-2 text-xs font-bold h-11">
+       <FileText className="h-4 w-4" /> View Invoice
+     </Button>
+     <Button variant="default" className="flex-1 rounded-xl shadow-premium gap-2 text-xs font-bold h-11">
+       <Download className="h-4 w-4" /> Download PDF
+     </Button>
+   </div>
+ )}
+
  {/* Timeline */}
  <div>
  <h4 className="font-bold text-sm text-foreground mb-4 uppercase tracking-wider text-muted-foreground">
@@ -112,6 +128,50 @@ export const OrderDetailsDialog = ({ order, open, onClose }: OrderDetailsDialogP
  </>
  )}
 
+  {/* Delivery Tracking */}
+  {order.currentDelivery && (
+  <>
+    <Separator />
+    <div>
+    <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+      <Navigation className="h-4 w-4" />
+      Delivery Tracking
+    </h4>
+    <div className="space-y-3 p-4 bg-muted/20 rounded-2xl">
+      <InfoRow icon={Truck} label="Partner" value={order.currentDelivery.partnerName} />
+      <InfoRow icon={User} label="Driver" value={order.currentDelivery.driverName} />
+      <InfoRow icon={Phone} label="Phone" value={order.currentDelivery.driverPhone} />
+      {order.currentDelivery.deliveryOtp && (
+        <InfoRow icon={EyeOff} label="Delivery OTP" value="••• •••" />
+      )}
+      {order.currentDelivery.eta && (
+        <div className="mt-3 p-3 bg-primary/10 text-primary rounded-xl font-medium text-sm flex justify-between items-center">
+          <span>ETA</span>
+          <span>{order.currentDelivery.eta}</span>
+        </div>
+      )}
+      {order.currentDelivery.trackingUrl && (
+        <Button variant="outline" className="w-full mt-2 rounded-xl text-xs font-bold" onClick={() => window.open(order.currentDelivery!.trackingUrl, '_blank')}>
+          Track Live
+        </Button>
+      )}
+    </div>
+    </div>
+  </>
+  )}
+
+  {order.instructions && (
+  <>
+  <Separator />
+  <div>
+    <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+      <Info className="h-4 w-4" /> Instructions
+    </h4>
+    <p className="text-sm text-foreground bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20">{order.instructions}</p>
+  </div>
+  </>
+  )}
+
  <Separator />
 
  {/* Items */}
@@ -131,13 +191,15 @@ export const OrderDetailsDialog = ({ order, open, onClose }: OrderDetailsDialogP
  {item.variationName && (
  <p className="text-xs text-muted-foreground mt-0.5">{item.variationName}</p>
  )}
- {item.addons && item.addons.length > 0 && (
- <div className="mt-1 space-y-0.5">
- {item.addons.map((a, ai) => (
- <p key={ai} className="text-xs text-muted-foreground">+ {a.name} (₹{a.price})</p>
- ))}
- </div>
- )}
+ {((item.addOnDetails || item.addons) ?? []).length > 0 && (
+  <div className="mt-2 space-y-1">
+  {(item.addOnDetails || item.addons)?.map((a, ai) => (
+  <p key={ai} className="text-xs text-muted-foreground bg-background border px-2 py-1 rounded-md inline-block mr-1">
+    {a.group ? `${a.group}: ` : ''}{a.name} (₹{a.price})
+  </p>
+  ))}
+  </div>
+  )}
  </div>
  <div className="text-right shrink-0">
  <p className="text-sm font-bold">₹{price.toLocaleString()}</p>
@@ -158,6 +220,26 @@ export const OrderDetailsDialog = ({ order, open, onClose }: OrderDetailsDialogP
  Bill Summary
  </h4>
  <div className="space-y-3 bg-muted/20 rounded-2xl p-4">
+  <div className="flex justify-between items-center text-sm">
+    <span className="text-muted-foreground">Subtotal</span>
+    <span className="font-medium">₹{(total - (order.deliveryCharge || 0) - (order.tax || 0) - (order.packageCharge || 0) + (order.discount || order.savedAmount || 0)).toFixed(2)}</span>
+  </div>
+  {(order.discount || order.savedAmount) ? (
+  <div className="flex justify-between items-center text-sm">
+  <span className="text-green-600 flex items-center gap-2">
+  <Tag className="h-3.5 w-3.5" /> Discount
+  </span>
+  <span className="text-green-600 font-bold">-₹{order.discount || order.savedAmount}</span>
+  </div>
+  ) : null}
+  {order.packageCharge ? (
+  <div className="flex justify-between items-center text-sm">
+  <span className="text-muted-foreground flex items-center gap-2">
+  <Package className="h-3.5 w-3.5" /> Package Charge
+  </span>
+  <span className="font-medium">₹{order.packageCharge}</span>
+  </div>
+  ) : null}
  {order.deliveryCharge !== undefined && (
  <div className="flex justify-between items-center text-sm">
  <span className="text-muted-foreground flex items-center gap-2">
@@ -170,14 +252,6 @@ export const OrderDetailsDialog = ({ order, open, onClose }: OrderDetailsDialogP
  <div className="flex justify-between items-center text-sm">
  <span className="text-muted-foreground">Tax</span>
  <span className="font-medium">₹{order.tax}</span>
- </div>
- )}
- {order.savedAmount !== undefined && order.savedAmount > 0 && (
- <div className="flex justify-between items-center text-sm">
- <span className="text-green-600 flex items-center gap-2">
- <Tag className="h-3.5 w-3.5" /> Savings
- </span>
- <span className="text-green-600 font-bold">-₹{order.savedAmount}</span>
  </div>
  )}
  <Separator className="my-2" />

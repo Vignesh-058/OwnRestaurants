@@ -1,17 +1,16 @@
 import type { OrderStatus } from '@/types/order.types';
-import { Check, Clock, ChefHat, Package, Truck, Star, XCircle } from 'lucide-react';
+import { Check, Clock, ChefHat, Truck, Star, XCircle } from 'lucide-react';
 
-const TIMELINE_STEPS: Array<{ status: OrderStatus; label: string; icon: any }> = [
- { status: 'Pending', label: 'Order Placed', icon: Clock },
- { status: 'Confirmed', label: 'Confirmed', icon: Check },
- { status: 'Preparing', label: 'Preparing', icon: ChefHat },
- { status: 'Ready', label: 'Ready', icon: Package },
- { status: 'Out For Delivery', label: 'Out For Delivery', icon: Truck },
- { status: 'Delivered', label: 'Delivered', icon: Star },
+const TIMELINE_STEPS: Array<{ status: OrderStatus | string; label: string; icon: any }> = [
+ { status: 'orderReceived', label: 'Order Received', icon: Clock },
+ { status: 'orderPlaced', label: 'Order Placed', icon: Check },
+ { status: 'preparing', label: 'Preparing', icon: ChefHat },
+ { status: 'outForDelivery', label: 'Out For Delivery', icon: Truck },
+ { status: 'delivered', label: 'Delivered', icon: Star },
 ];
 
-const STATUS_ORDER: OrderStatus[] = [
- 'Pending', 'Confirmed', 'Preparing', 'Ready', 'Out For Delivery', 'Delivered',
+const STATUS_ORDER: string[] = [
+ 'orderReceived', 'orderPlaced', 'preparing', 'outForDelivery', 'delivered',
 ];
 
 interface OrderTimelineProps {

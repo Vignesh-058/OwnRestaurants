@@ -29,8 +29,8 @@ export const EmptyCategories = () => (
 
 export const EmptyOutlets = () => (
  <motion.div {...fadeAnimation} className="flex flex-col items-center justify-center min-h-[40vh] p-8 text-center">
- <div className="h-24 w-24 bg-blue-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 border border-blue-100 dark:border-slate-700">
- <Store className="h-12 w-12 text-blue-500" />
+ <div className="h-24 w-24 bg-orange-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 border border-orange-100 dark:border-slate-700">
+ <Store className="h-12 w-12 text-orange-500" />
  </div>
  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">No outlets are currently available</h3>
  <p className="text-slate-500 text-lg max-w-md">This organization has no active outlets. Please try again later.</p>

@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { FloatingCart } from '@/components/cart/FloatingCart';
+import { CartDrawer } from '@/components/cart/CartDrawer';
 import { LocationSelectorModal } from '@/components/location/LocationSelectorModal';
 import { useOrganization } from '@/hooks/queries/useOrganization';
 import { useOutlets } from '@/hooks/queries/useOutlets';
@@ -39,12 +40,36 @@ export const MainLayout = () => {
  const bannersQuery = useBanners(belongsTo, outletId);
 
  useEffect(() => {
+  if (orgQuery.isSuccess && orgQuery.data?.organization?.theme) {
+  const theme = orgQuery.data.organization.theme;
+  const root = document.documentElement;
+  
+  if (theme.primaryColor) {
+  root.style.setProperty('--primary', theme.primaryColor);
+  root.style.setProperty('--ring', theme.primaryColor);
+  }
+  if (theme.backgroundColor) root.style.setProperty('--background', theme.backgroundColor);
+  if (theme.textColor) root.style.setProperty('--foreground', theme.textColor);
+  if (theme.borderColor) root.style.setProperty('--border', theme.borderColor);
+  if (theme.secondaryColor) root.style.setProperty('--secondary', theme.secondaryColor);
+  if (theme.secondaryTextColor) root.style.setProperty('--muted-foreground', theme.secondaryTextColor);
+  
+  // Example for border radius if backend starts sending it natively top-level
+  // if (theme.radius) root.style.setProperty('--radius', theme.radius + 'px');
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+  belongsTo, outletId, outletsQuery.isSuccess, bannersQuery.isSuccess, orgQuery.isSuccess, orgQuery.data
+  ]);
+
+ useEffect(() => {
  if (import.meta.env.DEV) {
- console.log('--- API Flow Verification ---');
- console.log('1. belongsTo ID:', belongsTo);
- console.log('2. Selected Outlet ID:', outletId);
- if (outletsQuery.isSuccess) console.log('3. Outlets Count:', outletsQuery.data?.outlets?.length || 0);
- if (bannersQuery.isSuccess) console.log('4. Active Banners Count:', bannersQuery.data?.length || 0);
+
+
+
+
+
  }
  // eslint-disable-next-line react-hooks/exhaustive-deps
  }, [
@@ -61,11 +86,12 @@ export const MainLayout = () => {
 
  if (outletsQuery.isSuccess && outletsQuery.data?.outlets?.length === 0) {
  return (
- <div className="relative flex min-h-screen flex-col">
+ <div className="relative flex min-h-screen flex-col pt-[80px]">
  <Navbar />
  <main className="flex-1 flex flex-col items-center justify-center">
  <EmptyStoreState />
  </main>
+ <LocationSelectorModal />
  <Footer />
  </div>
  );
@@ -73,7 +99,7 @@ export const MainLayout = () => {
 
  return (
  <ErrorBoundary>
- <div className="relative flex min-h-screen flex-col">
+ <div className="relative flex min-h-screen flex-col pt-[80px]">
  <Navbar />
  <main className="flex-1">
  <AnimatePresence mode="wait">
@@ -83,6 +109,7 @@ export const MainLayout = () => {
  </AnimatePresence>
  </main>
  <FloatingCart />
+ <CartDrawer />
  <FloatingNav />
  <LocationSelectorModal />
  <Footer />

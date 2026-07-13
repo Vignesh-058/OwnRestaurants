@@ -16,8 +16,8 @@ export const EmptyWishlist = () => {
  </p>
  <Button 
  size="lg" 
- className="rounded-full px-10 h-14 text-lg font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
- onClick={() => navigate('/shop')}
+ className="rounded-full px-10 h-14 text-[16px] font-bold bg-[#FF6B00] hover:bg-[#E65C00] text-white shadow-[0_8px_25px_rgba(255,107,0,0.25)] hover:-translate-y-1 transition-all duration-300 border-0"
+ onClick={() => navigate('/products')}
  >
  Continue Shopping
  </Button>

@@ -1,4 +1,5 @@
 import { axiosInstance } from '@/api/axios';
+import ENV from '@/config/env';
 import type { Banner } from '@/types/banner.types';
 import type { ApiResponse } from '@/types/api.types';
 import { AxiosError } from 'axios';
@@ -6,7 +7,7 @@ import { AxiosError } from 'axios';
 export const bannerService = {
  async getActiveBanners(belongsTo: string, outletId: string): Promise<Banner[]> {
  try {
- const response = await axiosInstance.post<ApiResponse<Banner[]>>('/banner/get-active', {
+ const response = await axiosInstance.post<ApiResponse<Banner[]>>(`${ENV.BANNER_API}/get-active`, {
  belongsTo,
  outletId
  });

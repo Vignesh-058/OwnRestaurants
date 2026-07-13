@@ -5,6 +5,7 @@ import { TokenManager } from '@/utils/TokenManager';
 
 interface AuthState {
  isAuthenticated: boolean;
+ isGuest: boolean;
  user: Customer | null;
  setAuth: (isAuthenticated: boolean, user: Customer, token: string) => void;
  logout: () => void;
@@ -14,21 +15,36 @@ export const useAuthStore = create<AuthState>()(
  persist(
  (set) => ({
  isAuthenticated: TokenManager.isAuthenticated(),
+ isGuest: !TokenManager.isAuthenticated(),
  user: null,
  setAuth: (isAuthenticated, user, token) => {
- console.log("[AUTH STORE] setAuth triggered:", { isAuthenticated, user, token });
+
  TokenManager.setToken(token);
- console.log("[AUTH STORE] Token stored in TokenManager:", TokenManager.getToken());
- set({ isAuthenticated, user });
- console.log("[AUTH STORE] Zustand state updated.");
+
+ set({ isAuthenticated, isGuest: !isAuthenticated, user });
+
  },
  logout: () => {
- console.log("[AUTH STORE] Logout triggered.");
- TokenManager.removeToken();
- set({ isAuthenticated: false, user: null });
- // Force a hard reload to clear any cached data (React Query, other Zustand stores, etc.)
- window.location.href = '/';
- },
+  TokenManager.removeToken();
+  set({ isAuthenticated: false, isGuest: true, user: null });
+  
+  // Clear all persisted stores related to user session
+  const keysToRemove = [
+  'auth-storage',
+  'cart-storage',
+  'wishlist-storage',
+  'location-storage',
+  'search-storage',
+  'coupon-storage',
+  'outlet-storage'
+  ];
+  
+  keysToRemove.forEach(key => localStorage.removeItem(key));
+  sessionStorage.clear();
+  
+  // Hard redirect to login page to clear React Query cache and memory
+  window.location.href = '/login';
+  },
  }),
  {
  name: 'auth-storage',

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import type { Address } from '@/types/customer.types';
+import type { CustomerAddress } from '@/types/customer.types';
 import { AddressCard } from './AddressCard';
 import { Input } from '@/components/ui/input';
 import { Search, SlidersHorizontal } from 'lucide-react';
@@ -9,12 +9,12 @@ import {
  SelectItem,
  SelectTrigger,
  SelectValue,
-} from "@/components/ui/select";
+ } from "@/components/ui/select";
 import { useAddressStore } from '@/store/AddressStore';
-import { toast } from 'sonner';
+
 
 interface AddressListProps {
- addresses: Address[];
+  addresses: CustomerAddress[];
 }
 
 type SortOption = 'newest' | 'oldest' | 'recently_used' | 'city';
@@ -24,9 +24,8 @@ export const AddressList = ({ addresses }: AddressListProps) => {
  const [sortBy, setSortBy] = useState<SortOption>('newest');
  const setDeliveryAddress = useAddressStore((state) => state.setDeliveryAddress);
 
- const handleUseForDelivery = (address: Address) => {
+ const handleUseForDelivery = (address: CustomerAddress) => {
  setDeliveryAddress(address);
- toast.success(`Delivery address set to ${address.addressType}`);
  };
 
  const filteredAndSortedAddresses = useMemo(() => {
@@ -38,7 +37,7 @@ export const AddressList = ({ addresses }: AddressListProps) => {
  result = result.filter(a => 
  a.city.toLowerCase().includes(q) || 
  a.pincode.toLowerCase().includes(q) || 
- a.addressLine1.toLowerCase().includes(q) || 
+ a.address1.toLowerCase().includes(q) || 
  a.customerName.toLowerCase().includes(q)
  );
  }

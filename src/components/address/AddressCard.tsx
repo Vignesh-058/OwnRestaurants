@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import type { Address } from '@/types/customer.types';
+import type { CustomerAddress } from '@/types/customer.types';
 import { MapPin, Home, Briefcase, MapPinned, MoreVertical, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -12,26 +12,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 interface AddressCardProps {
- address: Address;
- onUseForDelivery?: (address: Address) => void;
+ address: CustomerAddress;
+ onUseForDelivery?: (address: CustomerAddress) => void;
 }
 
 export const AddressCard = ({ address, onUseForDelivery }: AddressCardProps) => {
  const [copied, setCopied] = useState(false);
 
  const getTypeIcon = () => {
- switch (address.addressType) {
- case 'Home': return <Home className="h-4 w-4" />;
- case 'Work': return <Briefcase className="h-4 w-4" />;
+ switch (address.type?.toLowerCase()) {
+ case 'home': return <Home className="h-4 w-4" />;
+ case 'work': return <Briefcase className="h-4 w-4" />;
  default: return <MapPinned className="h-4 w-4" />;
  }
  };
 
  const getFullAddressString = () => {
  const parts = [
- address.addressLine1,
- address.addressLine2,
- address.landmark ? `Near ${address.landmark}` : null,
+ address.address1,
+ address.address2,
+ address.landMark ? `Near ${address.landMark}` : null,
  address.city,
  address.state,
  address.pincode
@@ -48,14 +48,14 @@ export const AddressCard = ({ address, onUseForDelivery }: AddressCardProps) => 
  return (
  <Card className="rounded-3xl border shadow-sm hover:shadow-md transition-all duration-300 relative group overflow-hidden">
  {/* Subtle top border accent based on type */}
- <div className={`absolute top-0 left-0 w-full h-1 ${address.addressType === 'Home' ? 'bg-blue-500' : address.addressType === 'Work' ? 'bg-orange-500' : 'bg-gray-400'}`} />
+ <div className={`absolute top-0 left-0 w-full h-1 ${address.type?.toLowerCase() === 'home' ? 'bg-[#FF6B00]' : address.type?.toLowerCase() === 'work' ? 'bg-orange-500' : 'bg-gray-400'}`} />
  
  <CardContent className="p-6">
  <div className="flex justify-between items-start mb-4">
  <div className="flex items-center gap-2">
- <Badge variant="secondary" className="flex items-center gap-1.5 px-3 py-1 rounded-full font-medium">
+ <Badge variant="secondary" className="flex items-center gap-1.5 px-3 py-1 rounded-full font-medium capitalize">
  {getTypeIcon()}
- {address.addressType}
+ {address.type}
  </Badge>
  {address.isDefault && (
  <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 px-3 py-1 rounded-full font-medium">

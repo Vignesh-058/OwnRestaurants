@@ -2,42 +2,40 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { couponService } from '@/services/coupon.service';
 import { useCouponStore } from '@/store/CouponStore';
 import { useCartStore } from '@/store/CartStore';
-import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { toast } from 'sonner';
-import type { Coupon, ApplyCouponPayload } from '@/types/coupon.types';
+import type { ApplyCouponPayload } from '@/types/coupon.types';
 
 export const useApplyCoupon = () => {
- const queryClient = useQueryClient();
- const { setAppliedCoupon } = useCouponStore();
- const { orderId } = useCartStore();
- const organization = useOrganizationStore((state) => state.organization);
- const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
+  const queryClient = useQueryClient();
+  const { setAppliedCoupon } = useCouponStore();
+  const { orderId } = useCartStore();
+  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
 
  return useMutation({
- mutationFn: async ({ coupon }: { coupon: Coupon }) => {
- if (!orderId || !organization?._id || !selectedOutlet?._id) {
- throw new Error('Cart, organization, or outlet not available.');
+ mutationFn: async (code: string) => {
+ if (!orderId || !selectedOutlet?._id) {
+ throw new Error('Cart or outlet not available.');
  }
 
  const payload: ApplyCouponPayload = {
- couponCode: coupon.code,
- orderId,
  outletId: selectedOutlet._id,
- belongsTo: organization._id,
+ orderId,
+ code: code.trim(),
  };
 
- return { result: await couponService.applyToCart(payload), coupon };
+ return { result: await couponService.applyToCart(payload), code };
  },
- onSuccess: ({ result, coupon }) => {
+ onSuccess: ({ result, code }) => {
  const discount = result.discountAmount ?? result.discount ?? result.savings ?? 0;
  const total = result.grandTotal ?? result.total ?? null;
- setAppliedCoupon(coupon, coupon.code, discount, total);
+ 
+ // We don't have the full coupon object here, so we simulate it with code for state compatibility
+ const pseudoCoupon = { _id: code, code, discountType: 'Fixed', discountValue: discount } as any;
+ setAppliedCoupon(pseudoCoupon, code, discount, total);
 
  // Invalidate the cart so prices refresh
  queryClient.invalidateQueries({ queryKey: ['cart'] });
-
- toast.success(`🎉 Coupon "${coupon.code}" applied! You save ₹${discount}`);
  },
  onError: (error: any) => {
  const msg: string = error?.response?.data?.message ?? error?.message ?? 'Failed to apply coupon.';

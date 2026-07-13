@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ResendOTPProps {
  onResend: () => void;
@@ -24,25 +25,39 @@ export const ResendOTP = ({ onResend, isSending }: ResendOTPProps) => {
  setTimeLeft(30);
  };
 
- return (
- <div className="text-center mt-6">
- {timeLeft > 0 ? (
- <p className="text-sm font-medium text-muted-foreground">
- Resend code in <span className="font-bold text-foreground">00:{timeLeft.toString().padStart(2, '0')}</span>
- </p>
- ) : (
- <p className="text-sm font-medium text-muted-foreground">
- Didn't receive the code?{' '}
- <Button 
- variant="link" 
- className="p-0 h-auto font-bold text-primary hover:text-primary/80" 
- onClick={handleResend}
- disabled={isSending}
- >
- Resend now
- </Button>
- </p>
- )}
- </div>
- );
+  return (
+  <div className="text-center flex items-center justify-center h-5">
+    <AnimatePresence mode="wait">
+      {timeLeft > 0 ? (
+        <motion.p 
+          key="timer"
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          className="text-[14.5px] font-medium text-slate-500 dark:text-slate-400"
+        >
+          Resend code in <span className="font-bold text-slate-800 dark:text-slate-200">00:{timeLeft.toString().padStart(2, '0')}</span>
+        </motion.p>
+      ) : (
+        <motion.p 
+          key="resend"
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          className="text-[14.5px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5"
+        >
+          Didn't receive the code?{' '}
+          <Button 
+            variant="link" 
+            className="p-0 h-auto font-bold text-primary hover:text-orange-600 transition-colors" 
+            onClick={handleResend}
+            disabled={isSending}
+          >
+            Resend now
+          </Button>
+        </motion.p>
+      )}
+    </AnimatePresence>
+  </div>
+  );
 };

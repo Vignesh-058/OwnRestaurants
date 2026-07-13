@@ -11,6 +11,6 @@ export const ProtectedRoute = () => {
  return <Navigate to="/login" state={{ from: location }} replace />;
  }
 
- console.log("[PROTECTED ROUTE] Authenticated, rendering Outlet", { location: location.pathname });
+
  return <Outlet />;
 };

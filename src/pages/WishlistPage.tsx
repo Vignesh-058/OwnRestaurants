@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWishlist } from '@/hooks/useWishlist';
 // Removed useAuthStore import
-import { WishlistCard } from '@/components/wishlist/WishlistCard';
+import { ProductCard } from '@/components/product/ProductCard';
+import { ProductDrawer } from '@/components/product/ProductDrawer';
 import { EmptyWishlist } from '@/components/wishlist/EmptyWishlist';
 import { RecentlyViewed } from '@/components/wishlist/RecentlyViewed';
 import { Heart, Trash2 } from 'lucide-react';
@@ -10,16 +11,17 @@ import { Button } from '@/components/ui/button';
 import type { CategoryItem } from '@/types/category.types';
 
 export const WishlistPage = () => {
- const navigate = useNavigate();
- const { wishlistItems, wishlistCount, removeFromWishlist, clearWishlist } = useWishlist();
+  const navigate = useNavigate();
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const { wishlistItems, wishlistCount, removeFromWishlist, clearWishlist } = useWishlist();
 
  useEffect(() => {
  window.scrollTo(0, 0);
  }, []);
 
- const handleProductClick = (product: CategoryItem) => {
- navigate(`/product/${product._id}`);
- };
+  const handleProductClick = (product: CategoryItem) => {
+    setSelectedProductId(product._id);
+  };
 
  return (
  <div className="bg-background min-h-screen py-10">
@@ -54,10 +56,9 @@ export const WishlistPage = () => {
 
  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
  {wishlistItems.map((product) => (
- <WishlistCard 
+ <ProductCard 
  key={product._id} 
  product={product} 
- onRemove={removeFromWishlist}
  onClick={handleProductClick}
  />
  ))}

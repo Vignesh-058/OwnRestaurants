@@ -13,4 +13,9 @@ export interface Banner {
  active: boolean;
  image: BannerImage;
  rank: number;
+ title?: string;
+ subtitle?: string;
+ description?: string;
+ buttonText?: string;
+ buttonLink?: string;
 }

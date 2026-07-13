@@ -6,16 +6,53 @@ import { AppErrorBoundary } from '@/components/common/AppErrorBoundary';
 import { OfflineBanner } from '@/components/common/OfflineBanner';
 import { LocationPermissionModal } from '@/components/modals/LocationPermissionModal';
 import { useOrganizationStore } from '@/store/OrganizationStore';
+import { useAuthStore } from '@/store/AuthStore';
+import { useOutletStore } from '@/store/OutletStore';
+import { useLocationStore } from '@/store/LocationStore';
+import { useCart } from '@/hooks/cart/useCart';
 import { applyOrganizationTheme } from '@/utils/theme';
+import defaultLogo from '@/assets/Ieyal Logo.jpeg';
+
+// Silent component that keeps the global cart up to date
+const GlobalCartSync = () => {
+ const { user, isAuthenticated } = useAuthStore();
+ const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
+ 
+ useCart({
+ customerPhoneNo: isAuthenticated ? (user?.phone || '') : '',
+ outletId: isAuthenticated ? (selectedOutlet?._id || '') : ''
+ });
+
+ return null;
+};
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
- const organization = useOrganizationStore((state) => state.organization);
+  const organization = useOrganizationStore((state) => state.organization);
+  const { user, isAuthenticated } = useAuthStore();
 
- useEffect(() => {
- if (organization?.theme) {
- applyOrganizationTheme(organization.theme);
- }
- }, [organization]);
+
+  useEffect(() => {
+    if (organization?.theme) {
+      applyOrganizationTheme(organization.theme);
+    }
+
+    // Update browser title dynamically
+    if (isAuthenticated && user?.name) {
+      document.title = `${user.name} | OwnCart`;
+    } else {
+      document.title = 'OwnCart';
+    }
+
+    // Update browser favicon
+    const faviconUrl = defaultLogo;
+    let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = faviconUrl;
+  }, [organization, isAuthenticated, user?.name]);
 
  return (
  <AppErrorBoundary>
@@ -25,6 +62,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
  <OfflineBanner />
  {/* Location modal handles global location permission checking */}
  <LocationPermissionModal />
+ <GlobalCartSync />
  {children}
  <ToastProvider />
  </QueryProvider>

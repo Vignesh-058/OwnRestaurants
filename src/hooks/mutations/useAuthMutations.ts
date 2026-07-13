@@ -23,10 +23,11 @@ export const useVerifyOtp = () => {
  mutationFn: ({ phone, otp, belongsTo }: { phone: string; otp: string; belongsTo: string }) => {
  return customerService.verifyOtp(phone, otp, belongsTo);
  },
- onSuccess: (data) => {
- setAuth(true, data.customer, data.token);
- toast.success('Successfully logged in.');
- },
+    onSuccess: (data: any) => {
+      const customer = data.customer || data.user || {};
+      const token = data.token || data.accessToken || '';
+      setAuth(true, customer, token);
+    },
  onError: (error) => {
  const parsed = ApiErrorParser(error);
  toast.error(parsed.message || 'Invalid OTP.');

@@ -1,5 +1,5 @@
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
-import { ProductCard } from '@/components/ProductCard/ProductCard';
+import { ProductCard } from '@/components/product/ProductCard';
 import { useNavigate } from 'react-router-dom';
 import type { CategoryItem } from '@/types/category.types';
 

@@ -16,7 +16,12 @@ export const useCategories = () => {
 
  const categories = useMemo(() => {
  if (!originalCategories) return [];
- return [allCategory, ...originalCategories];
+
+ // Aggregate all items for the 'All' category and deduplicate them if needed
+ const allItems = originalCategories.flatMap(c => c.items || []);
+ const allCategoryWithItems = { ...allCategory, items: allItems };
+
+ return [allCategoryWithItems, ...originalCategories];
  }, [originalCategories]);
 
  // 'all' is the default active category
@@ -31,7 +36,7 @@ export const useCategories = () => {
  originalCategories,
  activeCategoryId,
  setActiveCategoryId: handleSelectCategory,
- isLoading,
+ isLoading: isLoading || (originalCategories === undefined && !isError),
  isError,
  refetch
  };

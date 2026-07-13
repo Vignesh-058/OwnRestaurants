@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CurrentLocationButton } from './CurrentLocationButton';
 import { Loader2 } from 'lucide-react';
-import type { CreateAddressPayload } from '@/types/customer.types';
+import type { CreateAddressRequest } from '@/types/customer.types';
 import {
  Select,
  SelectContent,
@@ -39,34 +39,45 @@ const addressSchema = z.object({
 type AddressFormValues = z.infer<typeof addressSchema>;
 
 interface AddressFormProps {
- onSubmit: (data: CreateAddressPayload) => void;
- isLoading?: boolean;
+  onSubmit: (data: CreateAddressRequest) => void;
+  isLoading?: boolean;
 }
 
 export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
- const form = useForm<AddressFormValues>({
- resolver: zodResolver(addressSchema) as any,
- defaultValues: {
- customerName: '',
- addressLine1: '',
- addressLine2: '',
- city: '',
- state: '',
- country: 'India',
- pincode: '',
- landmark: '',
- addressType: 'Home',
- },
- });
+  const form = useForm<AddressFormValues>({
+    resolver: zodResolver(addressSchema) as any,
+    defaultValues: {
+      customerName: '',
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      state: '',
+      country: 'India',
+      pincode: '',
+      landmark: '',
+      addressType: 'Home',
+    },
+  });
 
- const handleLocationFound = (lat: number, lng: number) => {
- form.setValue('latitude', lat);
- form.setValue('longitude', lng);
- };
+  const handleLocationFound = (lat: number, lng: number) => {
+    form.setValue('latitude', lat);
+    form.setValue('longitude', lng);
+  };
 
- const handleSubmit = (data: AddressFormValues) => {
- onSubmit(data as CreateAddressPayload);
- };
+  const handleSubmit = (data: AddressFormValues) => {
+    onSubmit({
+      address1: data.addressLine1,
+      address2: data.addressLine2 || '',
+      city: data.city,
+      state: data.state,
+      country: data.country,
+      pincode: data.pincode,
+      latitude: data.latitude || 0,
+      longitude: data.longitude || 0,
+      landMark: data.landmark || '',
+      type: data.addressType.toLowerCase() as any,
+    });
+  };
 
  return (
  <Form {...form}>

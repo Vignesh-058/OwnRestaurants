@@ -1,187 +1,117 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
 import { 
- MapPin, Package, Ticket, HelpCircle, 
- LogOut, ChevronRight, Heart, Wallet, CreditCard, 
- Info, Bell, Globe
+  Package, MapPin, Ticket, Heart, Wallet, CreditCard, 
+  HelpCircle, Info, LogOut, Bell, Globe, Moon
 } from 'lucide-react';
-import { LogoutDialog } from '@/components/auth/LogoutDialog';
 import { useAuthStore } from '@/store/AuthStore';
-import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+import { Switch } from '@/components/ui/switch';
+import { LogoutDialog } from '@/components/auth/LogoutDialog';
 
-export const ProfileMenu = () => {
- const { logout } = useAuthStore();
- const location = useLocation();
- 
- const [isLogoutOpen, setIsLogoutOpen] = useState(false);
- const [notificationsEnabled, setNotificationsEnabled] = useState(true);
- const [language, setLanguage] = useState('English');
+interface ProfileMenuProps {
+  onTabChange?: (tabId: string) => void;
+  activeTab?: string;
+}
 
- const quickActions = [
- { 
- icon: Package, 
- title: 'My Orders', 
- subtitle: 'Track and view past orders', 
- href: '/profile/orders',
- gradient: 'from-blue-500 to-indigo-500'
- },
- { 
- icon: MapPin, 
- title: 'Saved Addresses', 
- subtitle: 'Manage delivery locations', 
- href: '/profile/addresses',
- gradient: 'from-emerald-500 to-teal-500'
- },
- { 
- icon: Heart, 
- title: 'Favorites', 
- subtitle: 'Browse your wishlist items', 
- href: '/wishlist',
- gradient: 'from-pink-500 to-rose-500'
- },
- { 
- icon: Ticket, 
- title: 'Offers & Coupons', 
- subtitle: 'View active promo discounts', 
- href: '/offers',
- gradient: 'from-amber-500 to-orange-500'
- },
- { 
- icon: Wallet, 
- title: 'Rewards & Wallet', 
- subtitle: 'Check points and credits', 
- href: '/profile',
- gradient: 'from-purple-500 to-indigo-500'
- },
- { 
- icon: CreditCard, 
- title: 'Payment Methods', 
- subtitle: 'Manage cards and UPI profiles', 
- href: '/profile',
- gradient: 'from-violet-500 to-fuchsia-500'
- },
- { 
- icon: HelpCircle, 
- title: 'Help & Support', 
- subtitle: 'Connect with order assistance', 
- href: '/support',
- gradient: 'from-sky-500 to-blue-500'
- },
- { 
- icon: Info, 
- title: 'About', 
- subtitle: 'Platform version and terms', 
- href: '/profile',
- gradient: 'from-slate-500 to-slate-700'
- }
- ];
+export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
+  const { logout } = useAuthStore();
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [language, setLanguage] = useState('English');
 
- const handleToggleNotifications = () => {
- setNotificationsEnabled(!notificationsEnabled);
- toast.success(`Notifications ${!notificationsEnabled ? 'enabled' : 'disabled'}`);
- };
+  const menuItems = [
+    { id: 'offers', icon: Ticket, title: 'Offers & Coupons' },
+    { id: 'orders', icon: Package, title: 'Orders' },
+    { id: 'addresses', icon: MapPin, title: 'Addresses' },
+    { id: 'favorites', icon: Heart, title: 'Wishlist' },
+    { id: 'rewards', icon: Wallet, title: 'Rewards' },
+    { id: 'payments', icon: CreditCard, title: 'Payments' },
+    { id: 'help', icon: HelpCircle, title: 'Help' },
+    { id: 'about', icon: Info, title: 'About' },
+  ];
 
- const handleLanguageChange = () => {
- const nextLang = language === 'English' ? 'Español' : 'English';
- setLanguage(nextLang);
- toast.success(`Language set to ${nextLang}`);
- };
+  const handleLanguageChange = () => {
+    setLanguage(prev => prev === 'English' ? 'Español' : 'English');
+  };
 
- return (
- <div className="space-y-6 w-full">
- {/* 1. Quick Action Cards */}
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
- {quickActions.map((action, i) => {
- const isActive = location.pathname === action.href;
- return (
- <NavLink 
- key={i} 
- to={action.href}
- end={action.href === '/profile'}
- className={`
- flex items-center w-full p-4 bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl rounded-2xl border transition-all duration-300 group shadow-sm hover:shadow-md
- ${isActive ? 'border-primary/40 bg-primary/5' : 'border-border/60 dark:border-white/5 hover:border-primary/20'}
- `}
- >
- {/* Gradient Icon container */}
- <div className={`h-11 w-11 rounded-xl bg-gradient-to-br ${action.gradient} text-white flex items-center justify-center shrink-0 mr-4 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
- <action.icon className="h-5.5 w-5.5" />
- </div>
- 
- <div className="flex-1 text-left min-w-0">
- <h4 className="font-extrabold text-sm text-foreground leading-tight truncate">{action.title}</h4>
- <p className="text-[10px] text-muted-foreground font-semibold mt-0.5 truncate leading-none">{action.subtitle}</p>
- </div>
+  return (
+    <div className="flex flex-col space-y-6 w-full">
+      {/* Navigation Cards */}
+      <div className="flex flex-col space-y-3">
+        {menuItems.map((item) => {
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => onTabChange?.(item.id)}
+              className={cn(
+                "flex items-center gap-4 w-full h-[60px] px-5 rounded-[16px] transition-all duration-200 text-left group",
+                isActive 
+                  ? "bg-gradient-to-r from-[#FF6B00] to-[#FF8A00] text-white shadow-[0_4px_16px_rgba(255,107,0,0.3)] hover:-translate-y-0.5" 
+                  : "bg-white text-[#101828] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:bg-[#FFF7ED] hover:-translate-y-0.5"
+              )}
+            >
+              <item.icon 
+                className={cn(
+                  "w-[22px] h-[22px] transition-colors", 
+                  isActive ? "text-white" : "text-[#667085] group-hover:text-[#FF6B00]"
+                )} 
+              />
+              <span className="font-bold text-[16px]">
+                {item.title}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
- <ChevronRight className={`h-4.5 w-4.5 transition-all text-muted-foreground group-hover:text-primary group-hover:translate-x-1 shrink-0 ${isActive ? 'text-primary' : ''}`} />
- </NavLink>
- );
- })}
- </div>
+      {/* Settings Card */}
+      <div className="bg-white rounded-[20px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#E4E7EC]">
+        <h4 className="font-bold text-[16px] text-[#101828] mb-4">Settings</h4>
+        <div className="flex flex-col space-y-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Bell className="w-[18px] h-[18px] text-[#667085]" />
+              <span className="font-medium text-[15px] text-[#101828]">Notifications</span>
+            </div>
+            <Switch 
+              checked={notificationsEnabled} 
+              onCheckedChange={setNotificationsEnabled}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Globe className="w-[18px] h-[18px] text-[#667085]" />
+              <span className="font-medium text-[15px] text-[#101828]">Language</span>
+            </div>
+            <button onClick={handleLanguageChange} className="text-[#FF6B00] font-bold text-[14px]">
+              {language}
+            </button>
+          </div>
+        </div>
+      </div>
 
- {/* 2. Grouped Settings Section */}
- <Card className="rounded-[1.8rem] border border-border/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl shadow-sm">
- <CardContent className="p-5 space-y-4">
- <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest px-1">Settings & Preferences</h3>
- 
- <div className="space-y-2">
+      {/* Sign Out Button */}
+      <div className="mt-auto pt-4">
+        <button 
+          onClick={() => setIsLogoutOpen(true)}
+          className="flex items-center justify-center gap-3 w-full h-[60px] rounded-[16px] bg-white border border-red-100 text-red-500 font-bold text-[16px] transition-all duration-200 hover:bg-red-50 hover:-translate-y-0.5 shadow-sm"
+        >
+          <LogOut className="w-[20px] h-[20px]" />
+          Sign Out
+        </button>
+      </div>
 
- {/* Notifications Toggle */}
- <div className="flex items-center justify-between p-2 rounded-xl hover:bg-muted/40 transition-colors">
- <div className="flex items-center gap-3">
- <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
- <Bell className="h-4.5 w-4.5" />
- </div>
- <Label className="text-xs font-extrabold text-foreground">Notifications</Label>
- </div>
- <button 
- onClick={handleToggleNotifications}
- className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${notificationsEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
- >
- <span className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform ${notificationsEnabled ? 'translate-x-5.5' : 'translate-x-1'}`} />
- </button>
- </div>
-
- {/* Language Selector */}
- <div className="flex items-center justify-between p-2 rounded-xl hover:bg-muted/40 transition-colors">
- <div className="flex items-center gap-3">
- <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500">
- <Globe className="h-4.5 w-4.5" />
- </div>
- <Label className="text-xs font-extrabold text-foreground">Language</Label>
- </div>
- <button 
- onClick={handleLanguageChange}
- className="text-xs font-black text-primary hover:underline bg-muted px-2.5 py-1 rounded-full"
- >
- {language}
- </button>
- </div>
- </div>
- </CardContent>
- </Card>
-
- {/* 3. Danger Zone Sign Out Button */}
- <div className="pt-2">
- <button 
- onClick={() => setIsLogoutOpen(true)}
- className="w-full h-12 bg-transparent border border-red-500/35 hover:bg-red-500/5 text-red-500 hover:text-red-600 rounded-2xl flex items-center justify-center gap-2 transition-all font-extrabold text-xs shadow-sm"
- >
- <LogOut className="h-4.5 w-4.5" />
- Sign Out of Account
- </button>
- </div>
-
- <LogoutDialog 
- isOpen={isLogoutOpen} 
- onOpenChange={setIsLogoutOpen} 
- onConfirm={() => {
- setIsLogoutOpen(false);
- logout();
- }} 
- />
- </div>
- );
+      <LogoutDialog 
+        isOpen={isLogoutOpen} 
+        onClose={() => setIsLogoutOpen(false)} 
+        onConfirm={() => {
+          logout();
+          setIsLogoutOpen(false);
+        }} 
+      />
+    </div>
+  );
 };

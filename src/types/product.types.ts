@@ -32,4 +32,5 @@ export interface ItemDetail {
  belongsTo: string;
  stockStatus: boolean;
  trackInventory: boolean;
+ stockCount?: number;
 }

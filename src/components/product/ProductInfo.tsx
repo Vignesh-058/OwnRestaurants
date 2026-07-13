@@ -13,43 +13,41 @@ export const ProductInfo = ({ name, dietryType, rating, inStock }: ProductInfoPr
  const isNonVeg = dietryType?.toLowerCase() === 'non-veg';
 
  return (
- <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between z-10">
- <div>
- <div className="flex items-center gap-3 mb-2">
+ <div className="absolute bottom-0 left-0 right-0 pt-32 pb-6 px-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end z-10 pointer-events-none">
+ <div className="flex items-center gap-3 mb-2.5">
  {dietryType && (
- <span className={cn(
- "inline-flex items-center justify-center w-5 h-5 rounded-sm border bg-white shadow-sm",
+ <div className={cn(
+ "flex items-center justify-center w-6 h-6 rounded-full border-[3px] bg-white shrink-0 shadow-lg",
  isVeg ? "border-green-600" : isNonVeg ? "border-red-600" : "border-yellow-500"
  )}>
- <span className={cn(
+ <div className={cn(
  "w-2.5 h-2.5 rounded-full",
  isVeg ? "bg-green-600" : isNonVeg ? "bg-red-600" : "bg-yellow-500"
  )} />
- </span>
+ </div>
  )}
  
  {rating ? (
- <span className="flex items-center gap-1 bg-[#16A34A] text-white px-2 py-0.5 rounded text-xs font-bold shadow-sm">
+ <div className="flex items-center gap-1.5 bg-[#16A34A] text-white px-2.5 py-1 rounded-[6px] text-[13px] font-bold shadow-lg leading-none">
  <Star className="w-3.5 h-3.5 fill-white" />
  {rating}
- </span>
+ </div>
  ) : (
- <span className="flex items-center gap-1 bg-[#16A34A] text-white px-2 py-0.5 rounded text-xs font-bold shadow-sm">
+ <div className="flex items-center gap-1.5 bg-[#16A34A] text-white px-2.5 py-1 rounded-[6px] text-[13px] font-bold shadow-lg leading-none">
  <Star className="w-3.5 h-3.5 fill-white" />
  4.8
- </span>
+ </div>
  )}
 
  {!inStock && (
- <span className="bg-red-500 text-white px-2 py-0.5 rounded text-xs font-bold shadow-sm">
+ <span className="bg-red-500 text-white px-2.5 py-1 rounded-[6px] text-[13px] font-bold shadow-lg leading-none">
  Out of Stock
  </span>
  )}
  </div>
- <h2 className="text-3xl font-black text-white leading-tight drop-shadow-md">
+ <h2 className="text-[32px] sm:text-[40px] font-black text-white leading-tight drop-shadow-xl tracking-tight">
  {name}
  </h2>
- </div>
  </div>
  );
 };

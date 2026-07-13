@@ -1,5 +1,6 @@
 import { ProductCard } from './ProductCard';
 import type { CategoryItem } from '@/types/category.types';
+import { motion } from 'framer-motion';
 
 interface ProductGridProps {
  products: CategoryItem[];
@@ -8,24 +9,43 @@ interface ProductGridProps {
 }
 
 export const ProductGrid = ({ products, onProductClick, title }: ProductGridProps) => {
- if (!products || products.length === 0) return null;
+  if (!products || products.length === 0) return null;
 
- return (
- <div className="w-full py-10 bg-background">
- <div className="max-w-7xl mx-auto px-4 md:px-8">
- {title && (
- <h2 className="text-2xl md:text-3xl font-bold text-[#111827] mb-8">{title}</h2>
- )}
- <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
- {products.map((product) => (
- <ProductCard 
- key={product._id} 
- product={product} 
- onClick={onProductClick} 
- />
- ))}
- </div>
- </div>
- </div>
- );
+  return (
+    <div className="w-full">
+      {title && (
+        <h2 className="text-2xl md:text-3xl font-bold text-[#111827] mb-6">{title}</h2>
+      )}
+      <motion.div 
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-[20px]"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.1
+            }
+          }
+        }}
+      >
+        {products.map((product) => (
+          <motion.div 
+            key={product._id}
+            variants={{
+              hidden: { opacity: 0, y: 40 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+            }}
+            className="flex w-full justify-center"
+          >
+            <ProductCard 
+              product={product} 
+              onClick={onProductClick} 
+            />
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
+  );
 };

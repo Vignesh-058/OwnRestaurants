@@ -1,12 +1,9 @@
-export interface Settings {
- paymentMode: string[];
- defaultPaymentMode: string;
- preBookingEnabled: boolean;
- banner?: {
+export interface BannerSettings {
  enable: boolean;
  autoScroll: boolean;
- };
- checkOutSettings?: {
+}
+
+export interface CheckoutSettings {
  showRewards: boolean;
  calculateLoyality: boolean;
  applyDiscount: boolean;
@@ -14,7 +11,17 @@ export interface Settings {
  loyaltyMinimumAmount: number;
  delivery?: boolean;
  pickup?: boolean;
- };
- isInvoicePdfGenerated?: boolean;
- pos?: any;
+}
+
+export type PaymentMode = 'COD' | 'ONLINE' | string;
+
+export interface Settings {
+ preBookingEnabled: boolean;
+ checkOutSettings: CheckoutSettings;
+ paymentMode: PaymentMode[];
+ defaultPaymentMode: PaymentMode;
+ banner: BannerSettings;
+ isInvoicePdfGenerated: boolean;
+ pos: string;
+ deliveryPoints: boolean;
 }

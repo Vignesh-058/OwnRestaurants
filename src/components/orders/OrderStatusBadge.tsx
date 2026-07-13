@@ -2,34 +2,21 @@ import { Badge } from '@/components/ui/badge';
 import type { OrderStatus } from '@/types/order.types';
 
 const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
- Pending: {
- label: 'Pending',
- className: 'bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-100',
- },
- Confirmed: {
- label: 'Confirmed',
- className: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100',
- },
- Preparing: {
- label: 'Preparing',
- className: 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-100',
- },
- Ready: {
- label: 'Ready',
- className: 'bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-100',
- },
- 'Out For Delivery': {
- label: 'Out For Delivery',
- className: 'bg-indigo-100 text-indigo-700 border-indigo-200 hover:bg-indigo-100',
- },
- Delivered: {
- label: 'Delivered',
- className: 'bg-green-100 text-green-700 border-green-200 hover:bg-green-100',
- },
- Cancelled: {
- label: 'Cancelled',
- className: 'bg-red-100 text-red-700 border-red-200 hover:bg-red-100',
- },
+ orderReceived: { label: 'Order Received', className: 'bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-100' },
+ orderPlaced: { label: 'Order Placed', className: 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-100' },
+ preparing: { label: 'Preparing', className: 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-100' },
+ Ready: { label: 'Ready', className: 'bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-100' },
+ outForDelivery: { label: 'Out For Delivery', className: 'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100' },
+ delivered: { label: 'Delivered', className: 'bg-green-100 text-green-700 border-green-200 hover:bg-green-100' },
+ orderCancelled: { label: 'Cancelled', className: 'bg-red-100 text-red-700 border-red-200 hover:bg-red-100' },
+ 
+ // Legacy fallbacks
+ Pending: { label: 'Pending', className: 'bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-100' },
+ Confirmed: { label: 'Confirmed', className: 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-100' },
+ Preparing: { label: 'Preparing', className: 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-100' },
+ 'Out For Delivery': { label: 'Out For Delivery', className: 'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100' },
+ Delivered: { label: 'Delivered', className: 'bg-green-100 text-green-700 border-green-200 hover:bg-green-100' },
+ Cancelled: { label: 'Cancelled', className: 'bg-red-100 text-red-700 border-red-200 hover:bg-red-100' },
 };
 
 interface OrderStatusBadgeProps {

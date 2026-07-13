@@ -19,7 +19,7 @@ export const OrdersPage = () => {
  const navigate = useNavigate();
  const { isAuthenticated } = useAuthStore();
  const { data, isLoading, isError, refetch } = useOrders();
- const { selectedOrder, setSelectedOrder, filters, searchQuery } = useOrderStore();
+ const { orders, pagination, loading, error, selectedOrder, setSelectedOrder, filters, searchQuery } = useOrderStore();
  const [dialogOpen, setDialogOpen] = useState(false);
  const [sort, setSort] = useState('newest');
 
@@ -39,7 +39,7 @@ export const OrdersPage = () => {
 
  // Client-side filter + search + sort on current page results
  const processedOrders = useMemo(() => {
- let result = [...(data?.orders ?? [])];
+ let result = [...(orders ?? [])];
 
  // Search
  if (searchQuery) {
@@ -84,7 +84,7 @@ export const OrdersPage = () => {
  });
 
  return result;
- }, [data?.orders, searchQuery, filters, sort]);
+ }, [orders, searchQuery, filters, sort]);
 
  if (!isAuthenticated) {
  navigate('/login', { replace: true });
@@ -92,9 +92,9 @@ export const OrdersPage = () => {
  }
 
  const renderContent = () => {
- if (isLoading) return <OrderSkeleton />;
+ if (loading) return <OrderSkeleton />;
 
- if (isError) {
+ if (error) {
  return (
  <motion.div 
  initial={{ opacity: 0, scale: 0.95 }}
@@ -106,7 +106,7 @@ export const OrdersPage = () => {
  </div>
  <div>
  <h2 className="text-xl font-black text-foreground">Couldn't load orders</h2>
- <p className="text-muted-foreground text-sm mt-1">There was a problem fetching your order history.</p>
+ <p className="text-muted-foreground text-sm mt-1">{error}</p>
  </div>
  <Button onClick={() => refetch()} className="rounded-full shadow-premium gap-2 px-6 h-11 font-black text-xs">
  <RefreshCw className="h-4 w-4" />
@@ -116,7 +116,7 @@ export const OrdersPage = () => {
  );
  }
 
- if (!data?.orders?.length) return <EmptyOrders />;
+ if (!orders?.length) return <EmptyOrders />;
 
  if (processedOrders.length === 0) {
  return (
@@ -131,12 +131,14 @@ export const OrdersPage = () => {
  {processedOrders.map((order) => (
  <OrderCard key={order._id} order={order} onViewDetails={handleViewDetails} />
  ))}
+ {pagination && (
  <Pagination
- totalPages={data?.totalPages}
- hasNextPage={data?.hasNextPage}
- hasPrevPage={data?.hasPrevPage}
- totalOrders={data?.totalOrders}
+ totalPages={pagination.totalPages}
+ hasNextPage={pagination.hasNextPage}
+ hasPrevPage={pagination.hasPrevPage}
+ totalOrders={pagination.totalOrders}
  />
+ )}
  </div>
  );
  };
@@ -166,7 +168,7 @@ export const OrdersPage = () => {
  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
  
  <div className="flex items-center gap-4 relative z-10">
- <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/10 to-blue-500/10 text-primary flex items-center justify-center shadow-inner">
+ <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/10 to-[#FF6B00]/20 text-primary flex items-center justify-center shadow-inner">
  <Package className="h-7 w-7" />
  </div>
  <div>

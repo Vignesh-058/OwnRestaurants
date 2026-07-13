@@ -1,17 +1,37 @@
 export type OrderStatus =
+ | 'orderReceived'
+ | 'orderPlaced'
+ | 'preparing'
+ | 'Ready'
+ | 'outForDelivery'
+ | 'delivered'
+ | 'orderCancelled'
  | 'Pending'
  | 'Confirmed'
  | 'Preparing'
- | 'Ready'
  | 'Out For Delivery'
  | 'Delivered'
  | 'Cancelled';
 
-export type PaymentStatus = 'Paid' | 'Unpaid' | 'Pending';
+export type PaymentStatus = 'paid' | 'unpaid' | 'failed' | 'Paid' | 'Unpaid' | 'Pending';
 
 export type PaymentMode = 'COD' | 'Online' | 'Card' | 'UPI' | 'Wallet';
 
 export type OrderType = 'Door Delivery' | 'Self Pickup' | 'Dine In';
+
+export type DeliveryStatus = 'Task Created' | 'Picked Up' | 'On The Way' | 'Delivered' | 'Cancelled';
+
+export interface Addon {
+ name: string;
+ price: number;
+ group?: string;
+}
+
+export interface DiscountItem {
+ name?: string;
+ amount?: number;
+ code?: string;
+}
 
 export interface OrderItem {
  itemid?: string;
@@ -22,9 +42,13 @@ export interface OrderItem {
  price: number;
  basePrice?: number;
  sellingPrice?: number;
- addons?: Array<{ name: string; price: number }>;
+ addons?: Addon[];
+ addOnDetails?: Addon[];
  image?: string | string[];
  variationName?: string;
+ packageCharge?: number;
+ tax?: number;
+ discount?: number;
 }
 
 export interface OrderAddress {
@@ -39,6 +63,19 @@ export interface OrderAddress {
  addressType?: string;
  latitude?: number;
  longitude?: number;
+}
+
+export interface Delivery {
+ partnerName?: string;
+ driverName?: string;
+ driverPhone?: string;
+ status?: DeliveryStatus;
+ trackingUrl?: string;
+ eta?: string;
+ pickupAddress?: string;
+ dropAddress?: string;
+ deliveryCharge?: number;
+ deliveryOtp?: string;
 }
 
 export interface Order {
@@ -61,19 +98,28 @@ export interface Order {
  deliveryCharge?: number;
  tax?: number;
  discount?: number;
+ packageCharge?: number;
  itemCount?: number;
  createdAt: string;
  updatedAt?: string;
  belongsTo?: string;
  outletId?: string;
  notes?: string;
+ currentDelivery?: Delivery;
+ instructions?: string;
 }
 
-export interface OrdersApiResponse {
- orders: Order[];
- totalOrders?: number;
- totalPages?: number;
- currentPage?: number;
- hasNextPage?: boolean;
- hasPrevPage?: boolean;
+export interface Pagination {
+ totalOrders: number;
+ totalPages: number;
+ currentPage: number;
+ hasNextPage: boolean;
+ hasPrevPage: boolean;
+ limit: number;
+}
+
+export interface CustomerOrdersResponse {
+ data: Order[];
+ totalOrders: number;
+ pagination: Pagination;
 }

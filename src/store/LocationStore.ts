@@ -1,30 +1,53 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { STORAGE_KEYS } from '@/constants/storage';
-
-export type PermissionStatus = 'prompt' | 'granted' | 'denied';
-
-interface LocationState {
- lat: number | null;
- lng: number | null;
- address: string | null;
- permissionStatus: PermissionStatus;
- setLocation: (lat: number, lng: number, address?: string) => void;
- setPermissionStatus: (status: PermissionStatus) => void;
- clearLocation: () => void;
-}
+import type { LocationState } from '@/types/location.types';
 
 export const useLocationStore = create<LocationState>()(
  persist(
  (set) => ({
- lat: null,
- lng: null,
- address: null,
- permissionStatus: 'prompt',
- setLocation: (lat, lng, address = 'Selected Location') => 
- set({ lat, lng, address, permissionStatus: 'granted' }),
- setPermissionStatus: (status) => set({ permissionStatus: status }),
- clearLocation: () => set({ lat: null, lng: null, address: null, permissionStatus: 'prompt' }),
+ latitude: null,
+ longitude: null,
+ formattedAddress: null,
+ street: null,
+ city: null,
+ state: null,
+ country: null,
+ postalCode: null,
+ placeId: null,
+ locationLoaded: false,
+ permissionGranted: null,
+ loading: false,
+ error: null,
+
+ setLocation: (locationData) =>
+ set((state) => ({
+ ...state,
+ ...locationData,
+ locationLoaded: locationData.locationLoaded !== undefined ? locationData.locationLoaded : true,
+ permissionGranted: true,
+ error: null,
+ loading: false,
+ })),
+ setPermissionStatus: (granted) => set({ permissionGranted: granted }),
+ setLoading: (loading) => set({ loading }),
+ setError: (error) => set({ error, loading: false }),
+ clearLocation: () =>
+ set({
+ latitude: null,
+ longitude: null,
+ formattedAddress: null,
+ street: null,
+ city: null,
+ state: null,
+ country: null,
+ postalCode: null,
+ placeId: null,
+ locationLoaded: false,
+ permissionGranted: null,
+ loading: false,
+ error: null,
+ }),
  }),
  {
  name: STORAGE_KEYS.LOCATION,

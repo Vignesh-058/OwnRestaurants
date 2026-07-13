@@ -21,8 +21,8 @@ export const useVerifyOTP = () => {
  if (!organizationId) throw new Error('Organization not found');
  return customerService.verifyOtp(phone, otp, organizationId);
  },
- onSuccess: (data) => {
- console.log("[VERIFY OTP] Backend Response Data:", data);
+ onSuccess: (data: any) => {
+
 
  // Support various backend formats (nested inside data.data or root data)
  const rawToken = data?.accessToken || data?.data?.accessToken || data?.token || data?.data?.token;
@@ -44,14 +44,22 @@ export const useVerifyOTP = () => {
  queryClient.invalidateQueries({ queryKey: ['cart'] });
  queryClient.invalidateQueries({ queryKey: ['orders'] });
  
- toast.success('Successfully logged in!');
  } else {
  console.error("[VERIFY OTP] Missing token or customer in response. Data received:", data);
  toast.error('Invalid response from server.');
  }
  },
- onError: () => {
- toast.error('Invalid OTP. Please try again.');
+ onError: (error: any) => {
+  const status = error.response?.status;
+  const message = error.response?.data?.message || error.response?.data?.error;
+
+  if (status === 400 && message?.toLowerCase().includes('expire')) {
+    toast.error('OTP expired. Request another OTP.');
+  } else if (status === 400 || status === 401) {
+    toast.error('Invalid OTP. Please try again.');
+  } else {
+    toast.error('Verification failed. Please try again.');
+  }
  }
  });
 };

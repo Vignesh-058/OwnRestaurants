@@ -8,11 +8,6 @@ export const useNetworkStatus = () => {
  useEffect(() => {
  const handleOnline = () => {
  setOnline(true);
- toast.success('Back online', {
- description: 'Your internet connection has been restored.',
- duration: 3000,
- id: 'network-online',
- });
  };
 
  const handleOffline = () => {

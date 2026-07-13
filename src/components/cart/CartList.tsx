@@ -10,18 +10,18 @@ interface CartListProps {
 }
 
 export const CartList = ({ items, currency, onUpdateQuantity, onRemove, isUpdating }: CartListProps) => {
- return (
- <div className="flex-1 space-y-4">
- {items.map((item) => (
- <CartItem 
- key={item._id}
- item={item}
- currency={currency}
- onUpdateQuantity={onUpdateQuantity}
- onRemove={onRemove}
- isUpdating={isUpdating}
- />
- ))}
- </div>
- );
+  return (
+    <div className="flex-1 flex flex-col gap-[20px]">
+      {items.map((item) => (
+        <CartItem 
+          key={item._id}
+          item={item}
+          currency={currency}
+          onUpdateQuantity={onUpdateQuantity}
+          onRemove={onRemove}
+          isUpdating={isUpdating}
+        />
+      ))}
+    </div>
+  );
 };
