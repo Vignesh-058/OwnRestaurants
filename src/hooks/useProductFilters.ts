@@ -38,7 +38,8 @@ export const useProductFilters = (items: CategoryItem[]) => {
     // 2. Price Range
     result = result.filter(item => {
       const price = Number(item.defaultSellingPrice || item.sellingPrice || item.price || 0);
-      return price >= priceRange[0] && price <= priceRange[1];
+      const maxPrice = priceRange[1] === 5000 ? Infinity : priceRange[1];
+      return price >= priceRange[0] && price <= maxPrice;
     });
 
     // 3. Food Type

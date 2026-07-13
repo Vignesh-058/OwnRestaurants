@@ -39,7 +39,7 @@ export const PriceSummary = ({
  !inStock && "opacity-50 pointer-events-none"
  )}>
  <button
- onClick={() => onQuantityChange(q => Math.max(1, typeof q === 'function' ? q(quantity) : q - 1))}
+ onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
  disabled={quantity <= 1 || !inStock}
  className="w-[40px] h-[40px] flex items-center justify-center rounded-[12px] text-[#9CA3AF] hover:text-white hover:bg-[#1F2937] disabled:opacity-50 transition-colors"
  >
@@ -62,7 +62,7 @@ export const PriceSummary = ({
  </div>
 
  <button
- onClick={() => onQuantityChange(q => (typeof q === 'function' ? q(quantity) : q) + 1)}
+ onClick={() => onQuantityChange(quantity + 1)}
  disabled={!inStock}
  className="w-[40px] h-[40px] flex items-center justify-center rounded-[12px] text-[#9CA3AF] hover:text-white hover:bg-[#1F2937] disabled:opacity-50 transition-colors"
  >

@@ -36,13 +36,12 @@ axiosInstance.interceptors.request.use(
  }
  }
  
- if (import.meta.env.DEV) {
-
-
- if (config.data) {
-
- }
- }
+  if (import.meta.env.DEV) {
+    console.log(`[API REQUEST] ${config.method?.toUpperCase()} ${config.url}`);
+    if (config.data) {
+      console.log(`[API PAYLOAD]`, config.data);
+    }
+  }
  
  // Add start time for execution tracking on the config object itself, NOT as a header (avoids CORS preflight)
  (config as any)._startTime = Date.now();
@@ -58,16 +57,12 @@ axiosInstance.interceptors.response.use(
   return response;
  },
  (error: AxiosError<{ message?: string; status?: string; error?: string }>) => {
- if (import.meta.env.DEV) {
-
-
-
-
-
-
-
-
- }
+  if (import.meta.env.DEV) {
+    console.error(
+      `[API ERROR] ${error.config?.method?.toUpperCase()} ${error.config?.url} => ${error.response?.status}`,
+      error.response?.data
+    );
+  }
 
  const status = error.response?.status;
  const serverMsg = error.response?.data?.message || error.response?.data?.error;

@@ -7,7 +7,7 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 import type { CategoryItem } from '@/types/category.types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Heart, Loader2, Check, Minus, Plus } from 'lucide-react';
+import { Heart, Loader2, Check, Minus, Plus, Star, TrendingDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
@@ -87,7 +87,7 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
     // Build existing items payload
     const existingItems = cartItems.map(c => ({
-      itemId: (c.itemid as any)._id || c.itemid,
+      itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
       quantity: c.quantity,
       variationId: c.variation_id?._id || "",
       addOnDetails: c.addons || [],
@@ -161,7 +161,7 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
       const payload: any = {
         items: updatedItems.map(c => ({
-          itemId: (c.itemid as any)._id || c.itemid,
+          itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
           quantity: c.quantity,
           variationId: c.variation_id?._id || "",
           addOnDetails: c.addons || [],
@@ -198,7 +198,7 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
     const payload: any = {
       items: updatedItems.map(c => ({
-        itemId: (c.itemid as any)._id || c.itemid,
+        itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
         quantity: c.quantity,
         variationId: c.variation_id?._id || "",
         addOnDetails: c.addons || [],
@@ -256,23 +256,22 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
           </div>
         )}
 
-        {/* Top Right: Wishlist Heart & Discount */}
-        <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1.5 items-end">
+        {/* Top Right: Wishlist Heart & Discount & Bestseller */}
+        <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-10">
           <button
-            className={cn(
-              "h-7 w-7 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center transition-all duration-300 hover:scale-110",
-              inWishlist ? "text-[#FF6B00]" : "text-[#667085] hover:text-[#FF6B00]"
-            )}
             onClick={(e) => {
               e.stopPropagation();
               toggleWishlist(product);
             }}
+            className="w-[34px] h-[34px] rounded-full bg-white/90 backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.08)] flex items-center justify-center hover:bg-white hover:scale-110 transition-all duration-300"
           >
-            <Heart className={cn("h-3.5 w-3.5 transition-all duration-300", inWishlist && "fill-[#FF6B00]")} />
+            <Heart 
+              className={cn("w-4 h-4 transition-colors duration-300", inWishlist ? 'fill-[#FF6B00] text-[#FF6B00]' : 'text-[#64748B]')} 
+            />
           </button>
           
           {discountDisplay && (
-            <div className="bg-[#FF6B00] text-white text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-[4px] shadow-sm">
+            <div className="bg-[#FF6B00] text-white text-[11px] font-bold px-2 py-1 rounded-[6px] shadow-sm flex items-center gap-1">
               {discountDisplay}
             </div>
           )}
@@ -285,6 +284,14 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
         <h3 className="font-semibold text-[18px] text-[#111827] line-clamp-2 leading-[22px] group-hover:text-[#FF6B00] transition-colors">
           {product.name}
         </h3>
+        
+        {/* Rating */}
+        {product.rating && (
+          <div className="flex items-center gap-1 mt-1">
+            <Star className="w-3.5 h-3.5 fill-[#EAB308] text-[#EAB308]" />
+            <span className="text-[12px] font-bold text-[#4B5563]">{product.rating}</span>
+          </div>
+        )}
         
         {/* Description */}
         {descText && (

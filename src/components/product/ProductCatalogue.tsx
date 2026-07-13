@@ -31,7 +31,7 @@ export const ProductCatalogue = ({ categories, activeCategoryId, onSelectCategor
   return (
     <section id="product-menu" className="w-full flex flex-col lg:flex-row relative z-10">
       {/* LEFT: Sidebar (Categories + Desktop Filters) */}
-      <aside className="w-full lg:w-[360px] shrink-0 bg-white border-r border-[#E2E8F0] z-20">
+      <aside className="w-full lg:w-[360px] shrink-0 bg-white border-r border-[#E2E8F0] z-30 relative">
         <div className="p-6 lg:p-6 flex flex-col lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-[#E2E8F0] scrollbar-track-transparent">
           
           <div className="flex-shrink-0">
@@ -40,6 +40,8 @@ export const ProductCatalogue = ({ categories, activeCategoryId, onSelectCategor
                 <h2 className="text-[26px] font-bold text-[#0F172A] tracking-tight leading-none mb-1.5">Categories</h2>
                 <p className="text-[13px] text-[#64748B] font-medium">Browse Menu</p>
               </div>
+              
+              {/* Desktop Filter Toggle (hidden on mobile) */}
               <Button 
                 variant="outline" 
                 size="icon"
@@ -54,6 +56,27 @@ export const ProductCatalogue = ({ categories, activeCategoryId, onSelectCategor
                   <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-[#FF6B00] border-2 border-white" />
                 )}
               </Button>
+
+              {/* Mobile Filter Toggle (hidden on desktop) */}
+              <Sheet open={isMobileFilterOpen} onOpenChange={setIsMobileFilterOpen}>
+                <SheetTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    className="lg:hidden flex w-10 h-10 rounded-full border-[#E2E8F0] hover:bg-[#F8FAFC] transition-colors relative"
+                  >
+                    <SlidersHorizontal className="w-4 h-4" />
+                    {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
+                      <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-[#FF6B00] border-2 border-white" />
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[85vw] sm:max-w-md p-0 bg-white border-r-0">
+                  <div className="h-full flex flex-col">
+                    <ProductFilterPanel {...filters} onApplyMobile={() => setIsMobileFilterOpen(false)} />
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
 
             <div className="mb-4 mt-4">
@@ -74,13 +97,13 @@ export const ProductCatalogue = ({ categories, activeCategoryId, onSelectCategor
           <AnimatePresence>
             {isDesktopFilterOpen && (
               <motion.div
-                initial={{ height: 0, opacity: 0, marginBottom: 0 }}
-                animate={{ height: 'auto', opacity: 1, marginBottom: 24 }}
-                exit={{ height: 0, opacity: 0, marginBottom: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="hidden lg:block overflow-hidden"
+                initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+                className="hidden lg:block absolute left-6 right-6 top-[132px] z-[60]"
               >
-                <div className="h-[450px] rounded-[16px] border border-[#E2E8F0] shadow-sm">
+                <div className="h-[450px] bg-white rounded-[16px] border border-[#E2E8F0] shadow-[0_12px_40px_rgba(0,0,0,0.12)] overflow-hidden">
                   <ProductFilterPanel {...filters} onApplyMobile={() => setIsDesktopFilterOpen(false)} />
                 </div>
               </motion.div>
@@ -157,24 +180,6 @@ export const ProductCatalogue = ({ categories, activeCategoryId, onSelectCategor
                   {filters.filteredItems.length} items
                 </span>
               </h3>
-
-              {/* Mobile Filter Button */}
-              <Sheet open={isMobileFilterOpen} onOpenChange={setIsMobileFilterOpen}>
-                <SheetTrigger asChild>
-                  <Button className="lg:hidden h-[44px] bg-white border border-[#E2E8F0] text-[#0F172A] hover:bg-[#F8FAFC] shadow-sm rounded-[12px] font-bold flex items-center gap-2">
-                    <SlidersHorizontal className="w-4 h-4 text-[#FF6B00]" />
-                    Filters
-                    {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
-                      <span className="w-2 h-2 rounded-full bg-[#FF6B00] ml-1" />
-                    )}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[85vw] sm:max-w-md p-0 bg-white border-r-0">
-                  <div className="h-full flex flex-col">
-                    <ProductFilterPanel {...filters} onApplyMobile={() => setIsMobileFilterOpen(false)} />
-                  </div>
-                </SheetContent>
-              </Sheet>
             </div>
             
             {/* Products Grid */}

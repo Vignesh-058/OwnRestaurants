@@ -90,7 +90,7 @@ export const CartDrawer = () => {
 
       const payload: AddToCartPayload = {
         items: latestCartItems.map(c => ({
-          itemId: c.itemid._id,
+          itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
           quantity: c.quantity,
           variationId: c.variation_id?._id || "",
           addOnDetails: c.addons || [],
@@ -128,7 +128,7 @@ export const CartDrawer = () => {
     removeItem({
       outletId: selectedOutlet._id,
       orderId,
-      itemid: item._id,
+      itemid: item._id || (item.itemid as any)._id || (item.itemid as any).itemid,
       customerPhoneNo,
       customerName
     });
@@ -357,13 +357,14 @@ export const CartDrawer = () => {
                               </button>
                               <button 
                                 onClick={() => {
-                                  toggleWishlist(item.itemid._id);
+                                  const prodId = (item.itemid as any)._id || (item.itemid as any).itemid;
+                                  toggleWishlist(prodId);
                                   handleRemove(item);
                                 }}
                                 disabled={isUpdating || isRemoving}
                                 className="flex items-center gap-1.5 text-[12px] font-medium text-[#6B7280] hover:text-[#FF6B00] transition-colors"
                               >
-                                <Heart className={cn("w-3.5 h-3.5", wishlistItems?.includes(item.itemid._id) ? "fill-[#FF6B00] text-[#FF6B00]" : "")} /> Save for Later
+                                <Heart className={cn("w-3.5 h-3.5", wishlistItems?.includes((item.itemid as any)._id || (item.itemid as any).itemid) ? "fill-[#FF6B00] text-[#FF6B00]" : "")} /> Save for Later
                               </button>
                             </div>
                             

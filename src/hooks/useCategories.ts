@@ -17,8 +17,15 @@ export const useCategories = () => {
  const categories = useMemo(() => {
  if (!originalCategories) return [];
 
- // Aggregate all items for the 'All' category and deduplicate them if needed
- const allItems = originalCategories.flatMap(c => c.items || []);
+ // Aggregate all items for the 'All' category and deduplicate them by _id
+ const allItemsMap = new Map();
+ originalCategories.flatMap(c => c.items || []).forEach((item: any) => {
+   const id = item._id || item.itemid;
+   if (id && !allItemsMap.has(id)) {
+     allItemsMap.set(id, item);
+   }
+ });
+ const allItems = Array.from(allItemsMap.values());
  const allCategoryWithItems = { ...allCategory, items: allItems };
 
  return [allCategoryWithItems, ...originalCategories];

@@ -24,6 +24,7 @@ export const CheckoutPage = () => {
   const { user } = useAuthStore();
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [deliveryType, setDeliveryType] = useState<string>('Door Delivery');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const settings = useSettingsStore((state) => state.settings);
@@ -45,6 +46,11 @@ export const CheckoutPage = () => {
   const { data: addresses, isLoading: isAddrLoading } = useAddresses();
 
   const handlePlaceOrder = async () => {
+    if (!deliveryType) {
+      toast.error('Please select a delivery type.');
+      return;
+    }
+
     if (!selectedAddressId) {
       toast.error('Please select a delivery address');
       return;
@@ -54,6 +60,17 @@ export const CheckoutPage = () => {
       toast.error('Please select an online payment method');
       return;
     }
+
+    // Prepare payload for when the Place Order API is integrated
+    const payload = {
+      deliveryType,
+      addressId: selectedAddressId,
+      paymentMode: selectedPaymentMode,
+      onlineMethod,
+      scheduleDate,
+      scheduleTime,
+      couponCode: isCouponApplied ? couponCode : undefined
+    };
 
     setIsProcessing(true);
     // Simulate backend processing
@@ -109,6 +126,40 @@ export const CheckoutPage = () => {
           
           {/* LEFT COLUMN: Addresses, Pre-Booking, Payment */}
           <div className="flex-1 space-y-6 md:space-y-8 w-full">
+            
+            {/* Delivery Type */}
+            <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-[#F1F5F9]">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-[#FFF7ED] flex items-center justify-center">
+                  <Ticket className="w-5 h-5 text-[#FF6B00]" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-[18px] text-[#111827]">Delivery Type</h3>
+                  <p className="text-[14px] text-[#6B7280] mt-0.5">How would you like to receive your order?</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {['Door Delivery', 'Self Pickup', 'Dine In'].map((type) => (
+                  <motion.div 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    key={type}
+                    onClick={() => setDeliveryType(type)}
+                    className={`relative p-4 border-2 rounded-[16px] cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-2 ${
+                      deliveryType === type 
+                        ? 'border-[#FF6B00] bg-[#FFF7ED] shadow-[0_4px_12px_rgba(255,107,0,0.05)] text-[#FF6B00]' 
+                        : 'border-[#F1F5F9] bg-white hover:border-[#FFD8B3]/50 hover:bg-[#FFF7ED]/10 text-[#4B5563]'
+                    }`}
+                  >
+                    <span className="font-bold text-[14px]">{type}</span>
+                    {deliveryType === type && (
+                      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#FF6B00]" />
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
             
             {/* Delivery Address */}
             <div className="bg-white p-6 md:p-8 rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-[#F1F5F9]">

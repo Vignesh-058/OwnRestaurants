@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useCategories } from "@/hooks/useCategories";
 import { ProductCatalogue } from "@/components/product/ProductCatalogue";
 import { ProductDrawer } from "@/components/product/ProductDrawer";
+import { ProductSkeleton } from "@/components/product/ProductSkeleton";
 
 export const ProductsPage = () => {
   const {
@@ -53,8 +54,17 @@ export const ProductsPage = () => {
         className="w-full flex flex-col"
       >
         {isCategoriesLoading ? (
-          <div className="flex justify-center items-center min-h-[50vh]">
-            <div className="w-10 h-10 border-4 border-[#FF6B00] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-full flex flex-col lg:flex-row p-6 gap-6">
+             <div className="w-full lg:w-[360px] flex flex-col gap-4">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="h-14 w-full bg-[#E2E8F0] animate-pulse rounded-[16px]"></div>
+                ))}
+             </div>
+             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                  <ProductSkeleton key={i} />
+                ))}
+             </div>
           </div>
         ) : isCategoriesError ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">

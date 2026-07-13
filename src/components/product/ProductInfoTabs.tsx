@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { ProductNutrition } from './ProductNutrition';
 import { ProductReviews } from './ProductReviews';
-import { Clock, ChefHat, Utensils, Info } from 'lucide-react';
+import { Clock, ChefHat, Utensils, Info, Star } from 'lucide-react';
 import type { CategoryItem } from '@/types/category.types';
 
 interface ProductInfoTabsProps {

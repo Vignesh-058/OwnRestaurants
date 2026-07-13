@@ -69,8 +69,8 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
    }));
 
    const matchingIndex = existingItems.findIndex(i => 
-     i.itemId === item._id && 
-     i.variationId === (selectedVariation?._id || "") && 
+     i.itemId === item.itemid && 
+     i.variationId === (selectedVariation || "") && 
      JSON.stringify(i.addOnDetails) === JSON.stringify(currentAddonGroups)
    );
 
@@ -78,9 +78,9 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
      existingItems[matchingIndex].quantity += quantity;
    } else {
      existingItems.push({
-       itemId: item._id,
+       itemId: item.itemid,
        quantity,
-       variationId: selectedVariation?._id || "",
+       variationId: selectedVariation || "",
        addOnDetails: currentAddonGroups,
        currency: currency === '₹' ? 'INR' : currency
      });

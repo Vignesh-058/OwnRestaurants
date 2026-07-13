@@ -25,22 +25,22 @@ export const FloatingCart = () => {
  >
  <div 
  onClick={() => navigate('/cart')}
- className="bg-primary/95 backdrop-blur-md shadow-2xl rounded-full w-full max-w-sm sm:max-w-md p-2 pl-6 pointer-events-auto cursor-pointer flex items-center justify-between border border-primary/20 hover:scale-[1.02] transition-transform duration-300"
+ className="bg-[#FF6B00]/95 backdrop-blur-md shadow-2xl rounded-full w-full max-w-sm sm:max-w-md p-2 pl-6 pointer-events-auto cursor-pointer flex items-center justify-between border border-[#FF6B00]/20 hover:scale-[1.02] transition-transform duration-300"
  >
  <div className="flex items-center gap-3">
- <div className="h-10 w-10 bg-primary-foreground/20 rounded-full flex items-center justify-center relative">
- <ShoppingBag className="h-5 w-5 text-primary-foreground" />
+ <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center relative">
+ <ShoppingBag className="h-5 w-5 text-white" />
  <span className="absolute -top-1 -right-1 h-5 w-5 bg-background text-foreground text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
  {itemCount}
  </span>
  </div>
- <div className="flex flex-col text-primary-foreground">
+ <div className="flex flex-col text-white">
  <span className="text-sm font-semibold opacity-90">View Cart</span>
  <span className="text-lg font-bold leading-none">{currency}{totalAmount.toLocaleString()}</span>
  </div>
  </div>
  
- <div className="h-12 px-6 bg-primary-foreground text-primary rounded-full flex items-center justify-center font-bold gap-2 shadow-sm">
+ <div className="h-12 px-6 bg-white text-[#FF6B00] rounded-full flex items-center justify-center font-bold gap-2 shadow-sm">
  Checkout <ArrowRight className="h-4 w-4" />
  </div>
  </div>
