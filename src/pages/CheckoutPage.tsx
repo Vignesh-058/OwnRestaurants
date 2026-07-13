@@ -24,7 +24,7 @@ export const CheckoutPage = () => {
   const { clearCart } = useCartStore();
   const { user } = useAuthStore();
 
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
   const [deliveryType, setDeliveryType] = useState<string>('Door Delivery');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -52,8 +52,8 @@ export const CheckoutPage = () => {
       return;
     }
 
-    if (!selectedAddressId) {
-      toast.error('Please select a delivery address');
+    if (!selectedAddress) {
+      toast.error('Please select a delivery address.');
       return;
     }
     
@@ -63,25 +63,50 @@ export const CheckoutPage = () => {
     }
 
     // Prepare payload for when the Place Order API is integrated
-    const payload = {
+    const payload: any = {
+      items: cart?.cartItems?.map((item: any) => ({
+        itemId: item.itemid?._id || item.itemId,
+        quantity: item.quantity,
+        price: item.unitPrice || item.price,
+        variation_id: item.variation_id?._id || item.variation_id,
+        addons: item.addons
+      })) || [],
       deliveryType,
-      addressId: selectedAddressId,
+      orderType: deliveryType,
+      customerName: user?.name || (user as any)?.firstName || 'Guest',
+      customerPhoneNo: user?.phone || '0000000000',
+      outletId: selectedOutlet?._id,
       paymentMode: selectedPaymentMode,
-      onlineMethod,
-      scheduleDate,
-      scheduleTime,
-      couponCode: isCouponApplied ? couponCode : undefined
     };
+
+    if (onlineMethod) payload.onlineMethod = onlineMethod;
+    if (scheduleDate) payload.scheduleDate = scheduleDate;
+    if (scheduleTime) payload.scheduleTime = scheduleTime;
+    if (isCouponApplied && couponCode) payload.couponCode = couponCode;
+
+    if (selectedAddress) {
+      payload.addressId = selectedAddress._id;
+      if (selectedAddress.address1) payload.address1 = selectedAddress.address1;
+      if (selectedAddress.address2) payload.address2 = selectedAddress.address2;
+      if (selectedAddress.city) payload.city = selectedAddress.city;
+      if (selectedAddress.state) payload.state = selectedAddress.state;
+      if (selectedAddress.country) payload.country = selectedAddress.country;
+      if (selectedAddress.pincode) payload.pincode = selectedAddress.pincode;
+      if (selectedAddress.latitude) payload.latitude = selectedAddress.latitude;
+      if (selectedAddress.longitude) payload.longitude = selectedAddress.longitude;
+    }
 
     setIsProcessing(true);
     
     try {
       // Print the exact request payload as requested
       console.log('--- EXACT PLACE ORDER PAYLOAD ---');
-      console.log(JSON.stringify(payload, null, 2));
+      console.log('selectedAddress:', selectedAddress);
+      console.log('request payload:', JSON.stringify(payload, null, 2));
       console.log('---------------------------------');
       
       const response = await orderService.placeOrder(payload);
+      console.log('API response:', response);
       
       clearCart();
       if (selectedPaymentMode === 'COD') {
@@ -196,11 +221,11 @@ export const CheckoutPage = () => {
                       whileTap={{ scale: 0.99 }}
                       key={addr._id} 
                       className={`relative p-5 border-2 rounded-[20px] cursor-pointer transition-all duration-300 ${
-                        selectedAddressId === addr._id 
+                        selectedAddress?._id === addr._id 
                           ? 'border-[#FF6B00] bg-[#FFF7ED] shadow-[0_4px_12px_rgba(255,107,0,0.05)]' 
                           : 'border-[#F1F5F9] bg-white hover:border-[#FFD8B3]/50 hover:bg-[#FFF7ED]/10'
                       }`}
-                      onClick={() => setSelectedAddressId(addr._id)}
+                      onClick={() => setSelectedAddress(addr)}
                     >
                       <div className="flex items-start justify-between">
                         <div className="pr-12">
@@ -214,9 +239,9 @@ export const CheckoutPage = () => {
                           </p>
                         </div>
                         <div className={`absolute top-5 right-5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-                          selectedAddressId === addr._id ? 'border-[#FF6B00]' : 'border-[#D1D5DB]'
+                          selectedAddress?._id === addr._id ? 'border-[#FF6B00]' : 'border-[#D1D5DB]'
                         }`}>
-                          {selectedAddressId === addr._id && (
+                          {selectedAddress?._id === addr._id && (
                             <motion.div 
                               initial={{ scale: 0 }} 
                               animate={{ scale: 1 }} 
@@ -563,7 +588,7 @@ export const CheckoutPage = () => {
                     selectedPaymentMode === 'Online Payment' ? 'bg-[#3B82F6] hover:bg-[#2563EB] shadow-[0_8px_25px_rgba(59,130,246,0.25)]' : 'bg-[#FF6B00] hover:bg-[#E65C00]'
                   }`}
                   onClick={handlePlaceOrder}
-                  disabled={!selectedAddressId || isProcessing || (selectedPaymentMode === 'Online Payment' && !onlineMethod)}
+                  disabled={!selectedAddress || isProcessing || (selectedPaymentMode === 'Online Payment' && !onlineMethod)}
                 >
                   {isProcessing ? (
                     'Processing...'
@@ -574,9 +599,9 @@ export const CheckoutPage = () => {
                   )}
                 </Button>
                 
-                {(!selectedAddressId || (selectedPaymentMode === 'Online Payment' && !onlineMethod)) && (
+                {(!selectedAddress || (selectedPaymentMode === 'Online Payment' && !onlineMethod)) && (
                   <p className="text-[#EF4444] text-[12px] font-bold text-center mt-3 hidden md:block">
-                    {!selectedAddressId ? 'Select a delivery address to continue' : 'Select an online payment method'}
+                    {!selectedAddress ? 'Select a delivery address to continue' : 'Select an online payment method'}
                   </p>
                 )}
               </div>
