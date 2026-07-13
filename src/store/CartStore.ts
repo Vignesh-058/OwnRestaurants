@@ -144,7 +144,8 @@ export const useCartStore = create<CartState>()(
  })),
  optimisticSetQuantity: (product, newQuantity) => set((state) => {
     const existingIndex = state.cartItems.findIndex(
-      (item) => item.itemid?._id === product._id || item.itemid === product._id
+      (item: any) => 
+        (item.itemid?._id || item.itemid?.itemid || item.itemid) === (product._id || product.itemid)
     );
 
     const newItems = [...state.cartItems];

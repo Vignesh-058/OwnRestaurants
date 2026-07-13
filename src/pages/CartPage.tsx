@@ -58,7 +58,7 @@ export const CartPage = () => {
 
  const payload: AddToCartPayload = {
  items: latestCartItems.map(c => ({
- itemId: c.itemid._id,
+ itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
  quantity: c.quantity,
  variationId: c.variation_id?._id || "",
  addOnDetails: c.addons || [],
@@ -105,7 +105,7 @@ export const CartPage = () => {
  removeItem({
  outletId: selectedOutlet._id,
  orderId,
- itemid: itemToRemove._id,
+ itemid: itemToRemove._id || (itemToRemove.itemid as any)._id || (itemToRemove.itemid as any).itemid,
  customerPhoneNo,
  customerName
  }, {

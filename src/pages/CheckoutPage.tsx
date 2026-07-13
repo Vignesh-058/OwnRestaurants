@@ -14,6 +14,7 @@ import { PageLoader } from '@/components/common/PageLoader';
 import { ErrorState } from '@/components/common/ErrorState';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { useAuthStore } from '@/store/AuthStore';
+import { orderService } from '@/services/order.service';
 import { toast } from 'sonner';
 
 export const CheckoutPage = () => {
@@ -73,11 +74,16 @@ export const CheckoutPage = () => {
     };
 
     setIsProcessing(true);
-    // Simulate backend processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      clearCart();
+    
+    try {
+      // Print the exact request payload as requested
+      console.log('--- EXACT PLACE ORDER PAYLOAD ---');
+      console.log(JSON.stringify(payload, null, 2));
+      console.log('---------------------------------');
       
+      const response = await orderService.placeOrder(payload);
+      
+      clearCart();
       if (selectedPaymentMode === 'COD') {
         toast.success("Order Placed Successfully!");
         navigate('/orders');
@@ -85,7 +91,11 @@ export const CheckoutPage = () => {
         toast.success(`Redirecting to ${onlineMethod} Gateway...`);
         navigate('/orders');
       }
-    }, 1500);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'Failed to place order.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleApplyCoupon = () => {

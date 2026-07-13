@@ -9,7 +9,6 @@ export const useUpdateCart = () => {
  return useMutation({
  mutationFn: (payload: CartCreateRequest) => {
     const data = {
-      deliveryType: 'Takeaway',
       ...payload
     };
     if (!data.orderId) {
