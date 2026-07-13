@@ -43,7 +43,7 @@ export const orderService = {
   },
 
   getOrderById: async (orderId: string): Promise<Order> => {
-    if (ENV.DEV_MODE) {
+    if (import.meta.env.DEV) {
       console.warn('[DEV MODE] Bypassing getOrderById API');
       return { _id: orderId, orderStatus: "Placed" } as any;
     }

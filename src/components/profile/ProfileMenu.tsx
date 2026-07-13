@@ -106,7 +106,7 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
 
       <LogoutDialog 
         isOpen={isLogoutOpen} 
-        onClose={() => setIsLogoutOpen(false)} 
+        onOpenChange={setIsLogoutOpen} 
         onConfirm={() => {
           logout();
           setIsLogoutOpen(false);

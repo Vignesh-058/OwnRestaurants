@@ -157,7 +157,7 @@ export const CartDrawer = () => {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
@@ -306,7 +306,7 @@ export const CartDrawer = () => {
                                     </div>
                                   )}
                                   <span className="text-[11px] font-bold text-[#FF6B00] uppercase tracking-wider">
-                                    {item.itemid.categoryId?.categoryName || 'Food'}
+                                    {(item.itemid as any).categoryId?.categoryName || 'Food'}
                                   </span>
                                 </div>
                                 <div className="flex flex-col items-end">
@@ -321,14 +321,14 @@ export const CartDrawer = () => {
                                 </div>
                               </div>
                               
-                              <h4 className="font-bold text-[15px] text-[#111827] line-clamp-1 leading-tight">{item.itemid.itemname}</h4>
+                              <h4 className="font-bold text-[15px] text-[#111827] line-clamp-1 leading-tight">{(item.itemid as any).itemname}</h4>
                               
                               <p className="text-[12px] text-[#6B7280] line-clamp-1 mt-0.5">
-                                {item.itemid.description || 'Delicious and freshly prepared just for you.'}
+                                {(item.itemid as any).description || 'Delicious and freshly prepared just for you.'}
                               </p>
 
                               {item.variation_id && (
-                                <span className="text-[12px] font-medium text-[#6B7280] mt-0.5">{item.variation_id.name}</span>
+                                <span className="text-[12px] font-medium text-[#6B7280] mt-0.5">{(item.itemid as any).categoryId?.name}</span>
                               )}
 
                               <div className="flex items-center gap-2 mt-1.5">

@@ -36,6 +36,8 @@ import {
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import type { CategoryItem } from "@/types/category.types";
+import { ProductGrid } from "@/components/product/ProductGrid";
+import type { FilterState } from "@/components/product/FilterSidebar";
 import { cn } from "@/lib/utils";
 
 export const LandingPage = () => {

@@ -22,7 +22,7 @@ export const CartItem = ({ item, currency, onUpdateQuantity, onRemove, isUpdatin
 
   const handleMoveToWishlist = () => {
     if (!inWishlist) {
-      addToWishlist(item.itemid);
+      addToWishlist(item.itemid as unknown as any);
     }
     onRemove(item);
   };

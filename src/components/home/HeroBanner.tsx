@@ -51,7 +51,7 @@ export const HeroBanner = () => {
   const getImageUrl = (path: string) => {
     if (!path) return defaultHero;
     if (path.startsWith("http")) return path;
-    const baseUrl = ENV.API_URL || ENV.BANNER_API?.replace("/banner", "") || "";
+    const baseUrl = ENV.API_BASE_URL || ENV.BANNER_API?.replace("/banner", "") || "";
     return `${baseUrl}/${path.replace(/^\//, "")}`;
   };
 
