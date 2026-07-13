@@ -112,8 +112,8 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
     const payload: any = {
       items: existingItems,
-      deliveryType: orderType || 'Takeaway',
-      orderType: orderType || 'Takeaway',
+      deliveryType: orderType || 'Door Delivery',
+      orderType: orderType || 'Door Delivery',
       customerName: user?.name || 'Guest',
       customerPhoneNo: user?.phone || '0000000000',
       instruction: '',
@@ -167,8 +167,8 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
           addOnDetails: c.addons || [],
           currency: cartCurrency
         })),
-        deliveryType: orderType || 'Takeaway',
-        orderType: orderType || 'Takeaway',
+        deliveryType: orderType || 'Door Delivery',
+        orderType: orderType || 'Door Delivery',
         customerName: user?.name || 'Guest',
         customerPhoneNo: user?.phone || '0000000000',
         instruction: '',
@@ -204,8 +204,8 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
         addOnDetails: c.addons || [],
         currency: cartCurrency
       })),
-      deliveryType: orderType || 'Takeaway',
-      orderType: orderType || 'Takeaway',
+      deliveryType: orderType || 'Door Delivery',
+      orderType: orderType || 'Door Delivery',
       customerName: user?.name || 'Guest',
       customerPhoneNo: user?.phone || '0000000000',
       instruction: '',
