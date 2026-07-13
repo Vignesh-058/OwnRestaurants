@@ -22,6 +22,7 @@ export const customerService = {
 
     try {
       const response = await axiosInstance.post<ApiResponse<{ status: string; message: string }>>(endpoint, payload);
+      console.log('[DEBUG - Login API Response]', JSON.stringify(response.data, null, 2));
       return response.data as any; // Backend returns status/message in root or data depending on version
     } catch (error: any) {
       if (error?.response?.data) {
@@ -39,6 +40,8 @@ export const customerService = {
     if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
       formattedPhone = formattedPhone.slice(2);
     }
+
+    console.log('[DEBUG - OTP value immediately before API call]', otp);
 
     const payload = {
       phone: formattedPhone,
