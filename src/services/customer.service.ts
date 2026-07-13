@@ -18,19 +18,26 @@ export const customerService = {
       mode: 'otp'
     };
     
+    console.log('[DEBUG - Login Request Payload]', JSON.stringify(payload, null, 2));
+
     try {
       const response = await axiosInstance.post<ApiResponse<{ status: string; message: string }>>(endpoint, payload);
       return response.data as any; // Backend returns status/message in root or data depending on version
     } catch (error: any) {
+      if (error?.response?.data) {
+        console.error('[DEBUG - Login Error Response Body]', JSON.stringify(error.response.data, null, 2));
+      } else {
+        console.error('[DEBUG - Login Error]', error);
+      }
       throw error;
     }
   },
 
   verifyOtp: async (phone: string, otp: string, belongsTo: string): Promise<AuthResponse> => {
-    // Backend bug workaround: /verify-otp crashes with 502 if 91 is NOT included
+    // Ensure the phone format is identical to login's formatting logic
     let formattedPhone = phone.startsWith('+') ? phone.slice(1) : phone;
-    if (formattedPhone.length === 10) {
-      formattedPhone = `91${formattedPhone}`;
+    if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
+      formattedPhone = formattedPhone.slice(2);
     }
 
     const payload = {
@@ -39,8 +46,19 @@ export const customerService = {
       belongsTo
     };
 
-    const response = await axiosInstance.post<ApiResponse<AuthResponse>>(`${ENV.AUTH_API}/verify-otp`, payload);
-    return response.data as any; // Backend returns token in root or data
+    console.log('[DEBUG - Verify OTP Request Payload]', JSON.stringify(payload, null, 2));
+
+    try {
+      const response = await axiosInstance.post<ApiResponse<AuthResponse>>(`${ENV.AUTH_API}/verify-otp`, payload);
+      return response.data as any; // Backend returns token in root or data
+    } catch (error: any) {
+      if (error?.response?.data) {
+        console.error('[DEBUG - Verify OTP Error Response Body]', JSON.stringify(error.response.data, null, 2));
+      } else {
+        console.error('[DEBUG - Verify OTP Error]', error);
+      }
+      throw error;
+    }
   },
 
   getAddresses: async (belongsTo: string, customerPhoneNo: string, lat: number, lng: number, page: number = 1, limit: number = 20): Promise<CustomerAddress[]> => {
