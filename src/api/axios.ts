@@ -57,12 +57,22 @@ axiosInstance.interceptors.response.use(
   return response;
  },
  (error: AxiosError<{ message?: string; status?: string; error?: string }>) => {
-  if (import.meta.env.DEV) {
+    let requestPayload = 'None';
+    if (error.config?.data) {
+      try {
+        requestPayload = typeof error.config.data === 'string' 
+          ? JSON.stringify(JSON.parse(error.config.data), null, 2) 
+          : JSON.stringify(error.config.data, null, 2);
+      } catch {
+        requestPayload = error.config.data;
+      }
+    }
+
     console.error(
       `[API ERROR] ${error.config?.method?.toUpperCase()} ${error.config?.url} => ${error.response?.status}`,
-      error.response?.data
+      `\n[Payload]: ${requestPayload}`,
+      `\n[Response Body]:`, error.response?.data
     );
-  }
 
  const status = error.response?.status;
  const serverMsg = error.response?.data?.message || error.response?.data?.error;
