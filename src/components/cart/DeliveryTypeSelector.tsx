@@ -6,18 +6,18 @@ interface Props {
   value: string;
   onChange: (val: string) => void;
   disabled?: boolean;
+  compact?: boolean;
 }
 
-export const DeliveryTypeSelector = ({ value, onChange, disabled }: Props) => {
+export const DeliveryTypeSelector = ({ value, onChange, disabled, compact }: Props) => {
   return (
-    <div className="bg-white p-5 md:p-6 rounded-[24px] border border-[#F1F5F9] shadow-[0_4px_20px_rgba(0,0,0,0.02)] mb-6">
-      {/* Header Row */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-[#FFF7ED] flex items-center justify-center">
-            <MapPin className="w-4.5 h-4.5 text-[#FF6B00]" />
+    <div className={compact ? "mb-0" : "bg-white p-5 md:p-6 rounded-[24px] border border-[#F1F5F9] shadow-[0_4px_20px_rgba(0,0,0,0.02)] mb-6"}>
+      <div className={compact ? "flex items-center justify-between mb-3" : "flex items-center justify-between mb-5"}>
+        <div className="flex items-center gap-2">
+          <div className={compact ? "w-6 h-6 rounded-full bg-[#FFF7ED] flex items-center justify-center" : "w-8 h-8 rounded-full bg-[#FFF7ED] flex items-center justify-center"}>
+            <MapPin className={compact ? "w-3.5 h-3.5 text-[#FF6B00]" : "w-4.5 h-4.5 text-[#FF6B00]"} />
           </div>
-          <h3 className="font-extrabold text-[17px] text-[#111827] tracking-tight">Order Type</h3>
+          <h3 className={compact ? "font-bold text-[14px] text-[#111827]" : "font-extrabold text-[17px] text-[#111827] tracking-tight"}>Order Type</h3>
         </div>
         <ChevronDown className="w-4 h-4 text-[#94A3B8]" />
       </div>
@@ -25,13 +25,13 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled }: Props) => {
       <RadioGroup 
         value={value} 
         onValueChange={onChange} 
-        className="flex flex-col gap-3.5"
+        className={compact ? "flex flex-col gap-2" : "flex flex-col gap-3.5"}
         disabled={disabled}
       >
         {/* Door Delivery Option */}
         <div 
           className={cn(
-            "relative flex items-center justify-between p-4 rounded-[16px] border-2 cursor-pointer transition-all duration-300",
+            compact ? "relative flex items-center justify-between p-3 rounded-[12px] border-2 cursor-pointer transition-all duration-300" : "relative flex items-center justify-between p-4 rounded-[16px] border-2 cursor-pointer transition-all duration-300",
             value === 'Door Delivery' 
               ? "border-[#FF6B00] bg-[#FFF7ED] shadow-[0_4px_12px_rgba(255,107,0,0.05)]" 
               : "border-[#F1F5F9] bg-white hover:border-[#FFD8B3]/50 hover:bg-[#FFF7ED]/10",
@@ -44,16 +44,16 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled }: Props) => {
           <div className="flex items-center gap-4">
             {/* Icon Container */}
             <div className={cn(
-              "w-11 h-11 rounded-full flex items-center justify-center transition-colors duration-300",
+              compact ? "w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300" : "w-11 h-11 rounded-full flex items-center justify-center transition-colors duration-300",
               value === 'Door Delivery' ? "bg-[#FF6B00] text-white" : "bg-[#FFF7ED] text-[#FF6B00]"
             )}>
-              <Bike className="w-5 h-5" />
+              <Bike className={compact ? "w-4 h-4" : "w-5 h-5"} />
             </div>
 
             {/* Texts */}
             <div className="flex flex-col text-left">
-              <span className="font-bold text-[15px] text-[#111827]">Door Delivery</span>
-              <span className="text-[12px] text-[#6B7280] font-medium mt-0.5">Deliver straight to your doorstep</span>
+              <span className={compact ? "font-semibold text-[13px] text-[#111827]" : "font-bold text-[15px] text-[#111827]"}>Door Delivery</span>
+              {!compact && <span className="text-[12px] text-[#6B7280] font-medium mt-0.5">Deliver straight to your doorstep</span>}
             </div>
           </div>
 
@@ -71,7 +71,7 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled }: Props) => {
         {/* Self Pickup Option */}
         <div 
           className={cn(
-            "relative flex items-center justify-between p-4 rounded-[16px] border-2 cursor-pointer transition-all duration-300",
+            compact ? "relative flex items-center justify-between p-3 rounded-[12px] border-2 cursor-pointer transition-all duration-300" : "relative flex items-center justify-between p-4 rounded-[16px] border-2 cursor-pointer transition-all duration-300",
             value === 'Self Pickup' 
               ? "border-[#FF6B00] bg-[#FFF7ED] shadow-[0_4px_12px_rgba(255,107,0,0.05)]" 
               : "border-[#F1F5F9] bg-white hover:border-[#FFD8B3]/50 hover:bg-[#FFF7ED]/10",
@@ -84,16 +84,16 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled }: Props) => {
           <div className="flex items-center gap-4">
             {/* Icon Container */}
             <div className={cn(
-              "w-11 h-11 rounded-full flex items-center justify-center transition-colors duration-300",
+              compact ? "w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300" : "w-11 h-11 rounded-full flex items-center justify-center transition-colors duration-300",
               value === 'Self Pickup' ? "bg-[#FF6B00] text-white" : "bg-[#FFF7ED] text-[#FF6B00]"
             )}>
-              <Store className="w-5 h-5" />
+              <Store className={compact ? "w-4 h-4" : "w-5 h-5"} />
             </div>
 
             {/* Texts */}
             <div className="flex flex-col text-left">
-              <span className="font-bold text-[15px] text-[#111827]">Self Pickup</span>
-              <span className="text-[12px] text-[#6B7280] font-medium mt-0.5">Collect directly from our kitchen</span>
+              <span className={compact ? "font-semibold text-[13px] text-[#111827]" : "font-bold text-[15px] text-[#111827]"}>Self Pickup</span>
+              {!compact && <span className="text-[12px] text-[#6B7280] font-medium mt-0.5">Collect directly from our kitchen</span>}
             </div>
           </div>
 

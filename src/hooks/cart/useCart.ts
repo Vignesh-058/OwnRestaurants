@@ -12,11 +12,7 @@ export const useCart = (payload: GetCartDetailsPayload) => {
  if (!payload.customerPhoneNo || !payload.outletId) return null;
  try {
  const data = await cartService.getCartDetails(payload);
- if (data) {
- setCart(data);
- } else {
- setCart(null);
- }
+ setCart(data || null);
  return data;
  } catch {
  setCart(null);

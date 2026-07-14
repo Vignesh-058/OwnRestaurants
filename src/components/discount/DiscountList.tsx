@@ -32,9 +32,9 @@ export const DiscountList = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-card p-6 rounded-3xl border shadow-sm">
+      <div className="space-y-4">
         <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-          <Ticket className="w-5 h-5 text-primary" />
+          <Ticket className="w-5 h-5 text-[#FF6B00]" />
           Offers & Discounts
         </h3>
         <div className="space-y-4">
@@ -47,7 +47,7 @@ export const DiscountList = () => {
 
   if (isError) {
     return (
-      <div className="bg-card p-6 rounded-3xl border shadow-sm border-destructive/20 bg-destructive/5">
+      <div className="border-destructive/20 bg-destructive/5 rounded-2xl p-4">
         <p className="text-destructive font-medium text-center">Unable to load discounts. Please try again.</p>
       </div>
     );
@@ -56,9 +56,9 @@ export const DiscountList = () => {
   const hasCoupons = coupons && coupons.length > 0;
 
   return (
-    <div className="bg-card p-6 rounded-3xl border shadow-sm space-y-6">
-      <h3 className="font-bold text-lg flex items-center gap-2">
-        <Ticket className="w-5 h-5 text-primary" />
+    <div className="space-y-6">
+      <h3 className="font-bold text-[18px] text-[#111827] flex items-center gap-2">
+        <Ticket className="w-5 h-5 text-[#FF6B00]" />
         Offers & Discounts
       </h3>
       
@@ -68,12 +68,12 @@ export const DiscountList = () => {
           placeholder="Enter coupon code"
           value={customCode}
           onChange={(e) => setCustomCode(e.target.value)}
-          className="uppercase font-bold tracking-widest placeholder:normal-case placeholder:font-normal placeholder:tracking-normal h-12 rounded-xl"
+          className="uppercase font-bold tracking-widest placeholder:normal-case placeholder:font-normal placeholder:tracking-normal h-12 rounded-xl focus-visible:ring-[#FF6B00] border-[#E5E7EB]"
         />
         <Button
           onClick={() => handleApply(customCode)}
           disabled={isPending || !customCode.trim()}
-          className="h-12 px-6 font-bold rounded-xl shrink-0"
+          className="h-12 px-6 font-bold rounded-xl shrink-0 bg-[#FF6B00] hover:bg-[#E65C00] text-white border-0 shadow-[0_4px_12px_rgba(255,107,0,0.2)]"
         >
           {isPending ? 'Applying...' : 'Apply'}
         </Button>
@@ -93,15 +93,15 @@ export const DiscountList = () => {
                 className={cn(
                   "border-2 border-dashed rounded-2xl p-4 relative overflow-hidden transition-all",
                   isApplied 
-                    ? "border-green-500 bg-green-50" 
-                    : "border-primary/30 bg-primary/5 hover:border-primary/50"
+                    ? "border-[#10B981] bg-[#ECFDF5]" 
+                    : "border-[#FFD8B3] bg-[#FFF7ED] hover:border-[#FF6B00]"
                 )}
               >
                 <div className="flex justify-between items-start gap-4">
                   <div className="space-y-1">
                     <div className={cn(
                       "inline-block px-2 py-1 font-bold rounded-md text-sm tracking-widest uppercase",
-                      isApplied ? "bg-green-100 text-green-700" : "bg-primary/10 text-primary"
+                      isApplied ? "bg-[#D1FAE5] text-[#047857]" : "bg-[#FFF7ED] text-[#FF6B00]"
                     )}>
                       {coupon.code}
                     </div>
@@ -110,7 +110,7 @@ export const DiscountList = () => {
                       <h4 className="font-bold text-md mt-2">{coupon.name}</h4>
                     )}
                     
-                    <p className={cn("text-sm font-semibold", isApplied ? "text-green-700" : "text-primary")}>
+                    <p className={cn("text-sm font-semibold", isApplied ? "text-[#047857]" : "text-[#FF6B00]")}>
                       {coupon.discountType === 'Fixed' || coupon.discountType === 'FlatOff' 
                         ? `${currency}${coupon.discountValue} OFF`
                         : coupon.discountType === 'Percentage'
@@ -141,7 +141,7 @@ export const DiscountList = () => {
                     <Button
                       variant="default"
                       size="sm"
-                      className="font-bold shrink-0 rounded-xl"
+                      className="font-bold shrink-0 rounded-xl bg-[#FF6B00] hover:bg-[#E65C00] text-white border-0"
                       onClick={() => handleApply(coupon.code)}
                       disabled={isPending}
                     >

@@ -47,6 +47,8 @@ export const CheckoutPage = () => {
   });
   const { data: addresses, isLoading: isAddrLoading } = useAddresses();
 
+  const cartGrandTotal = cart ? (cart.orderTotal + (cart.deliveryCharge || 0) + (cart.totalTax || 0)) : 0;
+
   const handlePlaceOrder = async () => {
     if (!deliveryType) {
       toast.error('Please select a delivery type.');
@@ -65,11 +67,11 @@ export const CheckoutPage = () => {
 
     // Prepare payload for when the Place Order API is integrated
     const payload: any = {
-      items: cart?.cartItems?.map((item: any) => ({
-        itemId: item.itemid?._id || item.itemId,
+      items: cart?.items?.map((item: any) => ({
+        itemId: item.product_retailer_id,
         quantity: item.quantity,
-        price: item.unitPrice || item.price,
-        variation_id: item.variation_id?._id || item.variation_id,
+        price: item.item_price,
+        variation_id: item.variationId,
         addons: item.addons
       })) || [],
       deliveryType,
@@ -143,7 +145,7 @@ export const CheckoutPage = () => {
   };
 
   if (isCartLoading || isAddrLoading) return <PageLoader />;
-  if (isCartError || !cart || (cart.cartItems || []).length === 0) return <ErrorState description="Your cart is empty or could not be loaded." />;
+  if (isCartError || !cart || (cart.items || []).length === 0) return <ErrorState description="Your cart is empty or could not be loaded." />;
 
   const onlineOptions = [
     { id: 'gpay', name: 'Google Pay', type: 'upi' },
@@ -569,13 +571,13 @@ export const CheckoutPage = () => {
               </div>
 
               {/* Rewards Hint */}
-              {settings?.checkOutSettings?.showRewards && cart.grandTotal < (settings.checkOutSettings.loyaltyMinimumAmount || 0) && (
+              {settings?.checkOutSettings?.showRewards && cartGrandTotal < (settings.checkOutSettings.loyaltyMinimumAmount || 0) && (
                 <div className="mb-6 p-4 rounded-[16px] bg-[#FFF7ED] border border-[#FFD8B3]/50 flex items-start gap-3">
                   <Gift className="w-5 h-5 text-[#FF6B00] shrink-0 mt-0.5" />
                   <div>
                     <p className="text-[13px] font-bold text-[#111827]">Unlock Rewards</p>
                     <p className="text-[12px] text-[#6B7280] mt-0.5 leading-snug">
-                      Add {org?.currency || '₹'}{(settings.checkOutSettings.loyaltyMinimumAmount - cart.grandTotal).toFixed(2)} more to unlock rewards for this order.
+                      Add {org?.currency || '₹'}{(settings.checkOutSettings.loyaltyMinimumAmount - cartGrandTotal).toFixed(2)} more to unlock rewards for this order.
                     </p>
                   </div>
                 </div>
@@ -587,7 +589,7 @@ export const CheckoutPage = () => {
                   <div className="text-right">
                     <span className="block text-[12px] text-[#94A3B8] font-medium mb-1">Inclusive of all taxes</span>
                     <span className="font-black text-[28px] text-[#FF6B00] leading-none">
-                      {org?.currency || '₹'}{(cart.grandTotal - (isCouponApplied ? 50 : 0)).toFixed(2)}
+                      {org?.currency || '₹'}{(cartGrandTotal - (isCouponApplied ? 50 : 0)).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -606,8 +608,8 @@ export const CheckoutPage = () => {
                     'Processing...'
                   ) : (
                     selectedPaymentMode === 'Online Payment' 
-                      ? `Proceed to Pay • ${org?.currency || '₹'}{(cart.grandTotal - (isCouponApplied ? 50 : 0)).toFixed(2)}`
-                      : `Place Order • ${org?.currency || '₹'}{(cart.grandTotal - (isCouponApplied ? 50 : 0)).toFixed(2)}`
+                      ? `Proceed to Pay • ${org?.currency || '₹'}{(cartGrandTotal - (isCouponApplied ? 50 : 0)).toFixed(2)}`
+                      : `Place Order • ${org?.currency || '₹'}{(cartGrandTotal - (isCouponApplied ? 50 : 0)).toFixed(2)}`
                   )}
                 </Button>
                 

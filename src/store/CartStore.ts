@@ -32,6 +32,7 @@ interface CartState {
  setCart: (payload: CartResponse | null) => void;
  clearCart: () => void;
  updateItemQuantity: (cartItemId: string, newQuantity: number) => void;
+ removeCartItem: (productRetailerId: string) => void;
  optimisticSetQuantity: (product: any, newQuantity: number) => void;
  setOrderId: (orderId: string | null) => void;
  openDrawer: () => void;
@@ -91,26 +92,21 @@ export const useCartStore = create<CartState>()(
  }
  
  set({
- orderId: payload._id || payload.cart?._id || null, // Assuming orderId maps to cart._id or root _id
- cartItems: payload.cartItems || [],
- cartItemCount: payload.cartItemCount || 0,
- orderTotal: payload.orderTotal || 0,
- savedAmount: payload.savedAmount || 0,
- deliveryCharge: payload.deliveryCharge || 0,
- packageCharge: payload.packageCharge || 0,
- totalTax: payload.totalTax || 0,
- grandTotal: payload.grandTotal || 0,
- customerAddress: payload.customerAddress || null,
- addressId: payload.addressId || null,
- paymentMode: payload.paymentMode || null,
- orderType: payload.orderType || null,
- eta: payload.eta || '',
- checkoutEnable: payload.checkoutEnable || false,
- checkOutMessage: payload.checkOutMessage || '',
- hasDiscount: payload.hasDiscount || false,
- cartDiscountDetails: payload.cartDiscountDetails || null,
- loyalty: payload.loyalty || null,
- lastUpdatedAt: payload.lastUpdatedAt || new Date().toISOString(),
+  orderId: payload.orderId || payload._id || null,
+  cartItems: payload.items || [],
+  cartItemCount: payload.items ? payload.items.reduce((acc, item) => acc + item.quantity, 0) : 0,
+  orderTotal: payload.orderTotal || 0,
+  savedAmount: payload.savedAmount || 0,
+  deliveryCharge: payload.deliveryCharge || 0,
+  packageCharge: payload.totalPackageCharge || 0,
+  totalTax: payload.totalTax || 0,
+  grandTotal: (payload.orderTotal || 0) + (payload.deliveryCharge || 0) + (payload.totalTax || 0),
+  customerAddress: payload.customerAddress as any || null,
+  addressId: payload.addressId || null,
+  paymentMode: payload.paymentMode || null,
+  orderType: payload.orderType || null,
+  checkoutEnable: payload.checkoutEnable ?? true,
+  checkOutMessage: payload.checkOutMessage || '',
  });
  },
 
@@ -128,13 +124,8 @@ export const useCartStore = create<CartState>()(
  addressId: null,
  paymentMode: null,
  orderType: null,
- eta: '',
  checkoutEnable: false,
  checkOutMessage: '',
- hasDiscount: false,
- cartDiscountDetails: null,
- loyalty: null,
- lastUpdatedAt: null,
  }),
 
  updateItemQuantity: (cartItemId, newQuantity) => set((state) => ({
@@ -142,10 +133,25 @@ export const useCartStore = create<CartState>()(
  item._id === cartItemId ? { ...item, quantity: newQuantity } : item
  )
  })),
+
+ removeCartItem: (productRetailerId) => set((state) => {
+   const newItems = state.cartItems.filter(
+    item => item.product_retailer_id !== productRetailerId
+   );
+   const newCount = newItems.reduce((acc, item) => acc + item.quantity, 0);
+   const newTotal = newItems.reduce((acc, item) => acc + ((item.item_price || 0) * item.quantity), 0);
+   console.log('[Cart] Store Updated — removeCartItem, new count:', newCount);
+   return {
+    cartItems: newItems,
+    cartItemCount: newCount,
+    orderTotal: newTotal,
+    grandTotal: newTotal + state.deliveryCharge + state.totalTax - state.savedAmount,
+   };
+  }),
+
  optimisticSetQuantity: (product, newQuantity) => set((state) => {
     const existingIndex = state.cartItems.findIndex(
-      (item: any) => 
-        (item.itemid?._id || item.itemid?.itemid || item.itemid) === (product._id || product.itemid)
+      (item: any) => item.product_retailer_id === product._id
     );
 
     const newItems = [...state.cartItems];
@@ -160,16 +166,17 @@ export const useCartStore = create<CartState>()(
       } else {
         newItems.push({
           _id: `temp-${Date.now()}`,
-          itemid: product,
+          product_retailer_id: product._id,
+          name: product.itemname || product.name,
           quantity: newQuantity,
-          unitPrice: product.defaultSellingPrice || product.sellingPrice || product.price || 0,
-          totalPrice: (product.defaultSellingPrice || product.sellingPrice || product.price || 0) * newQuantity,
+          item_price: product.defaultSellingPrice || product.sellingPrice || product.price || 0,
+          itemTotal: (product.defaultSellingPrice || product.sellingPrice || product.price || 0) * newQuantity,
         } as any);
       }
     }
 
     const newCount = newItems.reduce((acc, item) => acc + item.quantity, 0);
-    const newTotal = newItems.reduce((acc, item) => acc + ((item.unitPrice || 0) * item.quantity), 0);
+    const newTotal = newItems.reduce((acc, item) => acc + ((item.item_price || 0) * item.quantity), 0);
 
     return { 
       cartItems: newItems,

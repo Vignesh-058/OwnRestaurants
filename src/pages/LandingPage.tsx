@@ -295,7 +295,12 @@ export const LandingPage = () => {
                 recommendedProducts.length > 0 && (
                   <PopularProducts
                     products={recommendedProducts}
-                    onProductClick={(p) => setSelectedProductId(p._id)}
+                    onProductClick={(p) => {
+                      // Only open drawer for products with required variations
+                      if (p.variations && p.variations.length > 0) {
+                        setSelectedProductId(p._id);
+                      }
+                    }}
                   />
                 )}
 

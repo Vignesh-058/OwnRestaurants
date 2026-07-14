@@ -15,19 +15,19 @@ import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 import { CartList } from '@/components/cart/CartList';
 import { CartSummary } from '@/components/cart/CartSummary';
-import { DeliveryTypeSelector } from '@/components/cart/DeliveryTypeSelector';
+
 import { EmptyCart } from '@/components/cart/EmptyCart';
 import { CartSkeleton } from '@/components/cart/CartSkeleton';
 import { RemoveItemDialog } from '@/components/cart/RemoveItemDialog';
 import type { CartItem } from '@/types/cart.types';
-import { DiscountList } from '@/components/discount/DiscountList';
+
 import { useCart as useCartDetails } from '@/hooks/cart/useCart';
 
 export const CartPage = () => {
  const navigate = useNavigate();
  const currency = useOrganizationStore(state => state.organization?.currency || '₹');
  const selectedOutlet = useOutletStore(state => state.selectedOutlet);
- const { orderId, orderType, cartItems, updateItemQuantity } = useCartStore();
+ const { orderId, orderType, cartItems, updateItemQuantity, optimisticSetQuantity } = useCartStore();
  const { user } = useAuthStore();
 
  // Hardcoded for now per requirements (Guest flow without Auth if null)
@@ -68,9 +68,9 @@ export const CartPage = () => {
 
      const payload: any = {
        items: latestCartItems.map(c => ({
-         itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
+         itemId: c.product_retailer_id,
          quantity: c.quantity,
-         variationId: c.variation_id?._id || "",
+         variationId: c.variationId || "",
          addOnDetails: c.addons || [],
          currency: cartCurrency
        })),
@@ -100,19 +100,38 @@ export const CartPage = () => {
  };
 
  const handleUpdateQuantity = (item: CartItem, newQuantity: number) => {
- if (!selectedOutlet || !orderId) return;
+  if (!selectedOutlet || !orderId) return;
 
- if (newQuantity <= 0) {
- setItemToRemove(item);
- setIsRemoveDialogOpen(true);
- return;
- }
+  if (newQuantity <= 0) {
+   // Decrement to zero — delete directly without dialog
+   console.log('[Cart] Update Payload (delete via quantity=0):', item.product_retailer_id);
+   optimisticSetQuantity({ _id: item.product_retailer_id } as any, 0);
+   removeItem({
+    outletId: selectedOutlet._id,
+    orderId,
+    itemid: item.product_retailer_id,
+    customerPhoneNo,
+    customerName
+   }, {
+    onSuccess: () => {
+     console.log('[Cart] API Success — item deleted via qty=0');
+    },
+    onError: () => {
+     console.error('[Cart] API Error — delete failed, reverting optimistic update');
+     // Revert: refetch from server
+     updateItemQuantity(item._id || '', item.quantity);
+    }
+   });
+   return;
+  }
 
- // 1. Optimistic Local Update
- updateItemQuantity(item._id, newQuantity);
+  // Optimistic update immediately
+  console.log('[Cart] Update Payload (quantity):', { itemId: item._id, newQuantity });
+  updateItemQuantity(item._id || '', newQuantity);
+  console.log('[Cart] Store Updated — quantity:', newQuantity);
 
- // 2. Debounce Network Request
- triggerCartUpdate(localDeliveryType, localInstruction);
+  // Debounced network sync
+  triggerCartUpdate(localDeliveryType, localInstruction);
  };
 
  const handleInitiateRemove = (item: CartItem) => {
@@ -121,19 +140,27 @@ export const CartPage = () => {
  };
 
  const handleConfirmRemove = () => {
- if (!selectedOutlet || !orderId || !itemToRemove) return;
- 
- removeItem({
- outletId: selectedOutlet._id,
- orderId,
- itemid: itemToRemove._id || (itemToRemove.itemid as any)._id || (itemToRemove.itemid as any).itemid,
- customerPhoneNo,
- customerName
- }, {
- onSettled: () => {
- setIsRemoveDialogOpen(false);
- setItemToRemove(null);
- }
+  if (!selectedOutlet || !orderId || !itemToRemove) return;
+
+  // Optimistic: remove from store immediately so UI updates instantly
+  console.log('[Cart] Update Payload (remove):', itemToRemove.product_retailer_id);
+  optimisticSetQuantity({ _id: itemToRemove.product_retailer_id } as any, 0);
+  setIsRemoveDialogOpen(false);
+  setItemToRemove(null);
+
+  removeItem({
+   outletId: selectedOutlet._id,
+   orderId,
+   itemid: itemToRemove.product_retailer_id,
+   customerPhoneNo,
+   customerName
+  }, {
+   onSuccess: () => {
+    console.log('[Cart] API Success — item removed');
+   },
+   onError: () => {
+    console.error('[Cart] API Error — remove failed');
+   }
  });
  };
 
@@ -177,20 +204,9 @@ export const CartPage = () => {
         {isEmpty ? (
           <EmptyCart />
         ) : (
-          <div className="flex flex-col lg:grid lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] gap-8 pb-32 lg:pb-0 items-start">
+          <div className="flex flex-col lg:grid lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-6 pb-32 lg:pb-0 items-start">
  
  <div className="flex-1 space-y-6">
- <DeliveryTypeSelector 
- value={localDeliveryType}
- onChange={(val) => {
- setLocalDeliveryType(val);
- triggerCartUpdate(val, localInstruction);
- }}
- disabled={isUpdating}
- />
-
- <DiscountList />
- 
  <div className="bg-card p-6 rounded-3xl border shadow-sm">
  <h3 className="font-bold text-lg mb-4">Cooking Instructions</h3>
  <textarea
@@ -216,7 +232,15 @@ export const CartPage = () => {
 
           {/* Desktop Summary Sidebar / Mobile Sticky Footer */}
           <div className="w-full lg:sticky lg:top-24 flex-shrink-0 fixed bottom-0 left-0 right-0 z-50 lg:z-auto bg-white/95 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none p-4 lg:p-0 border-t lg:border-none shadow-[0_-10px_40px_rgba(0,0,0,0.1)] lg:shadow-none">
-            <CartSummary currency={currency} />
+            <CartSummary
+              currency={currency}
+              deliveryType={localDeliveryType}
+              onDeliveryTypeChange={(val) => {
+                setLocalDeliveryType(val);
+                triggerCartUpdate(val, localInstruction);
+              }}
+              isUpdating={isUpdating}
+            />
           </div>
 
         </div>
@@ -227,7 +251,7 @@ export const CartPage = () => {
  isOpen={isRemoveDialogOpen}
  onOpenChange={setIsRemoveDialogOpen}
  onConfirm={handleConfirmRemove}
- itemName={itemToRemove.itemid.itemname}
+ itemName={itemToRemove.name}
  />
  )}
       </div>

@@ -11,6 +11,7 @@ import { useLocationModalStore } from '@/store/LocationModalStore';
 import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
 import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
+import { useCreateCart } from '@/hooks/cart/useCreateCart';
 import { toast } from 'sonner';
 
 // New Hook
@@ -49,10 +50,13 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  } = useProductDetail(itemId, isOpen);
 
  const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();
+ const { mutate: createCart, isPending: isCreating } = useCreateCart();
  const { openDrawer, cartItems, orderId, orderType } = useCartStore();
  const { user } = useAuthStore();
  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
  const { handleAddressAndProceed } = useAddressFlow();
+
+ const isAdding = isUpdating || isCreating;
 
  const handleAddToCart = () => {
    if (!isValid || !item || !selectedOutlet) return;
@@ -60,9 +64,9 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
    // Check if the item already exists in the cart with the exact same variation & addons
    // For simplicity, we just trigger the cart update merging with existing items
    const existingItems = cartItems.map(c => ({
-     itemId: c.itemid._id,
+     itemId: c.product_retailer_id,
      quantity: c.quantity,
-     variationId: c.variation_id?._id || "",
+     variationId: c.variationId || "",
      addOnDetails: c.addons || [],
      currency: currency === '₹' ? 'INR' : currency
    }));
@@ -112,12 +116,21 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
       console.log("addressPayload:", addressPayload);
       console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
-      updateCart(payload, {
-        onSuccess: () => {
-          toast.success("Product added to cart.");
-          onClose();
-        }
-      });
+      if (orderId) {
+        updateCart(payload, {
+          onSuccess: () => {
+            toast.success("Product added to cart.");
+            onClose();
+          }
+        });
+      } else {
+        createCart(payload, {
+          onSuccess: () => {
+            toast.success("Product added to cart.");
+            onClose();
+          }
+        });
+      }
     };
 
     if (currentOrderType === 'Door Delivery') {
@@ -193,7 +206,7 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  quantity={quantity}
  onQuantityChange={setQuantity}
  onAddToCart={handleAddToCart}
- isValid={isValid && !isUpdating}
+ isValid={isValid && !isAdding}
  inStock={item.stockStatus}
  currency={currency}
  />

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Heart, Loader2, Minus, Plus, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
+import { useCreateCart } from '@/hooks/cart/useCreateCart';
 import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
@@ -30,17 +31,18 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
   const { wishlistItems, toggleWishlist: storeToggleWishlist } = useWishlist();
   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
   
-  const { mutate: updateCart, isPending: isAdding } = useUpdateCart();
+  const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();
+  const { mutate: createCart, isPending: isCreating } = useCreateCart();
   const { mutate: removeItem, isPending: isRemoving } = useDeleteCart();
   const { orderId, orderType, optimisticSetQuantity } = useCartStore();
   const { user, isAuthenticated } = useAuthStore();
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   const { handleAddressAndProceed } = useAddressFlow();
 
+  const isAdding = isUpdating || isCreating;
+
   const matchingCartItems = cartItems.filter((item) => {
-    const itemMatch = item.itemid?._id === product._id || 
-      (typeof item.itemid === 'string' && item.itemid === product._id);
-    return itemMatch;
+    return item.product_retailer_id === product._id;
   });
   
 
@@ -72,12 +74,6 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       navigate('/login');
       return;
     }
-    
-    const hasVariations = product.variations && product.variations.length > 0;
-    if (hasVariations) {
-      onClick?.(product);
-      return;
-    }
 
     if (!selectedOutlet) {
       toast.error("Please select an outlet first.");
@@ -88,15 +84,15 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
     // Build existing items payload
     const existingItems = cartItems.map(c => ({
-      itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
+      itemId: c.product_retailer_id,
       quantity: c.quantity,
-      variationId: c.variation_id?._id || "",
+      variationId: c.variationId || "",
       addOnDetails: c.addons || [],
       currency: cartCurrency
     }));
 
     const matchingIndex = existingItems.findIndex(i => 
-      i.itemId === product._id && i.variationId === ""
+      i.itemId === product._id && (i.variationId === "" || !i.variationId)
     );
 
     if (matchingIndex !== -1) {
@@ -134,11 +130,19 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
       optimisticSetQuantity(product, 1);
 
-      updateCart(payload, {
-        onSuccess: () => {
-          toast.success("Product added to cart.");
-        }
-      });
+      if (orderId) {
+        updateCart(payload, {
+          onSuccess: () => {
+            toast.success("Product added to cart.");
+          }
+        });
+      } else {
+        createCart(payload, {
+          onSuccess: () => {
+            toast.success("Product added to cart.");
+          }
+        });
+      }
     };
 
     if (currentOrderType === 'Door Delivery') {
@@ -160,7 +164,7 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       removeItem({
         outletId: selectedOutlet._id,
         orderId: orderId || '',
-        itemid: lastItem._id || lastItem.itemid?._id,
+        itemid: lastItem.product_retailer_id,
         customerPhoneNo: user?.phone || '0000000000',
         customerName: user?.name || 'Guest'
       }, {
@@ -184,9 +188,9 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
         const payload: any = {
           items: updatedItems.map(c => ({
-            itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
+            itemId: c.product_retailer_id,
             quantity: c.quantity,
-            variationId: c.variation_id?._id || "",
+            variationId: c.variationId || "",
             addOnDetails: c.addons || [],
             currency: cartCurrency
           })),
@@ -205,7 +209,11 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
         console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
         optimisticSetQuantity(product, newQty);
-        updateCart(payload);
+        if (orderId) {
+          updateCart(payload);
+        } else {
+          createCart(payload);
+        }
       };
 
       if (currentOrderType === 'Door Delivery') {
@@ -238,9 +246,9 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
       const payload: any = {
         items: updatedItems.map(c => ({
-          itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
+          itemId: c.product_retailer_id,
           quantity: c.quantity,
-          variationId: c.variation_id?._id || "",
+          variationId: c.variationId || "",
           addOnDetails: c.addons || [],
           currency: cartCurrency
         })),
@@ -259,7 +267,11 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
       optimisticSetQuantity(product, newQty);
-      updateCart(payload);
+      if (orderId) {
+        updateCart(payload);
+      } else {
+        createCart(payload);
+      }
     };
 
     if (currentOrderType === 'Door Delivery') {
@@ -280,10 +292,9 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
   return (
     <div
       className={cn(
-        "group relative flex flex-col w-full h-full min-h-[340px] bg-white rounded-[16px] border border-[#ECECEC] shadow-[0_8px_25px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgba(0,0,0,0.12)] hover:-translate-y-[6px] transition-all duration-300 overflow-hidden cursor-pointer",
+        "group relative flex flex-col w-full h-full min-h-[340px] bg-white rounded-[16px] border border-[#ECECEC] shadow-[0_8px_25px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgba(0,0,0,0.12)] hover:-translate-y-[6px] transition-all duration-300 overflow-hidden cursor-default",
         className,
       )}
-      onClick={() => onClick?.(product)}
     >
       {/* 1. Large Product Image (Compact Height 200px) */}
       <div className="relative w-full h-[200px] shrink-0 bg-[#F8F9FA] overflow-hidden">

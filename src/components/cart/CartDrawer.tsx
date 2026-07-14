@@ -102,9 +102,9 @@ export const CartDrawer = () => {
 
       const payload: any = {
         items: latestCartItems.map((c: any) => ({
-          itemId: c.itemid?._id || c.itemid,
+          itemId: c.product_retailer_id,
           quantity: c.quantity,
-          variationId: c.variation_id?._id || "",
+          variationId: c.variationId || "",
           addOnDetails: c.addons || [],
           currency: cartCurrency
         })),
@@ -135,7 +135,7 @@ export const CartDrawer = () => {
       return;
     }
 
-    updateItemQuantity(item._id, newQuantity);
+    updateItemQuantity(item._id || '', newQuantity);
     triggerCartUpdate();
   };
 
@@ -145,7 +145,7 @@ export const CartDrawer = () => {
     removeItem({
       outletId: selectedOutlet._id,
       orderId,
-      itemid: item._id || (item.itemid as any)._id || (item.itemid as any).itemid,
+      itemid: item.product_retailer_id,
       customerPhoneNo,
       customerName
     });
@@ -272,15 +272,9 @@ export const CartDrawer = () => {
                   className="p-4 md:p-6 space-y-4"
                 >
                   {cartItems.map((item) => {
-                    const isVeg = item.itemid.dietryType?.toLowerCase() === 'veg' || item.itemid.dietryType?.toLowerCase() === 'vegan';
-                    const isNonVeg = item.itemid.dietryType?.toLowerCase() === 'non-veg';
-                    const sellingPrice = item.unitPrice || 0;
-                    const originalPrice = item.basePrice || sellingPrice;
+                    const sellingPrice = item.item_price || 0;
+                    const originalPrice = sellingPrice;
                     let discountDisplay = '';
-                    if (originalPrice > sellingPrice && originalPrice > 0) {
-                      const discountPercent = Math.round(((originalPrice - sellingPrice) / originalPrice) * 100);
-                      discountDisplay = `${discountPercent}% OFF`;
-                    }
 
                     return (
                       <motion.div 
@@ -294,13 +288,9 @@ export const CartDrawer = () => {
                       >
                         {/* Image */}
                         <div className="w-[80px] h-[80px] md:w-[90px] md:h-[90px] bg-[#F8F9FA] rounded-[16px] overflow-hidden shrink-0 relative">
-                          {item.itemid.image?.[0] ? (
-                            <img src={item.itemid.image[0]} alt={item.itemid.itemname} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#F8F9FA]">
-                              <ShoppingBag className="w-6 h-6 text-[#D1D5DB]" />
-                            </div>
-                          )}
+                          <div className="w-full h-full flex items-center justify-center bg-[#F8F9FA]">
+                            <ShoppingBag className="w-6 h-6 text-[#D1D5DB]" />
+                          </div>
                           {discountDisplay && (
                             <div className="absolute top-0 left-0 bg-[#FF6B00] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-br-[8px]">
                               {discountDisplay}
@@ -314,16 +304,8 @@ export const CartDrawer = () => {
                             <div className="flex flex-col flex-1 pr-2">
                               <div className="flex items-center justify-between mb-1">
                                 <div className="flex items-center gap-1.5">
-                                  {item.itemid.dietryType && (
-                                    <div className={cn(
-                                      "flex items-center justify-center w-3.5 h-3.5 border-[1.5px] rounded-[3px] shrink-0",
-                                      isVeg ? "border-green-600" : isNonVeg ? "border-red-600" : "border-yellow-500"
-                                    )}>
-                                      <div className={cn("w-1.5 h-1.5 rounded-full", isVeg ? "bg-green-600" : isNonVeg ? "bg-red-600" : "bg-yellow-500")} />
-                                    </div>
-                                  )}
                                   <span className="text-[11px] font-bold text-[#FF6B00] uppercase tracking-wider">
-                                    {(item.itemid as any).categoryId?.categoryName || 'Food'}
+                                    Food
                                   </span>
                                 </div>
                                 <div className="flex flex-col items-end">
@@ -338,14 +320,14 @@ export const CartDrawer = () => {
                                 </div>
                               </div>
                               
-                              <h4 className="font-bold text-[15px] text-[#111827] line-clamp-1 leading-tight">{(item.itemid as any).itemname}</h4>
+                              <h4 className="font-bold text-[15px] text-[#111827] line-clamp-1 leading-tight">{item.name}</h4>
                               
                               <p className="text-[12px] text-[#6B7280] line-clamp-1 mt-0.5">
-                                {(item.itemid as any).description || 'Delicious and freshly prepared just for you.'}
+                                Delicious and freshly prepared just for you.
                               </p>
 
-                              {item.variation_id && (
-                                <span className="text-[12px] font-medium text-[#6B7280] mt-0.5">{(item.itemid as any).categoryId?.name}</span>
+                              {item.variationId && (
+                                <span className="text-[12px] font-medium text-[#6B7280] mt-0.5">Variation</span>
                               )}
 
                               <div className="flex items-center gap-2 mt-1.5">
@@ -374,14 +356,13 @@ export const CartDrawer = () => {
                               </button>
                               <button 
                                 onClick={() => {
-                                  const prodId = (item.itemid as any)._id || (item.itemid as any).itemid;
-                                  toggleWishlist(prodId);
+                                  toggleWishlist({ _id: item.product_retailer_id } as any);
                                   handleRemove(item);
                                 }}
                                 disabled={isUpdating || isRemoving}
                                 className="flex items-center gap-1.5 text-[12px] font-medium text-[#6B7280] hover:text-[#FF6B00] transition-colors"
                               >
-                                <Heart className={cn("w-3.5 h-3.5", wishlistItems?.includes((item.itemid as any)._id || (item.itemid as any).itemid) ? "fill-[#FF6B00] text-[#FF6B00]" : "")} /> Save for Later
+                                <Heart className={cn("w-3.5 h-3.5", wishlistItems?.includes(item.product_retailer_id as any) ? "fill-[#FF6B00] text-[#FF6B00]" : "")} /> Save for Later
                               </button>
                             </div>
                             

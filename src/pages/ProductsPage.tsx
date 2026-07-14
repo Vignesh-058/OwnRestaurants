@@ -24,7 +24,7 @@ export const ProductsPage = () => {
   const categoryParam = searchParams.get("category");
   
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-  const [activeCategoryId, setActiveCategoryId] = useState(categoryParam || "all");
+  const [activeCategoryId, setActiveCategoryId] = useState(categoryParam || 'all');
 
   // Initialize active category on load
   useEffect(() => {
@@ -85,7 +85,12 @@ export const ProductsPage = () => {
             allProducts={allProducts}
             activeCategoryId={activeCategoryId}
             onSelectCategory={handleCategorySelect}
-            onProductClick={(p) => setSelectedProductId(p._id)}
+            onProductClick={(p) => {
+              // Only open drawer for products with required variations
+              if (p.variations && p.variations.length > 0) {
+                setSelectedProductId(p._id);
+              }
+            }}
           />
         ) : null}
       </motion.div>

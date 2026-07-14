@@ -75,26 +75,15 @@ export interface Customer {
 }
 
 export interface CartItem {
- _id: string;
- itemid: {
- _id: string;
- itemname: string;
- image: string[];
- dietryType: string;
- };
- variation_id?: {
- _id: string;
+ _id?: string;
+ product_retailer_id: string;
  name: string;
- };
- addons: any[]; 
+ variationId?: string;
  quantity: number;
- unitPrice: number;
- basePrice: number;
- savedAmount: number;
- discount: number;
- tax: number;
+ item_price: number;
  itemTotal: number;
- stockStatus: string;
+ addons?: any[];
+ stockStatus?: string;
 }
 
 export interface OrderSummary {
@@ -108,25 +97,18 @@ export interface OrderSummary {
 }
 
 export interface CartResponse {
- _id?: string;
- cart?: any; // To allow mapping if the backend wraps the object
- cartItems: CartItem[];
- cartItemCount: number;
+ _id: string;
+ orderId: string;
+ items: CartItem[];
  orderTotal: number;
  savedAmount: number;
  deliveryCharge: number;
- packageCharge: number;
+ totalPackageCharge: number;
  totalTax: number;
- grandTotal: number;
- customerAddress: Address | null;
+ paymentMode: string;
+ orderType: string;
+ customerAddress: string | null;
  addressId: string | null;
- paymentMode: PaymentMode;
- orderType: OrderType;
- eta: string;
  checkoutEnable: boolean;
  checkOutMessage: string;
- hasDiscount: boolean;
- cartDiscountDetails: DiscountDetails | null;
- loyalty: Loyalty | null;
- lastUpdatedAt?: string;
 }

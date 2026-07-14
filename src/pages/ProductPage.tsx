@@ -130,9 +130,9 @@ export const ProductPage = () => {
     if (orderId) {
       const cartItems = useCartStore.getState().cartItems;
       updatedItems = cartItems.map(c => ({
-        itemId: (c.itemid as any)._id || c.itemid,
+        itemId: c.product_retailer_id,
         quantity: c.quantity,
-        variationId: c.variation_id?._id || "",
+        variationId: c.variationId || "",
         addOnDetails: c.addons || [],
         currency: cartCurrency
       }));
