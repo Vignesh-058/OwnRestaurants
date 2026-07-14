@@ -10,7 +10,6 @@ import { useAuthStore } from "@/store/AuthStore";
 import { useOutletStore } from "@/store/OutletStore";
 import { useLocationStore } from "@/store/LocationStore";
 import { useLocationModalStore } from "@/store/LocationModalStore";
-import { useWishlist } from "@/hooks/useWishlist";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -59,7 +58,7 @@ export const CartDrawer = () => {
   const currency = useOrganizationStore((state) => state.organization?.currency || "₹");
   const { user } = useAuthStore();
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
-  const { wishlistItems, toggleWishlist } = useWishlist();
+  const [isClearing, setIsClearing] = useState(false);
 
   const customerPhoneNo = user?.phone || "0000000000";
   const customerName = user?.name || "Guest";
@@ -353,16 +352,6 @@ export const CartDrawer = () => {
                                 className="flex items-center gap-1.5 text-[12px] font-medium text-[#6B7280] hover:text-red-500 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" /> Remove
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  toggleWishlist({ _id: item.product_retailer_id } as any);
-                                  handleRemove(item);
-                                }}
-                                disabled={isUpdating || isRemoving}
-                                className="flex items-center gap-1.5 text-[12px] font-medium text-[#6B7280] hover:text-[#FF6B00] transition-colors"
-                              >
-                                <Heart className={cn("w-3.5 h-3.5", wishlistItems?.includes(item.product_retailer_id as any) ? "fill-[#FF6B00] text-[#FF6B00]" : "")} /> Save for Later
                               </button>
                             </div>
                             

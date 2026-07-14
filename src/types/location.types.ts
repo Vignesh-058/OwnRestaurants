@@ -1,32 +1,12 @@
-export interface AddressComponent {
- long_name: string;
- short_name: string;
- types: string[];
-}
-
-export interface GoogleGeometry {
- location: {
- lat: number;
- lng: number;
- };
- location_type: string;
- viewport: {
- northeast: { lat: number; lng: number };
- southwest: { lat: number; lng: number };
- };
-}
-
-export interface GeoLocationResult {
- address_components: AddressComponent[];
- formatted_address: string;
- geometry: GoogleGeometry;
- place_id: string;
- types: string[];
-}
-
 export interface GeoLocationResponse {
- results: GeoLocationResult[];
- status: string;
+  latitude: number;
+  longitude: number;
+  city: string;
+  state: string;
+  country: string;
+  placeId?: string;
+  formattedAddress: string;
+  postalCode?: string;
 }
 
 export interface AddressSearchRequest {

@@ -24,7 +24,6 @@ import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { PromotionalBanner } from "@/components/home/PromotionalBanner";
-import { AboutSection } from "@/components/home/AboutSection";
 import { useSettings } from "@/hooks/queries/useSettings";
 import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
@@ -311,8 +310,6 @@ export const LandingPage = () => {
               <PromotionalBanner />
 
               {/* Main Product Collection Grid removed as requested */}
-              {/* 9. About Section */}
-              <AboutSection />
             </div>
           </>
         )}

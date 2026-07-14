@@ -13,7 +13,6 @@ import {
  ProfilePage,
  CouponsPage,
  SearchPage,
- WishlistPage,
  ProductsPage,
 } from '@/pages';
 
@@ -31,7 +30,6 @@ const router = createBrowserRouter([
  { index: true, element: <LandingPage /> },
  { path: 'products', element: <ProductsPage /> },
  { path: 'search', element: <SearchPage /> },
- { path: 'wishlist', element: <WishlistPage /> },
  { path: 'product/:id', element: <ProductPage /> },
  { path: 'cart', element: <CartPage /> },
  { path: 'address', element: <AddressPage /> },

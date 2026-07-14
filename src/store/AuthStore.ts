@@ -32,7 +32,6 @@ export const useAuthStore = create<AuthState>()(
   const keysToRemove = [
   'auth-storage',
   'cart-storage',
-  'wishlist-storage',
   'location-storage',
   'search-storage',
   'coupon-storage',

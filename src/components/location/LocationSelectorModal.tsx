@@ -6,10 +6,11 @@ import {
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useRequestBrowserLocation, extractAddressParts } from '@/hooks/queries/useLocation';
+import { useRequestBrowserLocation } from '@/hooks/queries/useLocation';
 import { useAddressSearch } from '@/hooks/queries/useAddressSearch';
 import { useCreateAddress } from '@/hooks/mutations/useCreateAddress';
 import { useAddresses } from '@/hooks/queries/useAddresses';
+import { locationService } from '@/services/location.service';
 import type { AddressType, CustomerAddress } from '@/types/customer.types';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/AuthStore';
@@ -89,17 +90,32 @@ export const LocationSelectorModal = () => {
     closeModal();
   };
 
-  const handleSelectSearchResult = (result: any) => {
-    const { lat, lng } = result.geometry?.location || result;
-    const parts = extractAddressParts(result.address_components || []);
-    setPendingAddress({
-      latitude: lat,
-      longitude: lng,
-      placeId: result.place_id,
-      ...parts,
-      formattedAddress: result.formatted_address || parts.formattedAddress,
-    });
-    setView('add-address');
+  const handleSelectSearchResult = async (result: any) => {
+    try {
+      setLoading(true);
+      // Backend handles Google Maps / Geocoding, just send the entered string
+      const response = await locationService.getCustomerLatLng({ 
+        enteredAddress: result.description || result.formatted_address || result.name || JSON.stringify(result),
+        belongsTo: user?.organizationId || ''
+      });
+      
+      setPendingAddress({
+        latitude: response.latitude,
+        longitude: response.longitude,
+        placeId: response.placeId,
+        city: response.city,
+        state: response.state,
+        country: response.country,
+        postalCode: response.postalCode,
+        formattedAddress: response.formattedAddress,
+      });
+      setView('add-address');
+    } catch (err) {
+      console.error(err);
+      setValidationError('Failed to resolve address location.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSelectSavedAddress = (addr: CustomerAddress) => {
@@ -111,10 +127,8 @@ export const LocationSelectorModal = () => {
     const addr = savedAddresses.find(a => a._id === selectedAddressId);
     if (!addr) return;
     
+    // Do NOT set latitude and longitude here to prevent customer addresses from being used for outlet filtering
     setLocation({
-      latitude: addr.latitude,
-      longitude: addr.longitude,
-      placeId: undefined,
       addressId: addr._id,
       address1: addr.address1,
       address2: addr.address2,
@@ -124,10 +138,8 @@ export const LocationSelectorModal = () => {
       postalCode: addr.pincode,
       country: addr.country,
       formattedAddress: [addr.address1, addr.address2, addr.city].filter(Boolean).join(', '),
-      locationLoaded: false
     });
     
-    setSelectedOutlet(null as any);
     closeModal();
   };
 
@@ -152,11 +164,7 @@ export const LocationSelectorModal = () => {
 
     if (!user) {
       // Guest bypass: Just set the local location state without making API call
-      setSelectedOutlet(null as any);
       setLocation({
-        latitude: payload.latitude,
-        longitude: payload.longitude,
-        placeId: pendingAddress.placeId,
         addressId: null,
         address1: payload.address1,
         address2: payload.address2,
@@ -166,7 +174,6 @@ export const LocationSelectorModal = () => {
         postalCode: payload.pincode,
         country: payload.country,
         formattedAddress: [payload.address1, payload.address2, payload.city].filter(Boolean).join(', '),
-        locationLoaded: false
       });
       closeModal();
       return;
@@ -174,12 +181,8 @@ export const LocationSelectorModal = () => {
 
     createAddress(payload, {
       onSuccess: (data) => {
-        setSelectedOutlet(null as any);
         const finalAddr = data.address || payload;
         setLocation({
-          latitude: finalAddr.latitude,
-          longitude: finalAddr.longitude,
-          placeId: pendingAddress.placeId,
           addressId: finalAddr._id || null,
           address1: payload.address1,
           address2: payload.address2,
@@ -189,7 +192,6 @@ export const LocationSelectorModal = () => {
           postalCode: payload.pincode,
           country: payload.country,
           formattedAddress: [payload.address1, payload.address2, payload.city].filter(Boolean).join(', '),
-          locationLoaded: false
         });
         closeModal();
       }

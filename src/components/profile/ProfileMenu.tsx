@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  Package, MapPin, Ticket, Heart, Wallet, CreditCard, 
+  Package, MapPin, Ticket, Wallet, CreditCard, 
   HelpCircle, Info, LogOut, Bell, Globe, Moon
 } from 'lucide-react';
 import { useAuthStore } from '@/store/AuthStore';
@@ -25,7 +25,6 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
     { id: 'offers', icon: Ticket, title: 'Offers & Coupons' },
     { id: 'orders', icon: Package, title: 'Orders' },
     { id: 'addresses', icon: MapPin, title: 'Addresses' },
-    { id: 'favorites', icon: Heart, title: 'Wishlist' },
     { id: 'rewards', icon: Wallet, title: 'Rewards' },
     { id: 'payments', icon: CreditCard, title: 'Payments' },
     { id: 'help', icon: HelpCircle, title: 'Help' },

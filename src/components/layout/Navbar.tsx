@@ -1,17 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Heart, Mic, ShoppingCart } from "lucide-react";
+import { Search, Mic, ShoppingCart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/store/CartStore";
-import { useWishlistStore } from "@/store/WishlistStore";
 import { useAuthStore } from "@/store/AuthStore";
 import { useOrganizationStore } from "@/store/OrganizationStore";
 import { useOutletStore } from "@/store/OutletStore";
 import { useLocationStore } from "@/store/LocationStore";
-import { useLocationModalStore } from "@/store/LocationModalStore";
+import { useOutletModalStore } from "@/store/OutletModalStore";
 import { AccountPanel } from "@/components/layout/AccountPanel";
 import { cn } from "@/lib/utils";
 import defaultLogo from "@/assets/Ieyal Logo.jpeg";
@@ -25,19 +24,16 @@ export const Navbar = () => {
   const cartTotal = grandTotal;
   const totalCartQuantity = cartItemCount;
 
-  const wishlistCount = useWishlistStore((state) => state.items.length);
   const { isAuthenticated, user } = useAuthStore();
   const organization = useOrganizationStore((state) => state.organization);
   const currency = organization?.currency || "₹";
 
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
 
-  const openLocationModal = useLocationModalStore((state) => state.openModal);
+  const openOutletModal = useOutletModalStore((state) => state.openModal);
   const userLocationAddress = useLocationStore(
     (state) => state.formattedAddress,
   );
-
-  const [showWishlistTooltip, setShowWishlistTooltip] = useState(false);
 
   const headerConfig = organization?.theme?.sections?.header?.config;
   const showCart = headerConfig?.showCart ?? true;
@@ -85,7 +81,7 @@ export const Navbar = () => {
 
               {/* Desktop/Laptop/Tablet Location Card */}
               <button
-                onClick={openLocationModal}
+                onClick={openOutletModal}
                 className="hidden md:flex flex-col items-start justify-center text-left w-[200px] lg:w-[260px] xl:w-[320px] h-[64px] bg-[#1F2937] border border-[rgba(255,255,255,0.08)] rounded-[16px] px-3 lg:px-4 py-3 hover:bg-[#1F2937]/80 hover:border-[rgba(255,255,255,0.15)] transition-all duration-300 group shadow-sm shrink-0"
               >
                 <div className="flex items-center w-full mb-1">
@@ -108,7 +104,7 @@ export const Navbar = () => {
 
               {/* Mobile Compact Location Button */}
               <button
-                onClick={openLocationModal}
+                onClick={openOutletModal}
                 className="md:hidden flex items-center gap-1.5 bg-[#1F2937] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-2.5 py-2 hover:bg-[#1F2937]/80 transition-colors max-w-[150px]"
               >
                 <span className="text-sm leading-none">📍</span>
@@ -149,43 +145,11 @@ export const Navbar = () => {
           })}
         </nav>
 
-        {/* RIGHT SECTION: Search Bar, Wishlist, Cart & Profile */}
+        {/* RIGHT SECTION: Search Bar, Cart & Profile */}
         <div className="flex items-center gap-4 shrink-0">
 
 
-          <div
-            onMouseEnter={() => setShowWishlistTooltip(true)}
-            onMouseLeave={() => setShowWishlistTooltip(false)}
-            className="relative hidden sm:block"
-          >
-            <Link to="/wishlist">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative rounded-full h-[48px] w-[48px] bg-[#1F2937] hover:bg-[#1F2937]/80 hover:border-[#FF6B00] border border-[rgba(255,255,255,0.05)] group shrink-0 transition-all shadow-sm"
-              >
-                <Heart className="h-5 w-5 text-[#94A3B8] group-hover:text-[#FF6B00] group-hover:scale-110 transition-transform duration-300" />
-                {wishlistCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 rounded-full text-[10px] bg-red-500 text-white border-2 border-[#111827] shadow-sm font-bold">
-                    {wishlistCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
 
-            <AnimatePresence>
-              {showWishlistTooltip && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute top-[56px] left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-lg z-50 pointer-events-none whitespace-nowrap"
-                >
-                  View Wishlist
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
 
           {showCart && (
             <Link 

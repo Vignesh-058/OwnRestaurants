@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOrders } from '@/hooks/queries/useOrders';
 import { useOrderStore } from '@/store/OrderStore';
-import { ProfileMenu } from '@/components/profile/ProfileMenu';
 import { OrderCard } from '@/components/orders/OrderCard';
 import { OrderDetailsDialog } from '@/components/orders/OrderDetailsDialog';
 import { OrderFilters } from '@/components/orders/OrderFilters';
@@ -145,16 +144,7 @@ export const OrdersPage = () => {
 
  return (
  <div className="bg-background min-h-screen py-10">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
- <div className="flex flex-col lg:flex-row gap-8">
- {/* Left Sidebar */}
- <div className="hidden lg:block w-[320px] shrink-0 sticky top-28 h-fit space-y-6">
- <div className="px-2 mb-2">
- <h2 className="text-2xl font-black text-foreground tracking-tight">My Account</h2>
- </div>
- <ProfileMenu />
- </div>
+ <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
  {/* Main Content */}
  <motion.div 
@@ -164,16 +154,15 @@ export const OrdersPage = () => {
  className="flex-1 min-w-0 space-y-6"
  >
  {/* Page header */}
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl p-6 sm:p-8 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.2)] border border-border/80 dark:border-white/10 relative overflow-hidden">
- <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
+ <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-6 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-border relative overflow-hidden">
  
  <div className="flex items-center gap-4 relative z-10">
- <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/10 to-[#FF6B00]/20 text-primary flex items-center justify-center shadow-inner">
+ <div className="h-14 w-14 rounded-2xl bg-[#FFF3E8] text-primary flex items-center justify-center">
  <Package className="h-7 w-7" />
  </div>
  <div>
- <h1 className="text-2xl font-black tracking-tight text-foreground">Order History</h1>
- <p className="text-muted-foreground text-xs font-semibold mt-1">
+ <h1 className="text-2xl font-bold tracking-tight text-foreground">Order History</h1>
+ <p className="text-muted-foreground text-sm font-normal mt-1">
  {data?.totalOrders
  ? `Review and track your ${data.totalOrders} past order${data.totalOrders > 1 ? 's' : ''}`
  : 'Track and view your past orders'}
@@ -182,7 +171,7 @@ export const OrdersPage = () => {
  </div>
  <Button
  variant="outline"
- className="rounded-full gap-2 px-5 h-10 border-border dark:border-white/10 hover:bg-muted font-bold text-xs shadow-sm shrink-0"
+ className="rounded-full gap-2 px-5 h-10 bg-white border-primary text-primary hover:bg-primary hover:text-white transition-all hover:-translate-y-[1px] font-bold text-xs shadow-sm shrink-0"
  onClick={() => refetch()}
  disabled={isLoading}
  >
@@ -191,15 +180,9 @@ export const OrdersPage = () => {
  </Button>
  </div>
 
- {/* Mobile Profile Menu */}
- <div className="lg:hidden">
- <h2 className="text-xl font-black text-foreground mb-4 px-2">Account Menu</h2>
- <ProfileMenu />
- </div>
-
  {/* Filters */}
  {!isLoading && !isError && (
- <div className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl p-5 rounded-[2rem] border border-border/80 dark:border-white/10 shadow-sm">
+ <div className="mb-6">
  <OrderFilters sort={sort} onSortChange={setSort} />
  </div>
  )}
@@ -211,7 +194,6 @@ export const OrdersPage = () => {
  </AnimatePresence>
  </div>
  </motion.div>
- </div>
  </div>
 
  {/* Order Details Dialog */}

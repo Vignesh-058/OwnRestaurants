@@ -4,26 +4,6 @@ import { useLocationStore } from '@/store/LocationStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useEffect, useCallback } from 'react';
 
-export const extractAddressParts = (components: any[]) => {
- let streetNumber = '', route = '', locality = '', city = '', state = '', country = '', postalCode = '';
-
- components.forEach((comp) => {
- const types = comp.types;
- if (types.includes('street_number')) streetNumber = comp.long_name;
- if (types.includes('route')) route = comp.long_name;
- if (types.includes('sublocality') || types.includes('sublocality_level_1')) locality = comp.long_name;
- if (types.includes('locality')) city = comp.long_name;
- if (types.includes('administrative_area_level_1')) state = comp.long_name;
- if (types.includes('country')) country = comp.long_name;
- if (types.includes('postal_code')) postalCode = comp.long_name;
- });
-
- const street = [streetNumber, route, locality].filter(Boolean).join(', ');
- const formattedAddress = [street, city, state, postalCode].filter(Boolean).join(', ');
-
- return { street, city, state, country, postalCode, formattedAddress };
-};
-
 export const useGeoLocation = () => {
  const { latitude, longitude, setLocation, setLoading, setError, locationLoaded } = useLocationStore();
  const belongsTo = useOrganizationStore((state) => state.organization?._id);
@@ -46,15 +26,19 @@ export const useGeoLocation = () => {
  if (query.isError) {
  setError('Unable to fetch your address.');
  }
- if (query.data?.results?.[0]) {
- const result = query.data.results[0];
- const parts = extractAddressParts(result.address_components);
+ if (query.data) {
+ const data = query.data;
 
  const newState = {
- latitude,
- longitude,
- placeId: result.place_id,
- ...parts,
+ latitude: data.latitude || latitude,
+ longitude: data.longitude || longitude,
+ placeId: data.placeId || undefined,
+ city: data.city,
+ state: data.state,
+ country: data.country,
+ postalCode: data.postalCode,
+ formattedAddress: data.formattedAddress,
+ locationLoaded: true
  };
 
  console.log('[DEBUG] Global Store Values (New Location State):', newState);

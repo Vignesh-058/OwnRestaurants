@@ -2,12 +2,11 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/CartStore';
-import { useWishlist } from '@/hooks/useWishlist';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import type { CategoryItem } from '@/types/category.types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Heart, Loader2, Minus, Plus, Star } from 'lucide-react';
+import { Loader2, Minus, Plus, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useCreateCart } from '@/hooks/cart/useCreateCart';
@@ -28,7 +27,6 @@ interface ProductCardProps {
 export const ProductCard = ({ product, className, onClick }: ProductCardProps) => {
   const navigate = useNavigate();
   const cartItems = useCartStore((state) => state.cartItems) || [];
-  const { wishlistItems, toggleWishlist: storeToggleWishlist } = useWishlist();
   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
   
   const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();
@@ -48,7 +46,6 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
 
   const totalQuantity = matchingCartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const inWishlist = wishlistItems.some((item) => item._id === product._id);
 
   // Use defaultSellingPrice if variations exist, fallback to sellingPrice
   const sellingPrice = Number(product.defaultSellingPrice || product.sellingPrice || product.price || 0);
@@ -281,14 +278,6 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
     }
   };
 
-  const toggleWishlist = (product: CategoryItem) => {
-    storeToggleWishlist(product);
-    toast.success(
-      inWishlist ? 'Removed from wishlist' : 'Added to wishlist',
-      { description: product.name }
-    );
-  };
-
   return (
     <div
       className={cn(
@@ -319,20 +308,9 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
           </div>
         )}
 
-        {/* Top Right: Wishlist Heart & Discount & Bestseller */}
+        {/* Top Right: Discount & Bestseller */}
         <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-10">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleWishlist(product);
-            }}
-            className="w-[34px] h-[34px] rounded-full bg-white/90 backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.08)] flex items-center justify-center hover:bg-white hover:scale-110 transition-all duration-300"
-          >
-            <Heart 
-              className={cn("w-4 h-4 transition-colors duration-300", inWishlist ? 'fill-[#FF6B00] text-[#FF6B00]' : 'text-[#64748B]')} 
-            />
-          </button>
-          
+
           {discountDisplay && (
             <div className="bg-[#FF6B00] text-white text-[11px] font-bold px-2 py-1 rounded-[6px] shadow-sm flex items-center gap-1">
               {discountDisplay}

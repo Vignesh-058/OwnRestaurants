@@ -6,7 +6,6 @@ import { CouponList } from '@/components/discount/CouponList';
 import { CouponSkeleton } from '@/components/discount/CouponSkeleton';
 import { EmptyCoupons } from '@/components/discount/EmptyCoupons';
 import { AppliedCoupon } from '@/components/discount/AppliedCoupon';
-import { ProfileMenu } from '@/components/profile/ProfileMenu';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Gift, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -55,17 +54,8 @@ export const CouponsPage = () => {
 
  return (
  <div className="bg-background min-h-screen py-10">
- <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+ <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
  
- <div className="flex flex-col lg:flex-row gap-8">
- {/* Sidebar */}
- <div className="hidden lg:block w-[320px] shrink-0 sticky top-28 h-fit space-y-6">
- <div className="px-2 mb-2">
- <h2 className="text-2xl font-black text-foreground tracking-tight">My Account</h2>
- </div>
- <ProfileMenu />
- </div>
-
  {/* Main area */}
  <motion.div 
  initial={{ opacity: 0, y: 15 }}
@@ -74,35 +64,28 @@ export const CouponsPage = () => {
  className="flex-1 min-w-0 space-y-6"
  >
  {/* Header banner */}
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl p-6 sm:p-8 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.2)] border border-border/80 dark:border-white/10 relative overflow-hidden">
- <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
+ <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-6 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-border relative overflow-hidden">
  
  <div className="flex items-center gap-4 relative z-10">
- <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/10 to-[#FF6B00]/20 text-primary flex items-center justify-center shadow-inner">
+ <div className="h-14 w-14 rounded-2xl bg-[#FFF3E8] text-primary flex items-center justify-center">
  <Gift className="h-7 w-7" />
  </div>
  <div>
- <h1 className="text-2xl font-black tracking-tight text-foreground">Offers & Coupons</h1>
- <p className="text-muted-foreground text-xs font-semibold mt-1">
+ <h1 className="text-2xl font-bold tracking-tight text-foreground">Offers & Coupons</h1>
+ <p className="text-muted-foreground text-sm font-normal mt-1">
  {coupons?.length ? `${coupons.length} active discount coupon${coupons.length > 1 ? 's' : ''} available` : 'Browse exclusive discount codes'}
  </p>
  </div>
  </div>
  <Button 
  variant="outline" 
- className="rounded-full gap-2 px-5 h-10 border-border dark:border-white/10 hover:bg-muted font-bold text-xs shadow-sm shrink-0"
+ className="rounded-full gap-2 px-5 h-10 bg-white border-primary text-primary hover:bg-primary hover:text-white transition-all hover:-translate-y-[1px] font-bold text-xs shadow-sm shrink-0"
  onClick={() => refetch()} 
  disabled={isLoading}
  >
  <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
  Refresh
  </Button>
- </div>
-
- {/* Mobile menu */}
- <div className="lg:hidden">
- <h2 className="text-xl font-black text-foreground mb-4 px-2">Account Menu</h2>
- <ProfileMenu />
  </div>
 
  {/* Applied coupon banner */}
@@ -115,8 +98,6 @@ export const CouponsPage = () => {
  </AnimatePresence>
  </div>
  </motion.div>
- </div>
-
  </div>
  </div>
  );

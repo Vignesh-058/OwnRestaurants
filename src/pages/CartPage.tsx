@@ -209,35 +209,37 @@ export const CartPage = () => {
     <div className="w-full min-h-screen bg-[#F8FAFC]">
       <div className="w-full max-w-[1800px] mx-auto px-6 lg:px-8 py-6">
 
-        {/* ── Page Header ── */}
-        <div className="flex items-center gap-3 mb-6">
+         {/* ── Page Header ── */}
+        <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="rounded-full hover:bg-[#E5E7EB] bg-white shadow-sm border border-[#E5E7EB] shrink-0"
+            className="w-11 h-11 rounded-full hover:bg-[#E5E7EB] bg-white shadow-sm border border-[#E5E7EB] shrink-0"
           >
             <ArrowLeft className="w-5 h-5 text-[#111827]" />
           </Button>
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#111827] leading-none">
-            Shopping Cart
-          </h1>
-          {!isEmpty && (
-            <span className="bg-[#111827] text-white text-[13px] font-bold px-3 py-1 rounded-full">
-              {cartItems.length} {cartItems.length === 1 ? 'Item' : 'Items'}
-            </span>
-          )}
+          <div>
+            <h1 className="text-[32px] md:text-[38px] font-black text-[#111827] leading-none">
+              Shopping Cart
+            </h1>
+            {!isEmpty && (
+              <p className="text-[15px] text-[#6B7280] font-medium mt-1">
+                {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
+              </p>
+            )}
+          </div>
         </div>
 
         {isEmpty ? (
           <EmptyCart />
         ) : (
           <>
-            {/* CSS Grid: left takes all remaining space, right is fixed 360px */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_440px] gap-6 items-start pb-40 lg:pb-8">
+            {/* CSS Grid: cart items left / premium summary right */}
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_440px] gap-5 items-start pb-40 lg:pb-8">
 
-            {/* Left — Cart Items: full width of remaining column */}
-            <div className="min-w-0 space-y-3 w-full">
+            {/* Left — Cart Items */}
+            <div className="min-w-0 space-y-5 w-full">
               <CartList
                 items={cartItems}
                 currency={currency}

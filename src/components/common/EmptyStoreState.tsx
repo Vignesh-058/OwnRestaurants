@@ -41,7 +41,7 @@ export const EmptyStoreState = () => {
  transition={{ delay: 0.3 }}
  className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mb-3"
  >
- No restaurants deliver to your location
+ No nearby outlets available.
  </motion.h3>
  <motion.p 
  initial={{ opacity: 0 }}

@@ -123,6 +123,7 @@ export interface Outlet {
   currencyCode: string;
   orderType: string[];
   distance?: number;
+  eta?: string;
 }
 
 export interface Organization {

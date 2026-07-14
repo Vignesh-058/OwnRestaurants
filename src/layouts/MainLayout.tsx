@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { FloatingCart } from '@/components/cart/FloatingCart';
 import { LocationSelectorModal } from '@/components/location/LocationSelectorModal';
+import { OutletSelectorModal } from '@/components/location/OutletSelectorModal';
 import { useOrganization } from '@/hooks/queries/useOrganization';
 import { useOutlets } from '@/hooks/queries/useOutlets';
 import { useSettings } from '@/hooks/queries/useSettings';
@@ -20,11 +21,12 @@ import { APP_CONFIG } from '@/constants';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 
 export const MainLayout = () => {
-  const belongsToId = APP_CONFIG.belongsTo || '';
-
-  const orgQuery = useOrganization(belongsToId);
-  // Always use the configured belongsToId for subsequent queries to prevent token mismatch
-  const belongsTo = belongsToId;
+  const location = useLocation();
+  // Use domain-based fetching for the Ieyal organization
+  const orgQuery = useOrganization('ieyal');
+  
+  // Extract belongsTo dynamically from the fetched organization payload to prevent token mismatches
+  const belongsTo = orgQuery.data?.organization?._id || '';
 
   // 1. Fetch Outlets using belongsTo
   const outletsQuery = useOutlets(belongsTo);
@@ -90,7 +92,7 @@ export const MainLayout = () => {
           <EmptyStoreState />
         </main>
         <LocationSelectorModal />
-        <Footer />
+        {location.pathname !== '/checkout' && <Footer />}
       </div>
     );
   }
@@ -109,7 +111,8 @@ export const MainLayout = () => {
         <FloatingCart />
         <FloatingNav />
         <LocationSelectorModal />
-        <Footer />
+        <OutletSelectorModal />
+        {location.pathname !== '/checkout' && <Footer />}
       </div>
     </ErrorBoundary>
   );

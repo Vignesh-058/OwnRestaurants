@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Minus, Plus, Heart, Share2, Star, Clock } from 'lucide-react';
+import { ChevronLeft, Minus, Plus, Share2, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useItemDetail } from '@/hooks/queries/useItemDetail';
@@ -18,7 +18,6 @@ import { PageLoader } from '@/components/common/PageLoader';
 import { ErrorState } from '@/components/common/ErrorState';
 import { ProductInfoTabs } from '@/components/product/ProductInfoTabs';
 import { RecommendedProducts } from '@/components/product/RecommendedProducts';
-import { useWishlist } from '@/hooks/useWishlist';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -33,7 +32,6 @@ export const ProductPage = () => {
   const { user } = useAuthStore();
   const { handleAddressAndProceed } = useAddressFlow();
   const { orderId, orderType } = useCartStore();
-  const { isInWishlist, toggleWishlist } = useWishlist();
 
   const [selectedVariation, setSelectedVariation] = useState<string | undefined>(undefined);
   const [addonSelections, setAddonSelections] = useState<AddonSelection>({});
@@ -42,8 +40,6 @@ export const ProductPage = () => {
   const { data: item, isLoading, isError, refetch } = useItemDetail(id || null, selectedVariation);
   const { mutate: addToCart, isPending: isAdding } = useAddToCart();
   const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();
-
-  const inWishlist = item ? isInWishlist(item.itemid) : false;
 
   const handleVariationChange = (variationId: string) => {
     setSelectedVariation(variationId);
@@ -286,14 +282,6 @@ export const ProductPage = () => {
           </Button>
           
           <div className="flex gap-3">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => toggleWishlist(item as any)}
-              className="rounded-full bg-white/20 hover:bg-white text-white hover:text-red-500 backdrop-blur-md h-10 w-10 border border-white/30 transition-colors"
-            >
-              <Heart className={cn("h-5 w-5 transition-transform", inWishlist && "fill-red-500 text-red-500 scale-110")} />
-            </Button>
             <Button 
               variant="ghost" 
               size="icon" 

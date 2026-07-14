@@ -4,7 +4,6 @@ export const ROUTES = {
  SEARCH: '/search',
  PRODUCT: (id: string) => `/product/${id}`,
  CART: '/cart',
- WISHLIST: '/wishlist',
  LOGIN: '/login',
  CHECKOUT: '/checkout',
  ADDRESS: '/address',

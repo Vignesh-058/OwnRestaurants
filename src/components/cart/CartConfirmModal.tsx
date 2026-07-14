@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Heart, Trash2, X } from 'lucide-react';
+import { Loader2, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export type ModalVariant = 'remove' | 'wishlist';
+export type ModalVariant = 'remove';
 
 interface CartConfirmModalProps {
   isOpen: boolean;
@@ -30,21 +30,6 @@ const config = {
     confirmLabel: 'Remove',
     confirmClass:
       'bg-[#B91C1C] hover:bg-[#991B1B] text-white shadow-[0_4px_16px_rgba(185,28,28,0.25)] hover:shadow-[0_6px_20px_rgba(185,28,28,0.35)]',
-  },
-  wishlist: {
-    icon: <Heart className="w-6 h-6 text-[#FF6B00]" />,
-    iconBg: 'bg-[#FFF7ED]',
-    title: 'Move to Wishlist',
-    description: (name: string) => (
-      <>
-        Are you sure you want to move{' '}
-        <span className="font-semibold text-[#111827]">"{name}"</span>{' '}
-        to your wishlist?
-      </>
-    ),
-    confirmLabel: 'Move',
-    confirmClass:
-      'bg-[#FF6B00] hover:bg-[#E65C00] text-white shadow-[0_4px_16px_rgba(255,107,0,0.25)] hover:shadow-[0_6px_20px_rgba(255,107,0,0.35)]',
   },
 } satisfies Record<ModalVariant, {
   icon: React.ReactNode;

@@ -32,7 +32,7 @@ export const OrderFilters = ({ onSortChange, sort }: OrderFiltersProps) => {
  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
  <Input
  placeholder="Search by order ID, name or phone..."
- className="pl-11 rounded-full h-12 bg-white border-transparent focus-visible:ring-1"
+ className="pl-11 rounded-[14px] h-12 bg-white border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
@@ -48,11 +48,11 @@ export const OrderFilters = ({ onSortChange, sort }: OrderFiltersProps) => {
 
  {/* Sort */}
  <div className="flex items-center gap-2">
- <div className="h-12 w-12 rounded-full bg-white border flex items-center justify-center shrink-0">
+ <div className="h-12 w-12 rounded-[14px] bg-white border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] flex items-center justify-center shrink-0">
  <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
  </div>
  <Select value={sort} onValueChange={onSortChange}>
- <SelectTrigger className="w-[170px] rounded-full h-12 bg-white border-transparent">
+ <SelectTrigger className="w-[170px] rounded-[14px] h-12 bg-white border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus:ring-1 focus:ring-primary focus:border-primary">
  <SelectValue placeholder="Sort by" />
  </SelectTrigger>
  <SelectContent className="rounded-2xl">
@@ -68,7 +68,7 @@ export const OrderFilters = ({ onSortChange, sort }: OrderFiltersProps) => {
  {/* Filter row */}
  <div className="flex flex-wrap gap-3 items-center">
  <Select value={filters.status} onValueChange={(v: string) => setFilters({ status: v as any })}>
- <SelectTrigger className="w-auto min-w-[130px] rounded-full h-10 bg-white text-sm border-transparent">
+ <SelectTrigger className="w-auto min-w-[130px] rounded-[14px] h-10 bg-white text-sm border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus:ring-1 focus:ring-primary focus:border-primary">
  <SelectValue placeholder="Status" />
  </SelectTrigger>
  <SelectContent className="rounded-2xl">
@@ -79,7 +79,7 @@ export const OrderFilters = ({ onSortChange, sort }: OrderFiltersProps) => {
  </Select>
 
  <Select value={filters.payment} onValueChange={(v: string) => setFilters({ payment: v as any })}>
- <SelectTrigger className="w-auto min-w-[140px] rounded-full h-10 bg-white text-sm border-transparent">
+ <SelectTrigger className="w-auto min-w-[140px] rounded-[14px] h-10 bg-white text-sm border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus:ring-1 focus:ring-primary focus:border-primary">
  <SelectValue placeholder="Payment" />
  </SelectTrigger>
  <SelectContent className="rounded-2xl">
@@ -90,7 +90,7 @@ export const OrderFilters = ({ onSortChange, sort }: OrderFiltersProps) => {
  </Select>
 
  <Select value={filters.orderType} onValueChange={(v: string) => setFilters({ orderType: v as any })}>
- <SelectTrigger className="w-auto min-w-[140px] rounded-full h-10 bg-white text-sm border-transparent">
+ <SelectTrigger className="w-auto min-w-[140px] rounded-[14px] h-10 bg-white text-sm border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus:ring-1 focus:ring-primary focus:border-primary">
  <SelectValue placeholder="Order Type" />
  </SelectTrigger>
  <SelectContent className="rounded-2xl">

@@ -5,7 +5,6 @@ import {
  Package, 
  MapPin, 
  Ticket, 
- Heart, 
  Settings, 
  HelpCircle, 
  LogOut, 
@@ -66,13 +65,6 @@ export const AccountPanel = () => {
  subtitle: 'Available discounts and rewards',
  href: '/offers',
  gradient: 'from-amber-500 to-orange-500',
- },
- {
- icon: Heart,
- title: 'Favorites',
- subtitle: 'View your wishlist items',
- href: '/wishlist',
- gradient: 'from-pink-500 to-rose-500',
  },
  {
  icon: Settings,

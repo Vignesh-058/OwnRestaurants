@@ -82,8 +82,8 @@ export const StoreConfig = () => {
         )}
       </div>
 
-      {/* Outlet Selector (Only if multiple outlets) */}
-      {outlets.length > 1 && (
+      {/* Outlet Selector */}
+      {outlets.length > 0 && (
         <div className="mt-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
