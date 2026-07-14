@@ -15,10 +15,12 @@ export const useOutlets = (belongsTo: string) => {
  const query = useQuery({
  queryKey: ['outlets', belongsTo, latitude, longitude],
  queryFn: async () => {
+ console.log('[DEBUG-FLOW] OUTLETS REQUEST - belongsTo:', belongsTo, 'lat:', latitude, 'lng:', longitude);
  const data = await organizationService.getOutlets(belongsTo, latitude || undefined, longitude || undefined);
+ console.log('[DEBUG-FLOW] OUTLETS FETCHED - count:', data.outlets?.length);
  return data;
  },
- enabled: !!belongsTo,
+ enabled: !!belongsTo && locationLoaded,
  staleTime: 1000 * 60 * 30, // 30 minutes
  });
 
@@ -27,7 +29,9 @@ export const useOutlets = (belongsTo: string) => {
  setOutlets(query.data.outlets);
  // Auto-select nearest outlet when location is loaded and sorted
  if (locationLoaded && !selectedOutlet && query.data.outlets.length > 0) {
- setSelectedOutlet(query.data.outlets[0]);
+ const activeOutlet = query.data.outlets.find(o => o.isActive) || query.data.outlets[0];
+ console.log('[DEBUG-FLOW] AUTO-SELECTING OUTLET:', activeOutlet._id);
+ setSelectedOutlet(activeOutlet);
  }
  }
  }, [query.data, setOutlets, setSelectedOutlet, locationLoaded, selectedOutlet]);

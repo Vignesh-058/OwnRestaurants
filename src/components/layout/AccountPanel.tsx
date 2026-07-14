@@ -94,7 +94,7 @@ export const AccountPanel = () => {
  <>
  <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <Avatar className="h-[48px] w-[48px] border-2 border-[rgba(255,255,255,0.05)] bg-[#1F2937] cursor-pointer hover:border-[#FF6B00] transition-all duration-300 shadow-sm overflow-hidden">
+      <Avatar className="h-[48px] w-[48px] border-2 border-[rgba(255,255,255,0.05)] bg-[#1F2937] cursor-pointer hover:border-[#FF7A00] transition-all duration-300 shadow-sm overflow-hidden">
         <AvatarImage src={user?.avatar} alt={user?.name || 'User'} className="object-cover" />
         <AvatarFallback className="bg-transparent text-[#94A3B8] font-bold">
           {user?.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -104,104 +104,105 @@ export const AccountPanel = () => {
  
  <DropdownMenuContent 
  align="end" 
- className="w-[340px] sm:w-[360px] p-0 rounded-[2rem] border border-border/80 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] mt-2.5 overflow-hidden"
+ className="w-[340px] sm:w-[380px] p-0 rounded-[24px] border border-[rgba(255,255,255,0.08)] bg-[#0F172A] shadow-[0_20px_50px_rgba(0,0,0,0.5)] mt-2.5 overflow-hidden"
  >
  <AnimatePresence>
  <motion.div
  initial={{ opacity: 0, y: -10 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, y: -10 }}
- transition={{ duration: 0.2 }}
+ transition={{ duration: 0.25 }}
  >
- {/* User Header with dynamic membership gradient */}
- <DropdownMenuLabel className="p-5 flex items-center gap-4 bg-muted/40 dark:bg-slate-950/40 relative overflow-hidden">
- <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-xl pointer-events-none" />
+ {/* User Header */}
+ <DropdownMenuLabel className="p-6 flex items-center gap-5 relative overflow-hidden bg-transparent">
+ <div className="absolute top-1/2 left-6 w-24 h-24 bg-[#FF7A00]/25 rounded-full blur-[35px] pointer-events-none -translate-y-1/2" />
  
- <Avatar className="h-14 w-14 border-2 border-background shadow-md">
+ <Avatar className="h-[70px] w-[70px] border-[3px] border-[rgba(255,255,255,0.1)] shadow-md z-10">
  <AvatarImage src={user?.avatar} alt={user?.name || 'User'} className="object-cover" />
- <AvatarFallback className="bg-gradient-to-br from-primary to-[#E85D00] text-white font-black text-lg">
+ <AvatarFallback className="bg-gradient-to-br from-[#FF7A00] to-[#E85D00] text-white font-black text-2xl">
  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
  </AvatarFallback>
  </Avatar>
  
  <div className="flex flex-col space-y-1 relative z-10">
+ <p className="text-[13px] font-medium text-[#CBD5E1]">Welcome Back 👋</p>
  <div className="flex items-center gap-2">
- <p className="text-base font-extrabold leading-none text-foreground">{user?.name || 'Guest User'}</p>
+ <p className="text-[18px] font-bold leading-tight text-[#FFFFFF]">{user?.name || 'Guest User'}</p>
  {ordersCount > 10 && (
- <span className="text-[8px] bg-primary/15 text-primary border border-primary/25 rounded-full px-2 py-0.5 font-bold uppercase tracking-wider flex items-center gap-0.5 shrink-0">
- <Sparkles className="h-2 w-2" /> Elite
+ <span className="text-[10px] bg-[#FF7A00]/15 text-[#FF7A00] border border-[#FF7A00]/30 rounded-full px-2 py-0.5 font-bold uppercase tracking-wider flex items-center gap-1 shrink-0">
+ <Sparkles className="h-2.5 w-2.5" /> Elite
  </span>
  )}
  </div>
- <p className="text-xs font-semibold text-muted-foreground">+91 {user?.phone || 'No Phone'}</p>
- {user?.email && <p className="text-[11px] font-medium text-muted-foreground/80 truncate max-w-[190px]">{user.email}</p>}
+ <p className="text-[14px] font-medium text-[#FFFFFF] mt-0.5">+91 {user?.phone || 'No Phone'}</p>
+ {user?.email && <p className="text-[12px] font-normal text-[#94A3B8] truncate max-w-[200px] mt-0.5">{user.email}</p>}
  </div>
  </DropdownMenuLabel>
  
- <Separator className="bg-border/60 dark:bg-white/5" />
+ <Separator className="bg-[rgba(255,255,255,0.08)] mx-5 w-auto" />
  
  {/* Stats capsule row */}
- <div className="p-4 grid grid-cols-3 gap-2.5">
- <Card className="rounded-2xl border-border/80 dark:border-white/5 bg-background dark:bg-slate-950/40 hover:bg-muted/50 transition-colors shadow-sm">
- <CardContent className="p-3 flex flex-col items-center justify-center text-center h-full">
- <span className="text-lg mb-1 leading-none">📦</span>
- <span className="font-extrabold text-sm text-foreground">{ordersCount}</span>
- <span className="text-[9px] uppercase font-black text-muted-foreground mt-0.5 tracking-wider">Orders</span>
+ <div className="p-5 grid grid-cols-3 gap-3 relative z-10">
+ <Card className="rounded-[18px] border border-[rgba(255,255,255,0.05)] bg-[#1F2937] hover:-translate-y-1 hover:border-[#FF7A00]/40 transition-all duration-250 shadow-sm cursor-pointer group">
+ <CardContent className="p-3.5 flex flex-col items-center justify-center text-center h-full">
+ <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250">📦</span>
+ <span className="font-bold text-[15px] text-[#FFFFFF]">{ordersCount}</span>
+ <span className="text-[11px] font-medium text-[#CBD5E1] mt-0.5 tracking-wide">Orders</span>
  </CardContent>
  </Card>
- <Card className="rounded-2xl border-border/80 dark:border-white/5 bg-background dark:bg-slate-950/40 hover:bg-muted/50 transition-colors shadow-sm">
- <CardContent className="p-3 flex flex-col items-center justify-center text-center h-full">
- <span className="text-lg mb-1 leading-none">💰</span>
- <span className="font-extrabold text-sm text-foreground truncate max-w-full">
+ <Card className="rounded-[18px] border border-[rgba(255,255,255,0.05)] bg-[#1F2937] hover:-translate-y-1 hover:border-[#FF7A00]/40 transition-all duration-250 shadow-sm cursor-pointer group">
+ <CardContent className="p-3.5 flex flex-col items-center justify-center text-center h-full">
+ <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250">💰</span>
+ <span className="font-bold text-[15px] text-[#FFFFFF] truncate max-w-full">
  {currency}{spentAmount}
  </span>
- <span className="text-[9px] uppercase font-black text-muted-foreground mt-0.5 tracking-wider">Spent</span>
+ <span className="text-[11px] font-medium text-[#CBD5E1] mt-0.5 tracking-wide">Spent</span>
  </CardContent>
  </Card>
- <Card className="rounded-2xl border-border/80 dark:border-white/5 bg-background dark:bg-slate-950/40 hover:bg-muted/50 transition-colors shadow-sm">
- <CardContent className="p-3 flex flex-col items-center justify-center text-center h-full">
- <span className="text-lg mb-1 leading-none">📍</span>
- <span className="font-extrabold text-sm text-foreground">{savedAddressesCount}</span>
- <span className="text-[9px] uppercase font-black text-muted-foreground mt-0.5 tracking-wider">Saved</span>
+ <Card className="rounded-[18px] border border-[rgba(255,255,255,0.05)] bg-[#1F2937] hover:-translate-y-1 hover:border-[#FF7A00]/40 transition-all duration-250 shadow-sm cursor-pointer group">
+ <CardContent className="p-3.5 flex flex-col items-center justify-center text-center h-full">
+ <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250">📍</span>
+ <span className="font-bold text-[15px] text-[#FFFFFF]">{savedAddressesCount}</span>
+ <span className="text-[11px] font-medium text-[#CBD5E1] mt-0.5 tracking-wide">Saved</span>
  </CardContent>
  </Card>
  </div>
  
- <Separator className="bg-border/60 dark:bg-white/5" />
+ <Separator className="bg-[rgba(255,255,255,0.08)] mx-5 w-auto" />
  
  {/* Account Menu */}
- <div className="p-2.5 max-h-[280px] overflow-y-auto scrollbar-none space-y-1">
+ <div className="px-3 py-4 max-h-[320px] overflow-y-auto scrollbar-none space-y-2 relative z-10">
  {menuItems.map((item, index) => (
  <DropdownMenuItem key={index} asChild className="p-0 focus:bg-transparent cursor-pointer">
  <Link 
  to={item.href}
- className="flex items-center w-full px-3 py-2.5 rounded-2xl hover:bg-muted/50 dark:hover:bg-white/5 transition-colors group"
+ className="flex items-center w-full h-[70px] px-4 rounded-[16px] hover:bg-[#1E293B] hover:translate-x-1 transition-all duration-250 group"
  >
- <div className={`h-8.5 w-8.5 rounded-xl bg-gradient-to-br ${item.gradient} text-white flex items-center justify-center mr-3 group-hover:scale-105 transition-transform shrink-0 shadow-sm`}>
- <item.icon className="h-4 w-4" />
+ <div className={`h-[42px] w-[42px] rounded-[12px] bg-gradient-to-br ${item.gradient} text-white flex items-center justify-center mr-4 group-hover:scale-105 transition-transform duration-250 shrink-0 shadow-sm`}>
+ <item.icon className="h-5 w-5" />
  </div>
- <div className="flex-1 flex flex-col text-left">
- <span className="text-xs font-extrabold text-foreground group-hover:text-primary transition-colors">{item.title}</span>
- <span className="text-[10px] text-muted-foreground font-semibold mt-0.5 leading-none">{item.subtitle}</span>
+ <div className="flex-1 flex flex-col text-left justify-center">
+ <span className="text-[15px] font-[600] text-[#FFFFFF] transition-colors">{item.title}</span>
+ <span className="text-[13px] text-[#94A3B8] mt-0.5 leading-none">{item.subtitle}</span>
  </div>
- <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors opacity-50 group-hover:opacity-100" />
+ <ChevronRight className="h-5 w-5 text-[#94A3B8] opacity-60 group-hover:opacity-100 group-hover:text-[#FFFFFF] transition-all duration-250" />
  </Link>
  </DropdownMenuItem>
  ))}
  </div>
  
- <Separator className="bg-border/60 dark:bg-white/5" />
+ <Separator className="bg-[rgba(255,255,255,0.08)] mx-5 w-auto mb-2" />
  
  {/* Sign Out Trigger */}
- <div className="p-2.5">
+ <div className="px-5 pb-5 pt-1 relative z-10">
  <DropdownMenuItem 
  onSelect={(e) => {
  e.preventDefault();
  setIsLogoutOpen(true);
  }}
- className="flex items-center w-full px-4 py-3 rounded-2xl text-destructive border border-red-500/20 hover:bg-red-500/5 hover:text-red-500 focus:bg-red-500/5 focus:text-red-500 transition-all cursor-pointer font-bold text-xs justify-center gap-1.5 shadow-sm"
+ className="flex items-center w-full h-[52px] rounded-[14px] text-[#FFFFFF] border border-[#FF7A00] hover:bg-[#FF7A00] hover:text-[#FFFFFF] focus:bg-[#FF7A00] focus:text-[#FFFFFF] transition-all duration-250 cursor-pointer font-[600] text-[15px] justify-center gap-2 shadow-sm group"
  >
- <LogOut className="h-4 w-4" />
+ <LogOut className="h-5 w-5 text-[#FF7A00] group-hover:text-[#FFFFFF] transition-colors duration-250" />
  Sign Out
  </DropdownMenuItem>
  </div>

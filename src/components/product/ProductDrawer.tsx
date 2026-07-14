@@ -6,6 +6,8 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useCartStore } from '@/store/CartStore';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
+import { useLocationStore } from '@/store/LocationStore';
+import { useLocationModalStore } from '@/store/LocationModalStore';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { toast } from 'sonner';
 
@@ -86,16 +88,33 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
      });
    }
 
-   const payload = {
+   const globalAddressId = useCartStore.getState().addressId;
+   const currentLocId = useLocationStore.getState().addressId;
+   const currentAddressId = currentLocId || globalAddressId;
+   const currentOrderType = orderType || 'Door Delivery';
+
+   if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+     useLocationModalStore.getState().openModal();
+     toast.error('Please select a delivery address first.');
+     return;
+   }
+
+   const payload: any = {
      items: existingItems,
-     deliveryType: orderType || 'Door Delivery',
-     orderType: orderType || 'Door Delivery',
+     deliveryType: currentOrderType,
+     orderType: currentOrderType,
      customerName: user?.name || 'Guest',
      customerPhoneNo: user?.phone || '0000000000',
      instruction: '',
      outletId: selectedOutlet._id,
-     orderId: orderId || undefined
+     orderId: orderId || undefined,
+     addressId: currentAddressId,
    };
+
+   console.log("=== CART UPDATE: ProductDrawer handleAddToCart ===");
+   console.log("Selected Address (LocationStore):", useLocationStore.getState());
+   console.log("addressId:", currentAddressId);
+   console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
    updateCart(payload, {
      onSuccess: () => {

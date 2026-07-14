@@ -65,23 +65,6 @@ export const customerService = {
   },
 
   getAddresses: async (belongsTo: string, customerPhoneNo: string, lat: number, lng: number, page: number = 1, limit: number = 20): Promise<CustomerAddress[]> => {
-    if (import.meta.env.DEV) {
-      console.warn('[DEV MODE] Bypassing getAddresses API and returning mock data');
-      return [{
-        _id: "mock-address-id",
-        street: "Development Mock Street",
-        city: "Thiruvarur",
-        state: "Tamil Nadu",
-        country: "India",
-        postalCode: "610001",
-        formattedAddress: "Development Mock Address, Thiruvarur, Tamil Nadu 610001",
-        lat: 10.7681,
-        lng: 79.6433,
-        type: "Home",
-        isDefault: true
-      }] as unknown as CustomerAddress[];
-    }
-
     try {
       const response = await axiosInstance.post<ApiResponse<CustomerAddress[]>>(`${ENV.ADDRESS_API}/get-addresses?page=${page}&limit=${limit}`, {
         belongsTo,
@@ -97,11 +80,6 @@ export const customerService = {
   },
 
   createAddress: async (payload: CreateAddressRequest): Promise<CreateAddressResponse> => {
-    if (import.meta.env.DEV) {
-      console.warn('[DEV MODE] Bypassing createAddress API and returning mock success');
-      return { _id: "mock-new-address", ...payload } as any;
-    }
-    
     const response = await axiosInstance.post<ApiResponse<CreateAddressResponse | any>>(`${ENV.ADDRESS_API}/create-address`, payload);
     return response.data.data ?? response.data;
   }

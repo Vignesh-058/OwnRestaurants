@@ -1,20 +1,23 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Store, Navigation, Shield, X } from 'lucide-react';
-import { getCurrentPosition } from '@/utils/testLocation';
 import { useLocationStore } from '@/store/LocationStore';
 import { useAuthStore } from '@/store/AuthStore';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { useLocationModalStore } from '@/store/LocationModalStore';
 
 export const LocationPermissionModal = () => {
   const permissionGranted = useLocationStore((state) => state.permissionGranted);
-  const setLocation = useLocationStore((state) => state.setLocation);
   const setPermissionStatus = useLocationStore((state) => state.setPermissionStatus);
+  const clearLocation = useLocationStore((state) => state.clearLocation);
+  const setLocation = useLocationStore((state) => state.setLocation);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const openLocationModal = useLocationModalStore((state) => state.openModal);
   
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDenied, setIsDenied] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && permissionGranted === null) {
@@ -34,25 +37,32 @@ export const LocationPermissionModal = () => {
       return;
     }
 
-    getCurrentPosition(
+    console.log('[DEBUG] Requesting Browser Geolocation...');
+    
+    navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log('[DEBUG] Location Permission Granted');
+        console.log(`[DEBUG] Current Coordinates: Lat ${position.coords.latitude}, Lng ${position.coords.longitude}`);
+        clearLocation();
         setLocation({
           latitude: position.coords.latitude,
-          longitude: position.coords.longitude
+          longitude: position.coords.longitude,
+          locationLoaded: false,
         });
         setIsOpen(false);
         setIsLoading(false);
       },
       (error) => {
-        console.error('Geolocation error:', error);
+        console.error('[DEBUG] Geolocation error:', error);
+        console.log('[DEBUG] Location Permission Denied/Failed');
         toast.error(
           error.code === 1 ? 'Location permission denied by browser.' :
           error.code === 2 ? 'Location information is unavailable.' :
           'Location request timed out.'
         );
         setPermissionStatus(false);
-        setIsOpen(false);
         setIsLoading(false);
+        setIsDenied(true);
       },
       {
         enableHighAccuracy: true,
@@ -64,6 +74,7 @@ export const LocationPermissionModal = () => {
 
   const handleSkip = () => {
     setPermissionStatus(false);
+    setLocation({ locationLoaded: true });
     setIsOpen(false);
   };
 
@@ -125,26 +136,55 @@ export const LocationPermissionModal = () => {
             </div>
 
             <div className="flex flex-col gap-4 w-full">
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Button 
-                  onClick={handleAllowLocation}
-                  disabled={isLoading}
-                  className="w-full h-[56px] rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-500 hover:to-orange-500 text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(249,115,22,0.4)] disabled:opacity-50 transition-all relative overflow-hidden"
-                >
-                  {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Allow Location Access'}
-                </Button>
-              </motion.div>
-              
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Button 
-                  variant="outline"
-                  onClick={handleSkip}
-                  disabled={isLoading}
-                  className="w-full h-[56px] rounded-2xl border-slate-700 bg-transparent hover:bg-slate-800 hover:text-white text-slate-300 font-bold text-[15px] transition-all"
-                >
-                  Not Now
-                </Button>
-              </motion.div>
+              {isDenied ? (
+                <>
+                  <p className="text-sm text-red-400 text-center font-medium mb-2">Enable location to continue or select an address.</p>
+                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+                    <Button 
+                      onClick={handleAllowLocation}
+                      disabled={isLoading}
+                      className="w-full h-[56px] rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-500 hover:to-orange-500 text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(249,115,22,0.4)] disabled:opacity-50 transition-all relative overflow-hidden"
+                    >
+                      {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Retry Location Access'}
+                    </Button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        setIsOpen(false);
+                        openLocationModal();
+                      }}
+                      disabled={isLoading}
+                      className="w-full h-[56px] rounded-2xl border-slate-700 bg-transparent hover:bg-slate-800 hover:text-white text-slate-300 font-bold text-[15px] transition-all"
+                    >
+                      Enter Address Manually
+                    </Button>
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+                    <Button 
+                      onClick={handleAllowLocation}
+                      disabled={isLoading}
+                      className="w-full h-[56px] rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-500 hover:to-orange-500 text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(249,115,22,0.4)] disabled:opacity-50 transition-all relative overflow-hidden"
+                    >
+                      {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Allow Location Access'}
+                    </Button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
+                    <Button 
+                      variant="outline"
+                      onClick={handleSkip}
+                      disabled={isLoading}
+                      className="w-full h-[56px] rounded-2xl border-slate-700 bg-transparent hover:bg-slate-800 hover:text-white text-slate-300 font-bold text-[15px] transition-all"
+                    >
+                      Not Now
+                    </Button>
+                  </motion.div>
+                </>
+              )}
             </div>
           </motion.div>
         </div>

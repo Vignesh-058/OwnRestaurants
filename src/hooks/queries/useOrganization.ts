@@ -8,8 +8,10 @@ export const useOrganization = (belongsTo: string) => {
  return useQuery({
  queryKey: ['organization', belongsTo],
  queryFn: async () => {
+ console.log('[DEBUG-FLOW] ORG REQUEST - belongsTo:', belongsTo);
  const data = await organizationService.getOrganization(belongsTo);
  if (data.organization) {
+ console.log('[DEBUG-FLOW] ORG LOADED:', data.organization.name);
  setOrganization(data.organization);
  }
  return data;

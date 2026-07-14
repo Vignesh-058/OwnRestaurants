@@ -85,15 +85,26 @@ export const CheckoutPage = () => {
     if (isCouponApplied && couponCode) payload.couponCode = couponCode;
 
     if (selectedAddress) {
-      payload.addressId = selectedAddress._id;
-      if (selectedAddress.address1) payload.address1 = selectedAddress.address1;
-      if (selectedAddress.address2) payload.address2 = selectedAddress.address2;
-      if (selectedAddress.city) payload.city = selectedAddress.city;
-      if (selectedAddress.state) payload.state = selectedAddress.state;
-      if (selectedAddress.country) payload.country = selectedAddress.country;
-      if (selectedAddress.pincode) payload.pincode = selectedAddress.pincode;
-      if (selectedAddress.latitude) payload.latitude = selectedAddress.latitude;
-      if (selectedAddress.longitude) payload.longitude = selectedAddress.longitude;
+      if (selectedAddress._id) {
+        payload.addressId = selectedAddress._id;
+      } else {
+        const lat = Number(selectedAddress.latitude);
+        const lng = Number(selectedAddress.longitude);
+        
+        if (!selectedAddress.address1 || !selectedAddress.city || !selectedAddress.state || !selectedAddress.country || !selectedAddress.pincode || isNaN(lat) || isNaN(lng)) {
+          toast.error('Incomplete delivery address. Please provide all required fields including valid location.');
+          return;
+        }
+
+        payload.address1 = selectedAddress.address1;
+        payload.address2 = selectedAddress.address2 || '';
+        payload.city = selectedAddress.city;
+        payload.state = selectedAddress.state;
+        payload.country = selectedAddress.country;
+        payload.pincode = selectedAddress.pincode;
+        payload.latitude = lat;
+        payload.longitude = lng;
+      }
     }
 
     setIsProcessing(true);

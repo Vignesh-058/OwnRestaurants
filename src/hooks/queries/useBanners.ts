@@ -13,7 +13,7 @@ export const useBanners = (belongsTo: string, outletId: string) => {
  const data = await bannerService.getActiveBanners(belongsTo, outletId);
  return data;
  },
- enabled: Boolean(belongsTo) && Boolean(outletId) && isSettingsLoaded && isBannerEnabled && useOutletStore.getState().storeStatus?.storeStatus === true,
+ enabled: Boolean(belongsTo) && Boolean(outletId) && isSettingsLoaded && isBannerEnabled,
  staleTime: 1000 * 60 * 15, // 15 minutes
  });
 };

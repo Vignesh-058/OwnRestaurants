@@ -38,6 +38,9 @@ export interface CustomerLocation {
  latitude: number | null;
  longitude: number | null;
  formattedAddress: string | null;
+ addressId: string | null;
+ address1: string | null;
+ address2: string | null;
  street: string | null;
  city: string | null;
  state: string | null;

@@ -58,8 +58,6 @@ export const LocationSelectorModal = () => {
       hasAutoOpened.current = true;
       if (!locationLoaded && !isOpen) {
         openModal();
-      } else if (user && isSuccess && addressesData && addressesData.length > 0 && !isOpen && !locationLoaded) {
-        openModal();
       }
     }
   }, [locationLoaded, isSuccess, addressesData, isOpen, openModal, user]);
@@ -117,6 +115,9 @@ export const LocationSelectorModal = () => {
       latitude: addr.latitude,
       longitude: addr.longitude,
       placeId: undefined,
+      addressId: addr._id,
+      address1: addr.address1,
+      address2: addr.address2,
       street: addr.address2,
       city: addr.city,
       state: addr.state,
@@ -156,6 +157,9 @@ export const LocationSelectorModal = () => {
         latitude: payload.latitude,
         longitude: payload.longitude,
         placeId: pendingAddress.placeId,
+        addressId: null,
+        address1: payload.address1,
+        address2: payload.address2,
         street: payload.address2,
         city: payload.city,
         state: payload.state,
@@ -176,6 +180,9 @@ export const LocationSelectorModal = () => {
           latitude: finalAddr.latitude,
           longitude: finalAddr.longitude,
           placeId: pendingAddress.placeId,
+          addressId: finalAddr._id || null,
+          address1: payload.address1,
+          address2: payload.address2,
           street: payload.address2,
           city: payload.city,
           state: payload.state,

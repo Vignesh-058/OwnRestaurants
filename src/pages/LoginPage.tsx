@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PhoneInput } from '@/components/auth/PhoneInput';
 import { OTPInput } from '@/components/auth/OTPInput';
-import { getCurrentPosition } from '@/utils/testLocation';
 import { ResendOTP } from '@/components/auth/ResendOTP';
 import { Button } from '@/components/ui/button';
 import { useLogin } from '@/hooks/auth/useLogin';
@@ -66,11 +65,11 @@ export const LoginPage = () => {
           }
           if (extractedToken) {
             // Immediately request GPS permission
-            getCurrentPosition(
+            navigator.geolocation.getCurrentPosition(
               (position) => {
                   const { latitude, longitude } = position.coords;
                   const address = `GPS Location (${latitude.toFixed(4)}°N, ${longitude.toFixed(4)}°E)`;
-                  useLocationStore.getState().setLocation({ latitude, longitude, formattedAddress: address });
+                  useLocationStore.getState().setLocation({ latitude, longitude, formattedAddress: address, locationLoaded: false });
                   navigate(from, { replace: true });
                 },
                 (error) => {
@@ -81,7 +80,7 @@ export const LoginPage = () => {
                     useLocationModalStore.getState().openModal();
                   }, 200);
                 },
-                { enableHighAccuracy: true, timeout: 5000 }
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
               );
           }
         }

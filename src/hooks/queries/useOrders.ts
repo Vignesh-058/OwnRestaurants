@@ -26,7 +26,7 @@ export const useOrders = () => {
  if (query.data) {
  setOrdersData(query.data.data, query.data.totalOrders, query.data.pagination);
  }
- }, [query.data, query.isLoading, query.isFetching, query.isError, query.error]);
+ }, [query.data, query.isLoading, query.isFetching, query.isError, query.error, setLoading, setError, setOrdersData]);
 
  return query;
 };

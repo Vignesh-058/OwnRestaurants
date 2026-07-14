@@ -1,12 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '@/store/CartStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useAuthStore } from '@/store/AuthStore';
+import { useLocationStore } from '@/store/LocationStore';
+import { useLocationModalStore } from '@/store/LocationModalStore';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 import { CartList } from '@/components/cart/CartList';
 import { CartSummary } from '@/components/cart/CartSummary';
@@ -14,8 +17,8 @@ import { DeliveryTypeSelector } from '@/components/cart/DeliveryTypeSelector';
 import { EmptyCart } from '@/components/cart/EmptyCart';
 import { CartSkeleton } from '@/components/cart/CartSkeleton';
 import { RemoveItemDialog } from '@/components/cart/RemoveItemDialog';
+import type { CartItem } from '@/types/cart.types';
 import { DiscountList } from '@/components/discount/DiscountList';
-import type { CartItem, AddToCartPayload } from '@/types/cart.types';
 import { useCart as useCartDetails } from '@/hooks/cart/useCart';
 
 export const CartPage = () => {
@@ -53,29 +56,44 @@ export const CartPage = () => {
  }
 
  updateTimeoutRef.current = setTimeout(() => {
- const latestCartItems = useCartStore.getState().cartItems;
- const cartCurrency = currency === '₹' ? 'INR' : currency;
+  const latestCartItems = useCartStore.getState().cartItems;
+  const cartCurrency = currency === '₹' ? 'INR' : currency;
 
- const payload: AddToCartPayload = {
- items: latestCartItems.map(c => ({
- itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
- quantity: c.quantity,
- variationId: c.variation_id?._id || "",
- addOnDetails: c.addons || [],
- currency: cartCurrency
- })),
- deliveryType: updatedDeliveryType,
- orderType: updatedDeliveryType,
- customerName,
- customerPhoneNo,
- instruction: updatedInstruction,
- addressId: useCartStore.getState().addressId || undefined,
- outletId: selectedOutlet._id,
- orderId
- };
+  const globalAddressId = useCartStore.getState().addressId;
+  const currentLocId = useLocationStore.getState().addressId;
+  const currentAddressId = currentLocId || globalAddressId;
 
- updateCart(payload);
- }, 600); // 600ms debounce
+  if (updatedDeliveryType === 'Door Delivery' && !currentAddressId) {
+    useLocationModalStore.getState().openModal();
+    toast.error('Please select a delivery address first.');
+    return;
+  }
+
+  const payload: any = {
+  items: latestCartItems.map(c => ({
+  itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
+  quantity: c.quantity,
+  variationId: c.variation_id?._id || "",
+  addOnDetails: c.addons || [],
+  currency: cartCurrency
+  })),
+  deliveryType: updatedDeliveryType,
+  orderType: updatedDeliveryType,
+  customerName,
+  customerPhoneNo,
+  instruction: updatedInstruction,
+  outletId: selectedOutlet._id,
+  addressId: currentAddressId,
+  orderId
+  };
+
+  console.log("=== CART UPDATE: CartPage handleUpdateQuantity ===");
+  console.log("Selected Address (LocationStore):", useLocationStore.getState());
+  console.log("addressId:", currentAddressId);
+  console.log("Final Payload:", JSON.stringify(payload, null, 2));
+
+  updateCart(payload);
+  }, 600); // 600ms debounce
  };
 
  const handleUpdateQuantity = (item: CartItem, newQuantity: number) => {

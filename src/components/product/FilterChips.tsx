@@ -9,8 +9,7 @@ interface FilterChipsProps {
   onRemoveFilter: (key: keyof FilterState, value: any) => void;
   onClearAll: () => void;
 }
-
-export const FilterChips = ({ filters, categories, onRemoveFilter, onClearAll }: FilterChipsProps) => {
+export const FilterChips = ({ filters, onRemoveFilter, onClearAll }: FilterChipsProps) => {
   const chips: { key: keyof FilterState; value: any; label: string }[] = [];
 
   // Categories are no longer part of FilterChips

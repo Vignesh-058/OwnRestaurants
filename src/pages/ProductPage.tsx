@@ -7,8 +7,10 @@ import { useItemDetail } from '@/hooks/queries/useItemDetail';
 import { useAddToCart, useUpdateCart } from '@/hooks/queries/useCart';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useOrganizationStore } from '@/store/OrganizationStore';
+import { useLocationStore } from '@/store/LocationStore';
+import { useLocationModalStore } from '@/store/LocationModalStore';
 import { useCartStore } from '@/store/CartStore';
+import { useOrganizationStore } from '@/store/OrganizationStore';
 import { PageLoader } from '@/components/common/PageLoader';
 import { ErrorState } from '@/components/common/ErrorState';
 import { ProductInfoTabs } from '@/components/product/ProductInfoTabs';
@@ -148,22 +150,35 @@ export const ProductPage = () => {
       updatedItems = [newItem];
     }
 
-    // Using CartStore's global addressId if available
     const globalAddressId = useCartStore.getState().addressId;
+    const currentLocId = useLocationStore.getState().addressId;
+    const currentAddressId = currentLocId || globalAddressId;
+    const currentOrderType = orderType || 'Takeaway';
+
+    if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+      useLocationModalStore.getState().openModal();
+      toast.error('Please select a delivery address first.');
+      return;
+    }
 
     const payload: any = {
       items: updatedItems,
-      deliveryType: orderType || 'Takeaway',
-      orderType: orderType || 'Takeaway',
+      deliveryType: currentOrderType,
+      orderType: currentOrderType,
       customerName: user.name || 'Guest',
       customerPhoneNo: user.phone,
       instruction: '',
-      addressId: globalAddressId || undefined,
       outletId: selectedOutlet._id,
+      addressId: currentAddressId,
     };
     if (orderId) {
       payload.orderId = orderId;
     }
+
+    console.log("=== CART UPDATE: ProductPage handleAddToCart ===");
+    console.log("Selected Address (LocationStore):", useLocationStore.getState());
+    console.log("addressId:", currentAddressId);
+    console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
     if (orderId) {
       updateCart(payload);

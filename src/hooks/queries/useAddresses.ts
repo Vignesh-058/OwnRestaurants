@@ -10,7 +10,7 @@ export const useAddresses = () => {
   const { user } = useAuthStore();
   const organization = useOrganizationStore((state) => state.organization);
   const setAddresses = useAddressStore((state) => state.setAddresses);
-  const { latitude, longitude } = useLocationStore();
+  const { latitude, longitude, locationLoaded } = useLocationStore();
 
   const lat = latitude ?? 0;
   const lng = longitude ?? 0;
@@ -23,7 +23,7 @@ export const useAddresses = () => {
       setAddresses(data);
       return data;
     },
-    enabled: !!user?.phone && !!organization?._id,
+    enabled: !!user?.phone && !!organization?._id && locationLoaded,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

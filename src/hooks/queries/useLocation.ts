@@ -3,7 +3,7 @@ import { locationService } from '@/services/location.service';
 import { useLocationStore } from '@/store/LocationStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useEffect, useCallback } from 'react';
-import { getCurrentPosition } from '@/utils/testLocation';
+
 export const extractAddressParts = (components: any[]) => {
  let streetNumber = '', route = '', locality = '', city = '', state = '', country = '', postalCode = '';
 
@@ -32,7 +32,9 @@ export const useGeoLocation = () => {
  queryKey: ['geoLocation', latitude, longitude, belongsTo],
  queryFn: async () => {
  if (!latitude || !longitude || !belongsTo) return null;
+ console.log('[DEBUG] Geo API Request:', { latitude, longitude, belongsTo });
  const data = await locationService.getCustomerGeoLocation({ latitude, longitude, belongsTo });
+ console.log('[DEBUG] Geo API Response:', data);
  return data;
  },
  enabled: !!latitude && !!longitude && !!belongsTo && !locationLoaded,
@@ -47,15 +49,19 @@ export const useGeoLocation = () => {
  if (query.data?.results?.[0]) {
  const result = query.data.results[0];
  const parts = extractAddressParts(result.address_components);
- 
- setLocation({
+
+ const newState = {
  latitude,
  longitude,
  placeId: result.place_id,
  ...parts,
- });
+ };
+
+ console.log('[DEBUG] Global Store Values (New Location State):', newState);
+
+ setLocation(newState);
  }
- }, [query.data, query.isLoading, query.isError]);
+ }, [query.data, query.isLoading, query.isError, latitude, longitude, setLoading, setError, setLocation]);
 
  return query;
 };
@@ -71,19 +77,22 @@ export const useRequestBrowserLocation = () => {
  }
 
  setLoading(true);
- getCurrentPosition(
+ navigator.geolocation.getCurrentPosition(
  (position) => {
  setPermissionStatus(true);
- setLocation({
+ const newState = {
  latitude: position.coords.latitude,
  longitude: position.coords.longitude,
  locationLoaded: false, // Forces the API to fetch the address again for the new coordinates
- });
+ };
+ console.log('[DEBUG] RequestBrowserLocation - Current Coordinates:', newState);
+ setLocation(newState);
  },
  () => {
  setPermissionStatus(false);
  setLoading(false);
  setError('Location permission is required to find nearby restaurants.');
+ setLocation({ locationLoaded: true });
  },
  { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
  );

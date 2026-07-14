@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { MapPin, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getCurrentPosition } from '@/utils/testLocation';
 
 interface CurrentLocationButtonProps {
  onLocationFound: (lat: number, lng: number) => void;
@@ -18,7 +17,7 @@ export const CurrentLocationButton = ({ onLocationFound }: CurrentLocationButton
  }
 
  setIsLoading(true);
- getCurrentPosition(
+ navigator.geolocation.getCurrentPosition(
  (position) => {
  setIsLoading(false);
  onLocationFound(position.coords.latitude, position.coords.longitude);

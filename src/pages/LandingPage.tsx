@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Sparkles, Ticket } from "lucide-react";
@@ -116,8 +116,8 @@ export const LandingPage = () => {
         window.scrollTo({ top: 250, behavior: "smooth" });
       }
     }
-  }, [categories, window.location.hash]);
-  const applyFiltersToItems = (items: any[]) => {
+  }, [categories]);
+  const applyFiltersToItems = useCallback((items: any[]) => {
     let filtered = items;
 
     // Categories
@@ -215,30 +215,8 @@ export const LandingPage = () => {
     });
 
     return filtered;
-  };
+  }, [filters]);
 
-  const featuredProducts = useMemo(() => {
-    const allProducts = categories.flatMap((c) => c.items || []);
-    const featured = allProducts.filter((p) => {
-      if (Array.isArray(p.tag)) {
-        return p.tag.some(
-          (t: any) =>
-            t?.name?.toLowerCase() === "featured" ||
-            t?.toLowerCase() === "featured",
-        );
-      }
-      return (
-        (p.tag as any)?.name?.toLowerCase() === "featured" ||
-        (p.tag as string)?.toLowerCase() === "featured"
-      );
-    });
-
-    const fallbackFeatured =
-      featured.length > 0
-        ? featured
-        : allProducts.filter((p) => p.discount?.value).slice(0, 8);
-    return applyFiltersToItems(fallbackFeatured).slice(0, 8);
-  }, [categories, filters]);
 
   const recommendedProducts = useMemo(() => {
     const allProducts = categories.flatMap((c) => c.items || []);
@@ -246,117 +224,7 @@ export const LandingPage = () => {
       (p) => p.bestseller || (p.rating && p.rating >= 4.5),
     );
     return applyFiltersToItems(recs).slice(0, 8);
-  }, [categories, filters]);
-
-  const handleProductClick = (product: CategoryItem) => {
-    setSelectedProductId(product._id);
-  };
-
-  const handleRequestLocation = () => {
-    openModal();
-  };
-
-  const handleRemoveFilter = (key: keyof FilterState, value: any) => {
-    if (Array.isArray(filters[key])) {
-      setFilters((prev) => ({
-        ...prev,
-        [key]: (prev[key] as any[]).filter((v) => v !== value),
-      }));
-    } else {
-      setFilters((prev) => ({
-        ...prev,
-        [key]:
-          key === "priceRange"
-            ? [0, 5000]
-            : key === "foodType"
-              ? "all"
-              : key === "rating" || key === "deliveryTime"
-                ? 0
-                : "",
-      }));
-    }
-  };
-
-  const handleClearAllFilters = () => {
-    setFilters({
-      categories: [],
-      foodType: "all",
-      priceRange: [0, 5000],
-      rating: 0,
-      offers: [],
-      deliveryTime: 0,
-      availability: [],
-      sortBy: "recommended",
-    });
-  };
-
-  const renderFilteredCategories = () => {
-    // Only render the active category
-    const activeCategory = categories.find((c) => c._id === activeCategoryId);
-
-    if (!activeCategory) {
-      return (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="w-full flex flex-col items-center justify-center py-24 text-center px-4"
-        >
-          <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6 shadow-inner">
-            <span className="text-4xl">🍽️</span>
-          </div>
-          <h3 className="text-2xl font-black text-foreground tracking-tight mb-3">
-            Category not found
-          </h3>
-          <p className="text-muted-foreground mb-8 max-w-[400px]">
-            Please select a valid category from the sidebar.
-          </p>
-        </motion.div>
-      );
-    }
-
-    const items = activeCategory.items || [];
-    const filteredItems = applyFiltersToItems(items);
-    const categoryName =
-      (activeCategory as any).categoryName ||
-      activeCategory.name ||
-      (activeCategory as any).displayName ||
-      (activeCategory as any).title ||
-      "Unknown";
-
-    if (filteredItems.length === 0) {
-      return null;
-    }
-
-    return (
-      <AnimatePresence mode="popLayout">
-        <motion.div
-          layout
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          key={activeCategory._id}
-          id={activeCategory._id}
-          className="w-full"
-        >
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-[32px] md:text-[40px] font-black text-[#111827] tracking-tight flex items-center gap-4">
-              {categoryName}
-              <span className="text-sm md:text-base font-bold text-[#FF6B00] bg-[#FFF7ED] px-4 py-1.5 rounded-full shadow-[0_2px_10px_rgba(255,107,0,0.1)]">
-                {filteredItems.length}{" "}
-                {filteredItems.length === 1 ? "Item" : "Items"}
-              </span>
-            </h2>
-          </div>
-          <ProductGrid
-            products={filteredItems}
-            onProductClick={(p) => setSelectedProductId(p._id)}
-          />
-        </motion.div>
-      </AnimatePresence>
-    );
-  };
+  }, [categories, applyFiltersToItems]);
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-background pb-32">
@@ -370,7 +238,7 @@ export const LandingPage = () => {
       >
         {isStoreStatusLoading ? (
           <StoreStatusLoader />
-        ) : storeStatusData?.storeStatus === false && !import.meta.env.DEV ? (
+        ) : storeStatusData?.storeStatus === false && (storeStatusData as any)?.openTime ? (
           <StoreClosedPage
             outlet={selectedOutlet!}
             storeStatus={storeStatusData}

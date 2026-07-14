@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/CartStore';
@@ -7,12 +7,14 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 import type { CategoryItem } from '@/types/category.types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Heart, Loader2, Check, Minus, Plus, Star, TrendingDown } from 'lucide-react';
+import { Heart, Loader2, Minus, Plus, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
+import { useLocationStore } from '@/store/LocationStore';
+import { useLocationModalStore } from '@/store/LocationModalStore';
 
 interface ProductCardProps {
   product: CategoryItem;
@@ -38,11 +40,7 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
     return itemMatch;
   });
   
-  useEffect(() => {
-    if (cartItems.length > 0) {
-      console.log("Cart Sync Log - Items:", cartItems.map(c => ({ id: c.itemid?._id || c.itemid, qty: c.quantity })), "Product ID:", product._id);
-    }
-  }, [cartItems, product._id]);
+
 
   const totalQuantity = matchingCartItems.reduce((sum, item) => sum + item.quantity, 0);
   const inWishlist = wishlistItems.some((item) => item._id === product._id);
@@ -110,16 +108,31 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       });
     }
 
+    const currentAddressId = useLocationStore.getState().addressId || useCartStore.getState().addressId;
+    const currentOrderType = orderType || 'Door Delivery';
+
+    if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+      useLocationModalStore.getState().openModal();
+      toast.error('Please select a delivery address first.');
+      return;
+    }
+
     const payload: any = {
       items: existingItems,
-      deliveryType: orderType || 'Door Delivery',
-      orderType: orderType || 'Door Delivery',
+      deliveryType: currentOrderType,
+      orderType: currentOrderType,
       customerName: user?.name || 'Guest',
       customerPhoneNo: user?.phone || '0000000000',
       instruction: '',
       outletId: selectedOutlet._id,
+      addressId: currentAddressId,
     };
     if (orderId) payload.orderId = orderId;
+
+    console.log("=== CART UPDATE: ProductCard handleQuickAdd ===");
+    console.log("Selected Address (LocationStore):", useLocationStore.getState());
+    console.log("addressId:", currentAddressId);
+    console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
     optimisticSetQuantity(product, 1);
 
@@ -159,6 +172,15 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
         return c;
       });
 
+      const currentAddressId = useLocationStore.getState().addressId || useCartStore.getState().addressId;
+      const currentOrderType = orderType || 'Door Delivery';
+
+      if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+        useLocationModalStore.getState().openModal();
+        toast.error('Please select a delivery address first.');
+        return;
+      }
+
       const payload: any = {
         items: updatedItems.map(c => ({
           itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
@@ -167,15 +189,21 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
           addOnDetails: c.addons || [],
           currency: cartCurrency
         })),
-        deliveryType: orderType || 'Door Delivery',
-        orderType: orderType || 'Door Delivery',
+        deliveryType: currentOrderType,
+        orderType: currentOrderType,
         customerName: user?.name || 'Guest',
         customerPhoneNo: user?.phone || '0000000000',
         instruction: '',
         outletId: selectedOutlet._id,
+        addressId: currentAddressId,
       };
       if (orderId) payload.orderId = orderId;
       
+      console.log("=== CART UPDATE: ProductCard handleDecrement ===");
+      console.log("Selected Address (LocationStore):", useLocationStore.getState());
+      console.log("addressId:", currentAddressId);
+      console.log("Final Payload:", JSON.stringify(payload, null, 2));
+
       optimisticSetQuantity(product, newQty);
       updateCart(payload);
     }
@@ -196,6 +224,15 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       return c;
     });
 
+    const currentAddressId = useLocationStore.getState().addressId || useCartStore.getState().addressId;
+    const currentOrderType = orderType || 'Door Delivery';
+
+    if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+      useLocationModalStore.getState().openModal();
+      toast.error('Please select a delivery address first.');
+      return;
+    }
+
     const payload: any = {
       items: updatedItems.map(c => ({
         itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
@@ -204,15 +241,21 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
         addOnDetails: c.addons || [],
         currency: cartCurrency
       })),
-      deliveryType: orderType || 'Door Delivery',
-      orderType: orderType || 'Door Delivery',
+      deliveryType: currentOrderType,
+      orderType: currentOrderType,
       customerName: user?.name || 'Guest',
       customerPhoneNo: user?.phone || '0000000000',
       instruction: '',
       outletId: selectedOutlet._id,
+      addressId: currentAddressId,
     };
     if (orderId) payload.orderId = orderId;
     
+    console.log("=== CART UPDATE: ProductCard handleIncrement ===");
+    console.log("Selected Address (LocationStore):", useLocationStore.getState());
+    console.log("addressId:", currentAddressId);
+    console.log("Final Payload:", JSON.stringify(payload, null, 2));
+
     optimisticSetQuantity(product, newQty);
     updateCart(payload);
   };
@@ -317,7 +360,7 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
           </div>
 
           {/* Add Button / Quantity Selector */}
-          <div className="relative h-[42px] lg:h-[46px] w-[130px] lg:w-[150px] shrink-0" onClick={(e) => e.stopPropagation()}>
+          <div className="relative h-[36px] lg:h-[40px] w-[100px] lg:w-[110px] shrink-0" onClick={(e) => e.stopPropagation()}>
             <AnimatePresence mode="wait">
               {totalQuantity > 0 ? (
                 <motion.div
@@ -331,17 +374,17 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
                   <button
                     onClick={handleDecrement}
                     disabled={isAdding || isRemoving}
-                    className="w-[32px] h-[32px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-full bg-[#FFF0F2] text-[#FF6B00] transition-colors duration-200 hover:bg-[#FF6B00] hover:text-white disabled:opacity-50"
+                    className="w-[28px] h-[28px] lg:w-[32px] lg:h-[32px] flex items-center justify-center rounded-full bg-[#FFF0F2] text-[#FF6B00] transition-colors duration-200 hover:bg-[#FF6B00] hover:text-white disabled:opacity-50"
                   >
                     <Minus className="w-4 h-4 lg:w-4.5 lg:h-4.5 stroke-[3]" />
                   </button>
-                  <span className="text-[16px] font-semibold text-[#FF6B00] select-none flex-1 text-center">
+                  <span className="text-[14px] lg:text-[15px] font-semibold text-[#FF6B00] select-none flex-1 text-center">
                     {totalQuantity}
                   </span>
                   <button
                     onClick={handleIncrement}
                     disabled={isAdding || isRemoving}
-                    className="w-[32px] h-[32px] lg:w-[36px] lg:h-[36px] flex items-center justify-center rounded-full bg-[#FFF0F2] text-[#FF6B00] transition-colors duration-200 hover:bg-[#FF6B00] hover:text-white disabled:opacity-50"
+                    className="w-[28px] h-[28px] lg:w-[32px] lg:h-[32px] flex items-center justify-center rounded-full bg-[#FFF0F2] text-[#FF6B00] transition-colors duration-200 hover:bg-[#FF6B00] hover:text-white disabled:opacity-50"
                   >
                     <Plus className="w-4 h-4 lg:w-4.5 lg:h-4.5 stroke-[3]" />
                   </button>
@@ -356,12 +399,12 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
                   className="absolute inset-0"
                 >
                   <Button
-                    className="w-full h-full rounded-full bg-[#FF6B00] hover:bg-[#E65C00] text-white font-bold text-[14px] lg:text-[15px] shadow-[0_4px_12px_rgba(255,107,0,0.18)] hover:shadow-[0_6px_16px_rgba(255,107,0,0.28)] transition-all duration-300 border-0"
+                    className="w-full h-full rounded-full bg-[#FF6B00] hover:bg-[#E65C00] text-white font-bold text-[13px] lg:text-[14px] shadow-[0_4px_12px_rgba(255,107,0,0.18)] hover:shadow-[0_6px_16px_rgba(255,107,0,0.28)] transition-all duration-300 border-0"
                     onClick={handleQuickAdd}
                     disabled={isAdding}
                   >
                     {isAdding ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       "Add +"
                     )}

@@ -8,10 +8,13 @@ import { useUpdateCart } from "@/hooks/cart/useUpdateCart";
 import { useDeleteCart } from "@/hooks/cart/useDeleteCart";
 import { useAuthStore } from "@/store/AuthStore";
 import { useOutletStore } from "@/store/OutletStore";
+import { useLocationStore } from "@/store/LocationStore";
+import { useLocationModalStore } from "@/store/LocationModalStore";
 import { useWishlist } from "@/hooks/useWishlist";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { CartItem as CartItemType, AddToCartPayload } from "@/types/cart.types";
+import { toast } from "sonner";
+import type { CartItem as CartItemType } from "@/types/cart.types";
 
 const AnimatedQuantity = ({ quantity, onIncrease, onDecrease, disabled }: any) => {
   return (
@@ -77,7 +80,7 @@ export const CartDrawer = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isDrawerOpen, closeDrawer]);
 
-  const triggerCartUpdate = () => {
+  const triggerCartUpdate = (updatedDeliveryType = orderType) => {
     if (!selectedOutlet || !orderId) return;
 
     if (updateTimeoutRef.current) {
@@ -87,24 +90,38 @@ export const CartDrawer = () => {
     updateTimeoutRef.current = setTimeout(() => {
       const latestCartItems = useCartStore.getState().cartItems;
       const cartCurrency = currency === '₹' ? 'INR' : currency;
+      const globalAddressId = useCartStore.getState().addressId;
+      const currentLocId = useLocationStore.getState().addressId;
+      const currentAddressId = currentLocId || globalAddressId;
 
-      const payload: AddToCartPayload = {
-        items: latestCartItems.map(c => ({
-          itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
+      if (updatedDeliveryType === 'Door Delivery' && !currentAddressId) {
+        useLocationModalStore.getState().openModal();
+        toast.error('Please select a delivery address first.');
+        return;
+      }
+
+      const payload: any = {
+        items: latestCartItems.map((c: any) => ({
+          itemId: c.itemid?._id || c.itemid,
           quantity: c.quantity,
           variationId: c.variation_id?._id || "",
           addOnDetails: c.addons || [],
           currency: cartCurrency
         })),
-        deliveryType: orderType || 'Door Delivery',
-        orderType: orderType || 'Door Delivery',
-        customerName,
-        customerPhoneNo,
+        deliveryType: updatedDeliveryType,
+        orderType: updatedDeliveryType,
+        customerName: user?.name || 'Guest',
+        customerPhoneNo: user?.phone || '0000000000',
         instruction: '',
-        addressId: useCartStore.getState().addressId || undefined,
         outletId: selectedOutlet._id,
-        orderId
+        addressId: currentAddressId,
+        orderId: orderId || undefined
       };
+
+      console.log("=== CART UPDATE: CartDrawer triggerCartUpdate ===");
+      console.log("Selected Address (LocationStore):", useLocationStore.getState());
+      console.log("addressId:", currentAddressId);
+      console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
       updateCart(payload);
     }, 600);

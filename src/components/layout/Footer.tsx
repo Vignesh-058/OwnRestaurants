@@ -5,8 +5,6 @@ import {
   MapPin, Phone, Mail, Clock
 } from 'lucide-react';
 import defaultLogo from '@/assets/Ieyal Logo.jpeg';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 export const Footer = () => {
   const organization = useOrganizationStore((state) => state.organization);

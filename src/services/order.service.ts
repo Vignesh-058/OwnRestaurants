@@ -5,14 +5,6 @@ import type { Order, CustomerOrdersResponse } from '@/types/order.types';
 
 export const orderService = {
   getOrdersByCustomer: async (page = 1, limit = 20): Promise<CustomerOrdersResponse> => {
-    if (import.meta.env.DEV) {
-      console.warn('[DEV MODE] Bypassing getOrdersByCustomer API');
-      return {
-        data: [],
-        totalOrders: 0,
-        pagination: { totalOrders: 0, totalPages: 1, currentPage: 1, hasNextPage: false, hasPrevPage: false, limit }
-      };
-    }
     const response = await axiosInstance.post<ApiResponse<CustomerOrdersResponse | any>>(
       `${ENV.ORDER_API}/get-all-order-by-customer?page=${page}&limit=${limit}`,
       {}
@@ -43,10 +35,6 @@ export const orderService = {
   },
 
   getOrderById: async (orderId: string): Promise<Order> => {
-    if (import.meta.env.DEV) {
-      console.warn('[DEV MODE] Bypassing getOrderById API');
-      return { _id: orderId, orderStatus: "Placed" } as any;
-    }
     const response = await axiosInstance.get<ApiResponse<Order>>(`${ENV.ORDER_API}/${orderId}`);
     return response.data.data;
   },
