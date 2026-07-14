@@ -10,6 +10,7 @@ import { useOutletStore } from '@/store/OutletStore';
 import { useLocationStore } from "@/store/LocationStore";
 import { useLocationModalStore } from "@/store/LocationModalStore";
 import { getCartAddressPayload, hasValidDeliveryAddress } from "@/utils/cartPayload";
+import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 import type { Variation, AddonGroup, ItemDetail } from "@/types/product.types";
 import { useCartStore } from '@/store/CartStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
@@ -29,7 +30,8 @@ export const ProductPage = () => {
   
   const org = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
-  const user = useAuthStore((state) => state.user);
+  const { user } = useAuthStore();
+  const { handleAddressAndProceed } = useAddressFlow();
   const { orderId, orderType } = useCartStore();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
@@ -154,36 +156,38 @@ export const ProductPage = () => {
 
     const currentOrderType = orderType || 'Takeaway';
 
-    if (currentOrderType === 'Door Delivery' && !hasValidDeliveryAddress()) {
-      useLocationModalStore.getState().openModal();
-      toast.error('Please select a delivery address first.');
-      return;
-    }
+    const proceedWithAdd = () => {
+      const addressPayload = getCartAddressPayload();
 
-    const addressPayload = getCartAddressPayload();
+      const payload: any = {
+        items: updatedItems,
+        deliveryType: currentOrderType,
+        orderType: currentOrderType,
+        customerName: user.name || 'Guest',
+        customerPhoneNo: user.phone,
+        instruction: '',
+        outletId: selectedOutlet._id,
+        ...addressPayload,
+      };
+      if (orderId) {
+        payload.orderId = orderId;
+      }
 
-    const payload: any = {
-      items: updatedItems,
-      deliveryType: currentOrderType,
-      orderType: currentOrderType,
-      customerName: user.name || 'Guest',
-      customerPhoneNo: user.phone,
-      instruction: '',
-      outletId: selectedOutlet._id,
-      ...addressPayload,
+      console.log("=== CART UPDATE: ProductPage handleAddToCart ===");
+      console.log("addressPayload:", addressPayload);
+      console.log("Final Payload:", JSON.stringify(payload, null, 2));
+
+      if (orderId) {
+        updateCart(payload);
+      } else {
+        addToCart(payload);
+      }
     };
-    if (orderId) {
-      payload.orderId = orderId;
-    }
 
-    console.log("=== CART UPDATE: ProductPage handleAddToCart ===");
-    console.log("addressPayload:", addressPayload);
-    console.log("Final Payload:", JSON.stringify(payload, null, 2));
-
-    if (orderId) {
-      updateCart(payload);
+    if (currentOrderType === 'Door Delivery') {
+      handleAddressAndProceed(proceedWithAdd);
     } else {
-      addToCart(payload);
+      proceedWithAdd();
     }
   };
 

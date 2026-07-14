@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/AuthStore';
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
 import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
+import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
 import { Button } from '@/components/ui/button';
@@ -30,8 +31,10 @@ export const CartPage = () => {
  const { user } = useAuthStore();
 
  // Hardcoded for now per requirements (Guest flow without Auth if null)
- const customerPhoneNo = user?.phone || "0000000000";
- const customerName = user?.name || "Guest";
+ const [customerName, setCustomerName] = useState(user?.name || "Guest");
+ const [customerPhoneNo, setCustomerPhoneNo] = useState(user?.phone || "0000000000");
+
+ const { handleAddressAndProceed } = useAddressFlow();
 
  const [itemToRemove, setItemToRemove] = useState<CartItem | null>(null);
  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
@@ -60,37 +63,39 @@ export const CartPage = () => {
   const latestCartItems = useCartStore.getState().cartItems;
   const cartCurrency = currency === '₹' ? 'INR' : currency;
 
-  if (updatedDeliveryType === 'Door Delivery' && !hasValidDeliveryAddress()) {
-    useLocationModalStore.getState().openModal();
-    toast.error('Please select a delivery address first.');
-    return;
-  }
+   const proceedWithUpdate = () => {
+     const addressPayload = getCartAddressPayload();
 
-  const addressPayload = getCartAddressPayload();
+     const payload: any = {
+       items: latestCartItems.map(c => ({
+         itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
+         quantity: c.quantity,
+         variationId: c.variation_id?._id || "",
+         addOnDetails: c.addons || [],
+         currency: cartCurrency
+       })),
+       deliveryType: updatedDeliveryType,
+       orderType: updatedDeliveryType,
+       customerName,
+       customerPhoneNo,
+       instruction: updatedInstruction,
+       outletId: selectedOutlet._id,
+       orderId,
+       ...addressPayload
+     };
 
-  const payload: any = {
-  items: latestCartItems.map(c => ({
-  itemId: (c.itemid as any)._id || (c.itemid as any).itemid || c.itemid,
-  quantity: c.quantity,
-  variationId: c.variation_id?._id || "",
-  addOnDetails: c.addons || [],
-  currency: cartCurrency
-  })),
-  deliveryType: updatedDeliveryType,
-  orderType: updatedDeliveryType,
-  customerName,
-  customerPhoneNo,
-  instruction: updatedInstruction,
-  outletId: selectedOutlet._id,
-  orderId,
-  ...addressPayload
-  };
+     console.log("=== CART UPDATE: CartPage handleUpdateQuantity ===");
+     console.log("addressPayload:", addressPayload);
+     console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
-  console.log("=== CART UPDATE: CartPage handleUpdateQuantity ===");
-  console.log("addressPayload:", addressPayload);
-  console.log("Final Payload:", JSON.stringify(payload, null, 2));
+     updateCart(payload);
+   };
 
-  updateCart(payload);
+   if (updatedDeliveryType === 'Door Delivery') {
+     handleAddressAndProceed(proceedWithUpdate);
+   } else {
+     proceedWithUpdate();
+   }
   }, 600); // 600ms debounce
  };
 

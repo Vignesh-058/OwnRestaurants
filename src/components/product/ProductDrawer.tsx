@@ -9,6 +9,7 @@ import { useOutletStore } from '@/store/OutletStore';
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
 import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
+import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { toast } from 'sonner';
 
@@ -47,10 +48,11 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  isValid
  } = useProductDetail(itemId, isOpen);
 
- const { mutate: updateCart, isPending } = useUpdateCart();
+ const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();
  const { openDrawer, cartItems, orderId, orderType } = useCartStore();
  const { user } = useAuthStore();
  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
+ const { handleAddressAndProceed } = useAddressFlow();
 
  const handleAddToCart = () => {
    if (!isValid || !item || !selectedOutlet) return;
@@ -91,37 +93,39 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
 
     const currentOrderType = orderType || 'Door Delivery';
 
-    if (currentOrderType === 'Door Delivery' && !hasValidDeliveryAddress()) {
-      useLocationModalStore.getState().openModal();
-      toast.error('Please select a delivery address first.');
-      return;
-    }
+    const proceedWithAdd = () => {
+      const addressPayload = getCartAddressPayload();
 
-    const addressPayload = getCartAddressPayload();
+      const payload: any = {
+        items: existingItems,
+        deliveryType: currentOrderType,
+        orderType: currentOrderType,
+        customerName: user?.name || 'Guest',
+        customerPhoneNo: user?.phone || '0000000000',
+        instruction: '',
+        outletId: selectedOutlet._id,
+        orderId: orderId || undefined,
+        ...addressPayload,
+      };
 
-    const payload: any = {
-      items: existingItems,
-      deliveryType: currentOrderType,
-      orderType: currentOrderType,
-      customerName: user?.name || 'Guest',
-      customerPhoneNo: user?.phone || '0000000000',
-      instruction: '',
-      outletId: selectedOutlet._id,
-      orderId: orderId || undefined,
-      ...addressPayload,
+      console.log("=== CART UPDATE: ProductDrawer handleAddToCart ===");
+      console.log("addressPayload:", addressPayload);
+      console.log("Final Payload:", JSON.stringify(payload, null, 2));
+
+      updateCart(payload, {
+        onSuccess: () => {
+          toast.success("Product added to cart.");
+          onClose();
+        }
+      });
     };
 
-    console.log("=== CART UPDATE: ProductDrawer handleAddToCart ===");
-    console.log("addressPayload:", addressPayload);
-    console.log("Final Payload:", JSON.stringify(payload, null, 2));
-
-   updateCart(payload, {
-     onSuccess: () => {
-       toast.success("Product added to cart.");
-       onClose();
-     }
-   });
- };
+    if (currentOrderType === 'Door Delivery') {
+      handleAddressAndProceed(proceedWithAdd);
+    } else {
+      proceedWithAdd();
+    }
+  };
 
  return (
  <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -189,7 +193,7 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  quantity={quantity}
  onQuantityChange={setQuantity}
  onAddToCart={handleAddToCart}
- isValid={isValid && !isPending}
+ isValid={isValid && !isUpdating}
  inStock={item.stockStatus}
  currency={currency}
  />
