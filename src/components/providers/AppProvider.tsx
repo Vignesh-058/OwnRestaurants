@@ -19,8 +19,8 @@ const GlobalCartSync = () => {
  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
  
  useCart({
- customerPhoneNo: isAuthenticated ? (user?.phone || '') : '',
- outletId: isAuthenticated ? (selectedOutlet?._id || '') : ''
+ customerPhoneNo: isAuthenticated ? (user?.phone || '0000000000') : '0000000000',
+ outletId: selectedOutlet?._id || ''
  });
 
  return null;

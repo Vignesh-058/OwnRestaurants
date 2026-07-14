@@ -7,8 +7,10 @@ import { useItemDetail } from '@/hooks/queries/useItemDetail';
 import { useAddToCart, useUpdateCart } from '@/hooks/queries/useCart';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useLocationStore } from '@/store/LocationStore';
-import { useLocationModalStore } from '@/store/LocationModalStore';
+import { useLocationStore } from "@/store/LocationStore";
+import { useLocationModalStore } from "@/store/LocationModalStore";
+import { getCartAddressPayload, hasValidDeliveryAddress } from "@/utils/cartPayload";
+import type { Variation, AddonGroup, ItemDetail } from "@/types/product.types";
 import { useCartStore } from '@/store/CartStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { PageLoader } from '@/components/common/PageLoader';
@@ -150,16 +152,15 @@ export const ProductPage = () => {
       updatedItems = [newItem];
     }
 
-    const globalAddressId = useCartStore.getState().addressId;
-    const currentLocId = useLocationStore.getState().addressId;
-    const currentAddressId = currentLocId || globalAddressId;
     const currentOrderType = orderType || 'Takeaway';
 
-    if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+    if (currentOrderType === 'Door Delivery' && !hasValidDeliveryAddress()) {
       useLocationModalStore.getState().openModal();
       toast.error('Please select a delivery address first.');
       return;
     }
+
+    const addressPayload = getCartAddressPayload();
 
     const payload: any = {
       items: updatedItems,
@@ -169,15 +170,14 @@ export const ProductPage = () => {
       customerPhoneNo: user.phone,
       instruction: '',
       outletId: selectedOutlet._id,
-      addressId: currentAddressId,
+      ...addressPayload,
     };
     if (orderId) {
       payload.orderId = orderId;
     }
 
     console.log("=== CART UPDATE: ProductPage handleAddToCart ===");
-    console.log("Selected Address (LocationStore):", useLocationStore.getState());
-    console.log("addressId:", currentAddressId);
+    console.log("addressPayload:", addressPayload);
     console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
     if (orderId) {

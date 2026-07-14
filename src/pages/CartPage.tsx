@@ -6,6 +6,7 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useAuthStore } from '@/store/AuthStore';
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
+import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
 import { Button } from '@/components/ui/button';
@@ -59,15 +60,13 @@ export const CartPage = () => {
   const latestCartItems = useCartStore.getState().cartItems;
   const cartCurrency = currency === '₹' ? 'INR' : currency;
 
-  const globalAddressId = useCartStore.getState().addressId;
-  const currentLocId = useLocationStore.getState().addressId;
-  const currentAddressId = currentLocId || globalAddressId;
-
-  if (updatedDeliveryType === 'Door Delivery' && !currentAddressId) {
+  if (updatedDeliveryType === 'Door Delivery' && !hasValidDeliveryAddress()) {
     useLocationModalStore.getState().openModal();
     toast.error('Please select a delivery address first.');
     return;
   }
+
+  const addressPayload = getCartAddressPayload();
 
   const payload: any = {
   items: latestCartItems.map(c => ({
@@ -83,13 +82,12 @@ export const CartPage = () => {
   customerPhoneNo,
   instruction: updatedInstruction,
   outletId: selectedOutlet._id,
-  addressId: currentAddressId,
-  orderId
+  orderId,
+  ...addressPayload
   };
 
   console.log("=== CART UPDATE: CartPage handleUpdateQuantity ===");
-  console.log("Selected Address (LocationStore):", useLocationStore.getState());
-  console.log("addressId:", currentAddressId);
+  console.log("addressPayload:", addressPayload);
   console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
   updateCart(payload);

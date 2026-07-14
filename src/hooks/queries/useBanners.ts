@@ -10,7 +10,9 @@ export const useBanners = (belongsTo: string, outletId: string) => {
  return useQuery({
  queryKey: ['banners', belongsTo, outletId],
  queryFn: async () => {
+ console.log('[DEBUG-FLOW] BANNERS REQUEST - belongsTo:', belongsTo, 'outletId:', outletId);
  const data = await bannerService.getActiveBanners(belongsTo, outletId);
+ console.log('[DEBUG-FLOW] BANNERS FETCHED - count:', data?.length);
  return data;
  },
  enabled: Boolean(belongsTo) && Boolean(outletId) && isSettingsLoaded && isBannerEnabled,

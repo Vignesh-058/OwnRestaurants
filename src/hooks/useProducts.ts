@@ -1,31 +1,21 @@
 import { useMemo } from 'react';
-import type { CategoryItem, Category } from '@/types/category.types';
+import type { CategoryItem } from '@/types/category.types';
 
 export const useProducts = (
- categories: Category[] | undefined,
+ allProducts: CategoryItem[] | undefined,
  activeCategoryId: string,
  searchQuery: string = ''
 ) => {
  return useMemo(() => {
- if (!categories) return [];
+ if (!allProducts) return [];
 
  let filteredProducts: CategoryItem[] = [];
 
  // Filter by Category
  if (activeCategoryId === 'all') {
- // Flatten all products
- const allItems = categories.flatMap(cat => cat.items || []);
- 
- // Remove duplicates just in case multiple categories share items (depends on backend)
- const uniqueItemsMap = new Map<string, CategoryItem>();
- allItems.forEach(item => {
- uniqueItemsMap.set(item._id, item);
- });
- filteredProducts = Array.from(uniqueItemsMap.values());
+   filteredProducts = allProducts;
  } else {
- // Select specific category
- const targetCategory = categories.find(c => c._id === activeCategoryId);
- filteredProducts = targetCategory?.items || [];
+   filteredProducts = allProducts.filter(p => p.category === activeCategoryId || (p as any).categoryId === activeCategoryId);
  }
 
  // Filter by Search Query
@@ -38,5 +28,5 @@ export const useProducts = (
  }
 
  return filteredProducts;
- }, [categories, activeCategoryId, searchQuery]);
+ }, [allProducts, activeCategoryId, searchQuery]);
 };

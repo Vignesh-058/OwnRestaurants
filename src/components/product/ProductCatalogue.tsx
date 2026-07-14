@@ -5,23 +5,25 @@ import type { Category } from '@/types/category.types';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { ProductGrid } from './ProductGrid';
 import { useProductFilters } from '@/hooks/useProductFilters';
+import { useProducts } from '@/hooks/useProducts';
 import { ProductFilterPanel } from './ProductFilterPanel';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 
 interface ProductCatalogueProps {
   categories: Category[];
+  allProducts?: any[];
   activeCategoryId: string;
   onSelectCategory: (id: string) => void;
   onProductClick: (product: any) => void;
 }
 
-export const ProductCatalogue = ({ categories, activeCategoryId, onSelectCategory, onProductClick }: ProductCatalogueProps) => {
+export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, onSelectCategory, onProductClick }: ProductCatalogueProps) => {
   const activeCategory = categories.find(c => c._id === activeCategoryId) || categories[0];
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isDesktopFilterOpen, setIsDesktopFilterOpen] = useState(false);
   
-  const items = activeCategory?.items || [];
+  const items = useProducts(allProducts, activeCategory?._id || 'all', '');
   const filters = useProductFilters(items);
 
   if (!activeCategory) return null;
@@ -114,7 +116,9 @@ export const ProductCatalogue = ({ categories, activeCategoryId, onSelectCategor
           <div className="flex flex-col gap-1.5 mb-8">
             {categories.map((category) => {
               const isActive = activeCategory._id === category._id;
-              const productCount = category.items?.length || 0;
+              
+              // Count products for this category using allProducts
+              const productCount = allProducts ? allProducts.filter(p => p.category === category._id || p.categoryId === category._id).length : 0;
               const catName = (category as any).categoryName || category.name || (category as any).displayName || "Unknown";
 
               return (

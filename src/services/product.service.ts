@@ -1,9 +1,11 @@
 import { axiosInstance } from '@/api/axios';
 import ENV from '@/config/env';
 import type { ItemDetail } from '@/types/product.types';
+import type { CategoryItem } from '@/types/category.types';
 import type { ApiResponse } from '@/types/api.types';
 
 export const productService = {
+
  getItemDetail: async (itemId: string, outletId: string, variationId?: string): Promise<ItemDetail> => {
  const payload: Record<string, string> = {
  itemId,

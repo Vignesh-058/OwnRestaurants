@@ -15,6 +15,7 @@ import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
+import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
 
 interface ProductCardProps {
   product: CategoryItem;
@@ -108,14 +109,15 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       });
     }
 
-    const currentAddressId = useLocationStore.getState().addressId || useCartStore.getState().addressId;
     const currentOrderType = orderType || 'Door Delivery';
 
-    if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+    if (currentOrderType === 'Door Delivery' && !hasValidDeliveryAddress()) {
       useLocationModalStore.getState().openModal();
       toast.error('Please select a delivery address first.');
       return;
     }
+
+    const addressPayload = getCartAddressPayload();
 
     const payload: any = {
       items: existingItems,
@@ -125,13 +127,12 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       customerPhoneNo: user?.phone || '0000000000',
       instruction: '',
       outletId: selectedOutlet._id,
-      addressId: currentAddressId,
+      ...addressPayload,
     };
     if (orderId) payload.orderId = orderId;
 
     console.log("=== CART UPDATE: ProductCard handleQuickAdd ===");
-    console.log("Selected Address (LocationStore):", useLocationStore.getState());
-    console.log("addressId:", currentAddressId);
+    console.log("addressPayload:", addressPayload);
     console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
     optimisticSetQuantity(product, 1);
@@ -172,14 +173,15 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
         return c;
       });
 
-      const currentAddressId = useLocationStore.getState().addressId || useCartStore.getState().addressId;
       const currentOrderType = orderType || 'Door Delivery';
 
-      if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+      if (currentOrderType === 'Door Delivery' && !hasValidDeliveryAddress()) {
         useLocationModalStore.getState().openModal();
         toast.error('Please select a delivery address first.');
         return;
       }
+
+      const addressPayload = getCartAddressPayload();
 
       const payload: any = {
         items: updatedItems.map(c => ({
@@ -195,13 +197,12 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
         customerPhoneNo: user?.phone || '0000000000',
         instruction: '',
         outletId: selectedOutlet._id,
-        addressId: currentAddressId,
+        ...addressPayload,
       };
       if (orderId) payload.orderId = orderId;
       
       console.log("=== CART UPDATE: ProductCard handleDecrement ===");
-      console.log("Selected Address (LocationStore):", useLocationStore.getState());
-      console.log("addressId:", currentAddressId);
+      console.log("addressPayload:", addressPayload);
       console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
       optimisticSetQuantity(product, newQty);
@@ -224,14 +225,15 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       return c;
     });
 
-    const currentAddressId = useLocationStore.getState().addressId || useCartStore.getState().addressId;
     const currentOrderType = orderType || 'Door Delivery';
 
-    if (currentOrderType === 'Door Delivery' && !currentAddressId) {
+    if (currentOrderType === 'Door Delivery' && !hasValidDeliveryAddress()) {
       useLocationModalStore.getState().openModal();
       toast.error('Please select a delivery address first.');
       return;
     }
+
+    const addressPayload = getCartAddressPayload();
 
     const payload: any = {
       items: updatedItems.map(c => ({
@@ -247,13 +249,12 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       customerPhoneNo: user?.phone || '0000000000',
       instruction: '',
       outletId: selectedOutlet._id,
-      addressId: currentAddressId,
+      ...addressPayload,
     };
     if (orderId) payload.orderId = orderId;
     
     console.log("=== CART UPDATE: ProductCard handleIncrement ===");
-    console.log("Selected Address (LocationStore):", useLocationStore.getState());
-    console.log("addressId:", currentAddressId);
+    console.log("addressPayload:", addressPayload);
     console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
     optimisticSetQuantity(product, newQty);

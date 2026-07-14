@@ -1,12 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { organizationService } from '@/services/organization.service';
 import { useOutletStore } from '@/store/OutletStore';
-import { useLocationStore } from '@/store/LocationStore';
 
 export const useStoreStatus = (belongsTo: string, outletId: string) => {
  const setStoreStatus = useOutletStore((state) => state.setStoreStatus);
-
- const locationLoaded = useLocationStore((state) => state.locationLoaded);
 
  return useQuery({
  queryKey: ['storeStatus', belongsTo, outletId],
@@ -17,7 +14,7 @@ export const useStoreStatus = (belongsTo: string, outletId: string) => {
  setStoreStatus(data);
  return data;
  },
- enabled: !!belongsTo && !!outletId && locationLoaded,
+ enabled: !!belongsTo && !!outletId,
  staleTime: 1000 * 60 * 5, // 5 minutes
  });
 };

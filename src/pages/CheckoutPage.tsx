@@ -14,6 +14,7 @@ import { PageLoader } from '@/components/common/PageLoader';
 import { ErrorState } from '@/components/common/ErrorState';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { useAuthStore } from '@/store/AuthStore';
+import { isValidMongoId } from '@/utils/cartPayload';
 import { orderService } from '@/services/order.service';
 import { toast } from 'sonner';
 
@@ -85,7 +86,7 @@ export const CheckoutPage = () => {
     if (isCouponApplied && couponCode) payload.couponCode = couponCode;
 
     if (selectedAddress) {
-      if (selectedAddress._id) {
+      if (isValidMongoId(selectedAddress._id)) {
         payload.addressId = selectedAddress._id;
       } else {
         const lat = Number(selectedAddress.latitude);

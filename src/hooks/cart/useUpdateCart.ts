@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { cartService } from '@/services/cart.service';
+import { useCartStore } from '@/store/CartStore';
 import { toast } from 'sonner';
 import type { CartCreateRequest } from '@/types/cart.types';
 
 export const useUpdateCart = () => {
  const queryClient = useQueryClient();
+ const { setOrderId } = useCartStore();
 
  return useMutation({
  mutationFn: (payload: CartCreateRequest) => {
@@ -16,7 +18,13 @@ export const useUpdateCart = () => {
     }
     return cartService.updateCart(data);
   },
- onSuccess: (_) => {
+ onSuccess: (data) => {
+ // Extract orderId from the response if it was a createCart fallback
+ const newOrderId = data?.data?.order?.orderId || data?.data?.orderId || data?.data?._id;
+ if (newOrderId) {
+   setOrderId(newOrderId);
+ }
+
  // Globally refresh cart state without relying on specific args
  queryClient.invalidateQueries({ queryKey: ['cart'] });
  },

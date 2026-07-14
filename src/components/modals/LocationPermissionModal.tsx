@@ -20,11 +20,11 @@ export const LocationPermissionModal = () => {
   const [isDenied, setIsDenied] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated && permissionGranted === null) {
+    if (permissionGranted === null) {
       const timer = setTimeout(() => setIsOpen(true), 1000);
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, permissionGranted]);
+  }, [permissionGranted]);
 
   const handleAllowLocation = () => {
     setIsLoading(true);

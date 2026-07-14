@@ -13,8 +13,9 @@ export const useCreateCart = () => {
  mutationFn: (payload: CartCreateRequest) => cartService.createCart(payload),
  onSuccess: (data) => {
  // Extract orderId from the response to save in global state
- if (data?.data?.order?.orderId) {
- setOrderId(data.data.order.orderId);
+ const newOrderId = data?.data?.order?.orderId || data?.data?.orderId || data?.data?._id;
+ if (newOrderId) {
+ setOrderId(newOrderId);
  }
  
  // Instantly refresh global cart

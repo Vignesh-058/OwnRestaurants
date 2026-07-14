@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
+import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { toast } from 'sonner';
 
@@ -88,33 +89,31 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
      });
    }
 
-   const globalAddressId = useCartStore.getState().addressId;
-   const currentLocId = useLocationStore.getState().addressId;
-   const currentAddressId = currentLocId || globalAddressId;
-   const currentOrderType = orderType || 'Door Delivery';
+    const currentOrderType = orderType || 'Door Delivery';
 
-   if (currentOrderType === 'Door Delivery' && !currentAddressId) {
-     useLocationModalStore.getState().openModal();
-     toast.error('Please select a delivery address first.');
-     return;
-   }
+    if (currentOrderType === 'Door Delivery' && !hasValidDeliveryAddress()) {
+      useLocationModalStore.getState().openModal();
+      toast.error('Please select a delivery address first.');
+      return;
+    }
 
-   const payload: any = {
-     items: existingItems,
-     deliveryType: currentOrderType,
-     orderType: currentOrderType,
-     customerName: user?.name || 'Guest',
-     customerPhoneNo: user?.phone || '0000000000',
-     instruction: '',
-     outletId: selectedOutlet._id,
-     orderId: orderId || undefined,
-     addressId: currentAddressId,
-   };
+    const addressPayload = getCartAddressPayload();
 
-   console.log("=== CART UPDATE: ProductDrawer handleAddToCart ===");
-   console.log("Selected Address (LocationStore):", useLocationStore.getState());
-   console.log("addressId:", currentAddressId);
-   console.log("Final Payload:", JSON.stringify(payload, null, 2));
+    const payload: any = {
+      items: existingItems,
+      deliveryType: currentOrderType,
+      orderType: currentOrderType,
+      customerName: user?.name || 'Guest',
+      customerPhoneNo: user?.phone || '0000000000',
+      instruction: '',
+      outletId: selectedOutlet._id,
+      orderId: orderId || undefined,
+      ...addressPayload,
+    };
+
+    console.log("=== CART UPDATE: ProductDrawer handleAddToCart ===");
+    console.log("addressPayload:", addressPayload);
+    console.log("Final Payload:", JSON.stringify(payload, null, 2));
 
    updateCart(payload, {
      onSuccess: () => {

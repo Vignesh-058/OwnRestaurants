@@ -27,14 +27,14 @@ export const useOutlets = (belongsTo: string) => {
  useEffect(() => {
  if (query.data?.outlets) {
  setOutlets(query.data.outlets);
- // Auto-select nearest outlet when location is loaded and sorted
- if (locationLoaded && !selectedOutlet && query.data.outlets.length > 0) {
+ // Auto-select nearest outlet when loaded
+ if (!selectedOutlet && query.data.outlets.length > 0) {
  const activeOutlet = query.data.outlets.find(o => o.isActive) || query.data.outlets[0];
  console.log('[DEBUG-FLOW] AUTO-SELECTING OUTLET:', activeOutlet._id);
  setSelectedOutlet(activeOutlet);
  }
  }
- }, [query.data, setOutlets, setSelectedOutlet, locationLoaded, selectedOutlet]);
+ }, [query.data, setOutlets, setSelectedOutlet, selectedOutlet]);
 
  return query;
 };

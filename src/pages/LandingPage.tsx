@@ -27,6 +27,7 @@ import { PromotionalBanner } from "@/components/home/PromotionalBanner";
 import { AboutSection } from "@/components/home/AboutSection";
 import { useSettings } from "@/hooks/queries/useSettings";
 import { Button } from "@/components/ui/button";
+import { useProductsQuery } from "@/hooks/queries/useProducts";
 import {
   Sheet,
   SheetContent,
@@ -62,8 +63,13 @@ export const LandingPage = () => {
     categories,
     isLoading: isCategoriesLoading,
     isError: isCategoriesError,
-    refetch: refetchCategories,
   } = useCategories();
+
+  const {
+    data: allProducts = [],
+    isLoading: isProductsLoading,
+    isError: isProductsError,
+  } = useProductsQuery();
 
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null,
@@ -219,12 +225,11 @@ export const LandingPage = () => {
 
 
   const recommendedProducts = useMemo(() => {
-    const allProducts = categories.flatMap((c) => c.items || []);
     const recs = allProducts.filter(
       (p) => p.bestseller || (p.rating && p.rating >= 4.5),
     );
     return applyFiltersToItems(recs).slice(0, 8);
-  }, [categories, applyFiltersToItems]);
+  }, [allProducts, applyFiltersToItems]);
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-background pb-32">

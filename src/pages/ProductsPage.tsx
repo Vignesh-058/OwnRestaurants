@@ -5,6 +5,7 @@ import { useCategories } from "@/hooks/useCategories";
 import { ProductCatalogue } from "@/components/product/ProductCatalogue";
 import { ProductDrawer } from "@/components/product/ProductDrawer";
 import { ProductSkeleton } from "@/components/product/ProductSkeleton";
+import { useProductsQuery } from "@/hooks/queries/useProducts";
 
 export const ProductsPage = () => {
   const {
@@ -12,6 +13,12 @@ export const ProductsPage = () => {
     isLoading: isCategoriesLoading,
     isError: isCategoriesError,
   } = useCategories();
+
+  const {
+    data: allProducts,
+    isLoading: isProductsLoading,
+    isError: isProductsError,
+  } = useProductsQuery();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
@@ -53,7 +60,7 @@ export const ProductsPage = () => {
         transition={{ duration: 0.4 }}
         className="w-full flex flex-col"
       >
-        {isCategoriesLoading ? (
+        {isCategoriesLoading || isProductsLoading ? (
           <div className="w-full flex flex-col lg:flex-row p-6 gap-6">
              <div className="w-full lg:w-[360px] flex flex-col gap-4">
                 {[1, 2, 3, 4, 5, 6].map(i => (
@@ -66,7 +73,7 @@ export const ProductsPage = () => {
                 ))}
              </div>
           </div>
-        ) : isCategoriesError ? (
+        ) : isCategoriesError || isProductsError ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
             <span className="text-4xl mb-4">🍽️</span>
             <h3 className="text-2xl font-black text-foreground mb-2">Could not load products</h3>
@@ -75,6 +82,7 @@ export const ProductsPage = () => {
         ) : categories.length > 0 ? (
           <ProductCatalogue 
             categories={categories}
+            allProducts={allProducts}
             activeCategoryId={activeCategoryId}
             onSelectCategory={handleCategorySelect}
             onProductClick={(p) => setSelectedProductId(p._id)}
