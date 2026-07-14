@@ -13,6 +13,7 @@ import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useCreateCart } from '@/hooks/cart/useCreateCart';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 // New Hook
 import { useProductDetail } from '@/hooks/useProductDetail';
@@ -32,8 +33,11 @@ interface ProductDrawerProps {
  onClose: () => void;
 }
 
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+
 export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) => {
  const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
+ const isDesktop = useMediaQuery('(min-width: 768px)');
 
  const {
  item,
@@ -142,7 +146,7 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
 
  return (
  <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
- <SheetContent side="right" className="w-full sm:max-w-xl p-0 flex flex-col bg-background gap-0 sm:rounded-l-[2rem] overflow-hidden shadow-2xl border-none">
+ <SheetContent side={isDesktop ? "right" : "bottom"} className={cn("p-0 flex flex-col bg-background overflow-hidden shadow-2xl border-none", isDesktop ? "w-full sm:max-w-xl gap-0 sm:rounded-l-[2rem]" : "h-[90vh] rounded-t-3xl w-full")}>
  
  <SheetHeader className="sr-only">
  <SheetTitle>Product Details</SheetTitle>

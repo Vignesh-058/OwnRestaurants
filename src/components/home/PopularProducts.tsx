@@ -64,8 +64,7 @@ export const PopularProducts = ({ products, onProductClick }: PopularProductsPro
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               key={product._id}
-              className="snap-start shrink-0"
-              style={{ width: '320px' }}
+              className="snap-start shrink-0 w-[280px] md:w-[320px]"
             >
               <ProductCard 
                 product={product}

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Mic, ShoppingCart } from "lucide-react";
+import { Search, Mic, ShoppingCart, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,7 @@ export const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { grandTotal, cartItemCount, openDrawer } = useCartStore();
   const cartTotal = grandTotal;
@@ -62,7 +63,14 @@ export const Navbar = () => {
     <header className="w-full fixed top-0 left-0 right-0 z-[100] h-[80px] flex items-center bg-gradient-to-r from-[#0F172A] to-[#111827] backdrop-blur-md border-b border-[rgba(255,255,255,0.08)] shadow-sm transition-colors px-4 md:px-8 xl:px-12">
       <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-4">
         {/* LEFT SECTION: Logo & Delivery */}
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-3 md:gap-4 shrink-0">
+          <button 
+            className="lg:hidden p-1.5 text-white -ml-1"
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+          
           <Link
             to={isAuthenticated ? "/" : "/login"}
             className="flex items-center group"
@@ -70,7 +78,7 @@ export const Navbar = () => {
             <img
               src={defaultLogo}
               alt="IEYAL Solutions"
-              className="w-[48px] h-[48px] object-contain drop-shadow-sm transition-transform group-hover:scale-105 rounded-[12px]"
+              className="w-[36px] h-[36px] md:w-[48px] md:h-[48px] object-contain drop-shadow-sm transition-transform group-hover:scale-105 rounded-[10px] md:rounded-[12px]"
             />
           </Link>
 
@@ -146,7 +154,7 @@ export const Navbar = () => {
         </nav>
 
         {/* RIGHT SECTION: Search Bar, Cart & Profile */}
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
 
 
 
@@ -154,7 +162,7 @@ export const Navbar = () => {
           {showCart && (
             <Link 
               to="/cart"
-              className="flex items-center gap-2 h-[48px] px-6 bg-gradient-to-r from-[#FF6B00] to-[#E85D00] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(255,107,0,0.4)] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_0_rgba(255,107,0,0.39)] shrink-0 group"
+              className="flex items-center gap-2 h-[40px] md:h-[48px] px-4 md:px-6 bg-gradient-to-r from-[#FF6B00] to-[#E85D00] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(255,107,0,0.4)] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_0_rgba(255,107,0,0.39)] shrink-0 group"
             >
               <ShoppingCart className="h-5 w-5 stroke-[2.5] group-hover:scale-110 transition-transform" />
               <span className="text-sm font-bold tracking-wide flex items-center gap-1.5">
@@ -185,7 +193,7 @@ export const Navbar = () => {
             <Link to="/login" className="ml-2">
               <Button
                 size="sm"
-                className="rounded-full h-[48px] px-6 bg-[#1F2937] hover:bg-[#1F2937]/80 hover:border-[#FF6B00] border border-[rgba(255,255,255,0.05)] text-white font-bold text-sm shadow-sm transition-all duration-300 shrink-0"
+                className="rounded-full h-[40px] md:h-[48px] px-4 md:px-6 bg-[#1F2937] hover:bg-[#1F2937]/80 hover:border-[#FF6B00] border border-[rgba(255,255,255,0.05)] text-white font-bold text-sm shadow-sm transition-all duration-300 shrink-0"
               >
                 Sign In
               </Button>
@@ -193,6 +201,49 @@ export const Navbar = () => {
           )}
         </div>
       </div>
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="fixed inset-0 bg-black/60 z-[110] lg:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <motion.div 
+              initial={{ x: "-100%" }} 
+              animate={{ x: 0 }} 
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[120] lg:hidden flex flex-col"
+            >
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-[#0F172A] to-[#111827]">
+                <img src={defaultLogo} alt="Logo" className="w-[40px] h-[40px] rounded-[10px]" />
+                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-white/80 hover:text-white">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
+                {navLinks.map(link => (
+                  <Link 
+                    key={link.id} 
+                    to={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "p-3 rounded-xl text-[15px] font-bold transition-colors",
+                      activeTabId === link.id ? "bg-[#FFF7ED] text-[#FF6B00]" : "text-gray-700 hover:bg-gray-50"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

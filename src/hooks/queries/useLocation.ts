@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { locationService } from '@/services/location.service';
 import { useLocationStore } from '@/store/LocationStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
+import { useAuthStore } from '@/store/AuthStore';
 import { useEffect, useCallback } from 'react';
 
 export const useGeoLocation = () => {
@@ -17,7 +18,7 @@ export const useGeoLocation = () => {
  console.log('[DEBUG] Geo API Response:', data);
  return data;
  },
- enabled: !!latitude && !!longitude && !!belongsTo && !locationLoaded,
+ enabled: !!latitude && !!longitude && !!belongsTo && !locationLoaded && useAuthStore.getState().isAuthenticated,
  staleTime: Infinity,
  });
 

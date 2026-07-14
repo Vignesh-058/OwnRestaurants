@@ -3,6 +3,7 @@ import { organizationService } from '@/services/organization.service';
 import { useOutletStore } from '@/store/OutletStore';
 import { useLocationStore } from '@/store/LocationStore';
 import { useOutletModalStore } from '@/store/OutletModalStore';
+import { useAuthStore } from '@/store/AuthStore';
 import { useEffect } from 'react';
 
 export const useOutlets = (belongsTo: string) => {
@@ -15,6 +16,7 @@ export const useOutlets = (belongsTo: string) => {
   
   // Safe state access to prevent infinite renders
   const openModal = useOutletModalStore((state) => state.openModal);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const query = useQuery({
     queryKey: ['outlets', belongsTo, latitude, longitude],
@@ -27,7 +29,7 @@ export const useOutlets = (belongsTo: string) => {
       console.log('[OUTLETS] Complete outlet list:', data.outlets);
       return data;
     },
-    enabled: !!belongsTo && locationLoaded,
+    enabled: !!belongsTo && locationLoaded && isAuthenticated,
     staleTime: 1000 * 60 * 30, // 30 minutes
   });
 

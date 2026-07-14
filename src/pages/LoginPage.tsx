@@ -64,24 +64,8 @@ export const LoginPage = () => {
             extractedToken = rawToken.token || rawToken.accessToken || rawToken.value || '';
           }
           if (extractedToken) {
-            // Immediately request GPS permission
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                  const { latitude, longitude } = position.coords;
-                  const address = `GPS Location (${latitude.toFixed(4)}°N, ${longitude.toFixed(4)}°E)`;
-                  useLocationStore.getState().setLocation({ latitude, longitude, formattedAddress: address, locationLoaded: false });
-                  navigate(from, { replace: true });
-                },
-                (error) => {
-                  console.warn("[LOGIN LOCATION] GPS permission denied/failed:", error);
-                  // Denied or error -> navigate to destination and trigger manual location modal selector
-                  navigate(from, { replace: true });
-                  setTimeout(() => {
-                    useLocationModalStore.getState().openModal();
-                  }, 200);
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-              );
+            // Let the global LocationPermissionModal handle the location request securely
+            navigate(from, { replace: true });
           }
         }
       }
