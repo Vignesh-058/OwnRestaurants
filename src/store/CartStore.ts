@@ -73,61 +73,86 @@ export const useCartStore = create<CartState>()(
  appliedDiscount: null,
 
  setCart: (payload) => {
- if (!payload) {
- set({
- orderId: null,
- cartItems: [],
- cartItemCount: 0,
- orderTotal: 0,
- savedAmount: 0,
- deliveryCharge: 0,
- packageCharge: 0,
- totalTax: 0,
- grandTotal: 0,
- customerAddress: null,
- addressId: null,
- paymentMode: null,
- orderType: null,
- eta: '',
- checkoutEnable: false,
- checkOutMessage: '',
- hasDiscount: false,
- cartDiscountDetails: null,
- loyalty: null,
- lastUpdatedAt: null,
- appliedDiscount: null,
- });
- return;
- }
- 
- set({
-  orderId: payload.orderId || payload._id || null,
-  cartItems: payload.items || [],
-  cartItemCount: payload.items ? payload.items.reduce((acc, item) => acc + item.quantity, 0) : 0,
-  orderTotal: payload.orderTotal || 0,
-  savedAmount: payload.savedAmount || 0,
-  deliveryCharge: payload.deliveryCharge || 0,
-  packageCharge: payload.totalPackageCharge || 0,
-  totalTax: payload.totalTax || 0,
-  grandTotal: payload.grandTotal ?? 0, // Provided by backend now
-  customerAddress: payload.customerAddress as any || null,
-  addressId: payload.addressId || null,
-  paymentMode: payload.paymentMode || null,
-  orderType: payload.orderType || null,
-  checkoutEnable: payload.checkoutEnable ?? true,
-  checkOutMessage: payload.checkOutMessage || '',
+  if (!payload) {
+  set({
+  orderId: null,
+  cartItems: [],
+  cartItemCount: 0,
+  orderTotal: 0,
+  savedAmount: 0,
+  deliveryCharge: 0,
+  packageCharge: 0,
+  totalTax: 0,
+  grandTotal: 0,
+  customerAddress: null,
+  addressId: null,
+  paymentMode: null,
+  orderType: null,
+  eta: '',
+  checkoutEnable: false,
+  checkOutMessage: '',
+  hasDiscount: false,
+  cartDiscountDetails: null,
+  loyalty: null,
+  lastUpdatedAt: null,
+  appliedDiscount: null,
+  });
+  return;
+  }
   
-  // Handle applied discounts if backend provides them directly
-  appliedDiscount: payload.appliedOfferId 
-    ? {
-        discountId: payload.appliedOfferId,
-        discountType: 'backend', // Let backend drive it
-        discountPercentage: 0,
-        discountAmount: payload.discountAmount || payload.couponDiscount || 0,
-        couponName: payload.couponName || ''
-      } 
-    : null
- });
+  if (import.meta.env.DEV) {
+    console.log('[DEBUG] Cart API Response Payload:', JSON.stringify(payload, null, 2));
+  }
+
+  const orderTotal = payload.orderTotal || 0;
+  const deliveryCharge = payload.deliveryCharge || 0;
+  const totalTax = payload.totalTax || 0;
+  const savedAmount = payload.savedAmount || payload.discountAmount || payload.couponDiscount || 0;
+  
+  // Calculate Grand Total = Subtotal + Delivery Charge + Tax - Discount
+  const calculatedGrandTotal = orderTotal + deliveryCharge + totalTax - savedAmount;
+  
+  // Use backend provided final amount if available, otherwise fallback to calculated
+  const finalGrandTotal = payload.grandTotal || (payload as any).totalAmount || (payload as any).payableAmount || (payload as any).finalAmount || calculatedGrandTotal;
+
+  if (import.meta.env.DEV) {
+    console.log('[DEBUG] Derived Cart Values:');
+    console.log(' - Subtotal:', orderTotal);
+    console.log(' - Delivery Charge:', deliveryCharge);
+    console.log(' - Tax:', totalTax);
+    console.log(' - Discount:', savedAmount);
+    console.log(' - Grand Total (Calculated):', calculatedGrandTotal);
+    console.log(' - Final Payable Amount (Used):', finalGrandTotal);
+  }
+
+  set({
+   orderId: payload.orderId || payload._id || null,
+   cartItems: payload.items || [],
+   cartItemCount: payload.items ? payload.items.reduce((acc, item) => acc + item.quantity, 0) : 0,
+   orderTotal,
+   savedAmount,
+   deliveryCharge,
+   packageCharge: payload.totalPackageCharge || 0,
+   totalTax,
+   grandTotal: Math.max(0, finalGrandTotal),
+   customerAddress: payload.customerAddress as any || null,
+   addressId: payload.addressId || null,
+   paymentMode: payload.paymentMode || null,
+   orderType: payload.orderType || null,
+   checkoutEnable: payload.checkoutEnable ?? true,
+   checkOutMessage: payload.checkOutMessage || '',
+   
+   // Handle applied discounts if backend provides them directly
+   appliedDiscount: payload.appliedOfferId 
+     ? {
+         discountId: payload.appliedOfferId,
+         discountType: 'backend', // Let backend drive it
+         discountPercentage: 0,
+         discountAmount: payload.discountAmount || payload.couponDiscount || 0,
+         couponName: payload.couponName || ''
+       } 
+     : null
+  });
  },
 
  clearCart: () => set({

@@ -50,8 +50,21 @@ export const CheckoutPage = () => {
   });
   const { data: addresses, isLoading: isAddrLoading } = useAddresses();
 
-  const finalTotal = cart?.grandTotal ?? 0;
   const discountAmount = cart?.discountAmount ?? cart?.couponDiscount ?? cart?.savedAmount ?? 0;
+  const calculatedGrandTotal = (cart?.orderTotal || 0) + (cart?.deliveryCharge || 0) + (cart?.totalTax || 0) - discountAmount;
+  const finalTotal = cart?.grandTotal || (cart as any)?.totalAmount || (cart as any)?.payableAmount || (cart as any)?.finalAmount || calculatedGrandTotal;
+
+  if (import.meta.env.DEV) {
+    console.log('[DEBUG Checkout] Derived Final Total:', {
+      orderTotal: cart?.orderTotal,
+      deliveryCharge: cart?.deliveryCharge,
+      totalTax: cart?.totalTax,
+      discountAmount,
+      calculatedGrandTotal,
+      grandTotal: cart?.grandTotal,
+      finalTotal
+    });
+  }
 
   const handlePlaceOrder = async () => {
     if (!user) {
