@@ -24,7 +24,7 @@ export const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-24 bg-[#111827] text-white">
+    <section id="how-it-works" className="py-24 bg-[#111827] text-white">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4">

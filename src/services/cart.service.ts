@@ -21,7 +21,7 @@ const normalizePhone = (phone: string | undefined): string => {
 export const cartService = {
   getCartDetails: async (payload: GetCartDetailsPayload): Promise<CartResponse | null> => {
     const requestPayload = { ...payload, customerPhoneNo: normalizePhone(payload.customerPhoneNo) };
-    console.log(`[cart API request] /get-cart-details phone: ${requestPayload.customerPhoneNo}`);
+    if (import.meta.env.DEV) console.log(`[cart API request] /get-cart-details phone: ${requestPayload.customerPhoneNo}`);
     const response = await axiosInstance.post<ApiResponse<CartResponse[]>>(`${ENV.CART_API}/get-cart-details`, requestPayload);
     const data = response.data.data;
     if (Array.isArray(data) && data.length > 0) {
@@ -32,22 +32,31 @@ export const cartService = {
 
   createCart: async (payload: CartCreateRequest): Promise<any> => {
     const requestPayload = { ...payload, customerPhoneNo: normalizePhone(payload.customerPhoneNo) };
-    console.log(`[cart API request] /create phone: ${requestPayload.customerPhoneNo}`);
+    if (import.meta.env.DEV) console.log(`[cart API request] /create phone: ${requestPayload.customerPhoneNo}`);
     const response = await axiosInstance.post(`${ENV.CART_API}/create`, requestPayload);
     return response.data;
   },
 
   updateCart: async (payload: AddToCartPayload): Promise<any> => {
     const requestPayload = { ...payload, customerPhoneNo: normalizePhone(payload.customerPhoneNo) };
-    console.log(`[cart API request] /update phone: ${requestPayload.customerPhoneNo}`);
+    if (import.meta.env.DEV) console.log(`[cart API request] /update phone: ${requestPayload.customerPhoneNo}`);
     const response = await axiosInstance.post(`${ENV.CART_API}/update`, requestPayload);
     return response.data;
   },
 
   removeFromCart: async (payload: RemoveFromCartPayload): Promise<any> => {
     const requestPayload = { ...payload, customerPhoneNo: normalizePhone(payload.customerPhoneNo) };
-    console.log(`[cart API request] /delete/item phone: ${requestPayload.customerPhoneNo}`);
+    if (import.meta.env.DEV) console.log(`[cart API request] /delete/item phone: ${requestPayload.customerPhoneNo}`);
     const response = await axiosInstance.post(`${ENV.CART_API}/delete/item`, requestPayload);
+    return response.data;
+  },
+
+  orderCheckout: async (payload: { orderId: string; outletId: string; customerPhoneNo: string; [key: string]: any }): Promise<any> => {
+    const requestPayload = { ...payload, customerPhoneNo: normalizePhone(payload.customerPhoneNo) };
+    if (import.meta.env.DEV) console.log('[Checkout] Checkout Request initiated');
+    if (import.meta.env.DEV) console.log('[Checkout] Checkout Payload:', JSON.stringify(requestPayload, null, 2));
+    const response = await axiosInstance.post(`${ENV.CART_API}/order-checkout`, requestPayload);
+    console.log('[Checkout] Checkout Response:', response.data);
     return response.data;
   }
 };

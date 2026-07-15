@@ -11,8 +11,8 @@ export const FloatingCart = () => {
   const organization = useOrganizationStore((state) => state.organization);
   const currency = organization?.currency || '₹';
 
-  const hideRoutes = ['/', '/cart', '/checkout', '/payment', '/order-success', '/orders'];
-  if (hideRoutes.includes(location.pathname)) return null;
+  const hideRoutes = ['/', '/cart', '/checkout', '/payment', '/order-success']; // removed /orders and /profile/orders to allow Repeat Order to show it
+  if (hideRoutes.some(route => location.pathname === route || location.pathname.startsWith('/profile') && !location.pathname.includes('orders'))) return null;
 
   const itemCount = cartItemCount;
   const totalAmount = grandTotal;
@@ -25,11 +25,11 @@ export const FloatingCart = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-          className="fixed bottom-6 left-0 right-0 z-50 px-4 pointer-events-none flex justify-center"
+          className="fixed bottom-6 right-6 z-50 pointer-events-none flex"
         >
           <div
             onClick={() => navigate('/cart')}
-            className="bg-[#FF6B00] backdrop-blur-md shadow-[0_8px_32px_rgba(255,107,0,0.35)] rounded-full w-full max-w-sm sm:max-w-md p-3 pl-5 pointer-events-auto cursor-pointer flex items-center justify-between border border-white/20 hover:bg-[#E65C00] transition-all duration-200 hover:scale-[1.02]"
+            className="bg-[#FF6B00] backdrop-blur-md shadow-[0_8px_32px_rgba(255,107,0,0.35)] rounded-full w-auto p-3 pr-3 pl-5 pointer-events-auto cursor-pointer flex items-center justify-between border border-white/20 hover:bg-[#E65C00] transition-all duration-200 hover:scale-[1.02] gap-6"
           >
             {/* Left: icon + count + price */}
             <div className="flex items-center gap-3">

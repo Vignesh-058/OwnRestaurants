@@ -40,7 +40,7 @@ const AddressIcon = ({ type }: { type: string }) => {
 };
 
 export const LocationSelectorModal = () => {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { isOpen, closeModal, openModal } = useLocationModalStore();
   const { setLocation, loading: isLocating, permissionGranted, locationLoaded } = useLocationStore();
   const setSelectedOutlet = useOutletStore((state) => state.setSelectedOutlet);
@@ -55,13 +55,14 @@ export const LocationSelectorModal = () => {
   const hasAutoOpened = useRef(false);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     if (!hasAutoOpened.current) {
       hasAutoOpened.current = true;
       if (!locationLoaded && !isOpen) {
         openModal();
       }
     }
-  }, [locationLoaded, isSuccess, addressesData, isOpen, openModal, user]);
+  }, [locationLoaded, isSuccess, addressesData, isOpen, openModal, user, isAuthenticated]);
 
   const [pendingAddress, setPendingAddress] = useState<any>(null);
   const [address1, setAddress1] = useState('');
@@ -198,7 +199,7 @@ export const LocationSelectorModal = () => {
     });
   };
 
-  if (!isOpen) return null;
+  if (!isAuthenticated || !isOpen) return null;
 
   return (
     <AnimatePresence>
@@ -216,7 +217,7 @@ export const LocationSelectorModal = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: "100%" }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="bg-slate-900 border border-white/10 w-full sm:max-w-[520px] rounded-t-[24px] sm:rounded-[24px] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] z-10 flex flex-col max-h-[90vh] sm:max-h-[85vh] relative"
+          className="bg-slate-900 border border-white/10 w-full md:w-[90%] lg:max-w-[700px] h-[95vh] md:h-auto max-h-[85vh] rounded-t-[24px] md:rounded-[24px] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] z-10 flex flex-col relative"
         >
           {/* Header */}
           <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between shrink-0 bg-slate-900/80 backdrop-blur-md">
@@ -245,7 +246,7 @@ export const LocationSelectorModal = () => {
 
           <div className="flex-1 overflow-y-auto custom-scrollbar">
             {view === 'search' ? (
-              <div className="p-6 space-y-8">
+              <div className="p-4 space-y-4">
                 {/* Search Bar */}
                 <div className="relative group">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-[#FF6B00] transition-colors" />
@@ -254,7 +255,7 @@ export const LocationSelectorModal = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search by area, street or landmark..."
-                    className="w-full h-[56px] pl-12 pr-4 bg-slate-800/50 border border-white/10 shadow-sm rounded-2xl text-[16px] font-medium focus:outline-none focus:border-[#FF6B00] focus:bg-slate-900 transition-all text-white placeholder:text-slate-500"
+                    className="w-full h-[48px] pl-12 pr-4 bg-slate-800/50 border border-white/10 shadow-sm rounded-2xl text-[16px] font-medium focus:outline-none focus:border-[#FF6B00] focus:bg-slate-900 transition-all text-white placeholder:text-slate-500"
                   />
                 </div>
 
@@ -345,7 +346,7 @@ export const LocationSelectorModal = () => {
                           <Loader2 className="h-6 w-6 animate-spin text-primary" />
                         </div>
                       ) : savedAddresses.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="space-y-[10px]">
                           {savedAddresses.map((addr: CustomerAddress) => {
                             const isSelected = selectedAddressId === addr._id;
                             const readableTitle = getReadableTitle(addr);
@@ -361,7 +362,7 @@ export const LocationSelectorModal = () => {
                                 whileTap={{ scale: 0.98 }}
                                 key={addr._id}
                                 onClick={() => handleSelectSavedAddress(addr)}
-                                className={`w-full text-left p-5 rounded-[18px] transition-all flex items-start gap-4 group relative overflow-hidden ${
+                                className={`w-full text-left p-4 rounded-[16px] transition-all flex items-start gap-2.5 group relative overflow-hidden ${
                                   isSelected 
                                     ? 'bg-[#FF6B00]/10 border border-[#FF6B00] shadow-md' 
                                     : 'bg-slate-800/80 border border-white/10 hover:border-white/20 hover:shadow-lg hover:bg-slate-800/90'
@@ -494,7 +495,7 @@ export const LocationSelectorModal = () => {
                   <Button 
                     onClick={handleContinue}
                     disabled={!selectedAddressId}
-                    className="w-full h-[56px] rounded-2xl bg-gradient-to-r from-[#FF6B00] to-[#E85D00] hover:from-[#E85D00] hover:to-[#CC5200] text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(255,107,0,0.4)] disabled:opacity-50 disabled:shadow-none transition-all group relative overflow-hidden"
+                    className="w-full h-[48px] rounded-2xl bg-gradient-to-r from-[#FF6B00] to-[#E85D00] hover:from-[#E85D00] hover:to-[#CC5200] text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(255,107,0,0.4)] disabled:opacity-50 disabled:shadow-none transition-all group relative overflow-hidden"
                   >
                     Continue
                   </Button>
@@ -503,7 +504,7 @@ export const LocationSelectorModal = () => {
                 <Button 
                   onClick={() => setView('add-address')}
                   variant="outline"
-                  className="w-full h-[56px] rounded-2xl border-white/10 hover:bg-slate-800 hover:text-white text-[16px] font-bold text-slate-300 transition-all bg-transparent"
+                  className="w-full h-[48px] rounded-2xl border-white/10 hover:bg-slate-800 hover:text-white text-[16px] font-bold text-slate-300 transition-all bg-transparent"
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   Add New Address

@@ -8,9 +8,8 @@ export const useStoreStatus = (belongsTo: string, outletId: string) => {
  return useQuery({
  queryKey: ['storeStatus', belongsTo, outletId],
  queryFn: async () => {
- console.log('[DEBUG-FLOW] STORE STATUS REQUEST - outletId:', outletId);
+ console.log('[STORE] Loading store settings');
  const data = await organizationService.getStoreStatus(belongsTo, outletId);
- console.log('[DEBUG-FLOW] STORE STATUS LOADED:', data.storeStatus);
  setStoreStatus(data);
  return data;
  },

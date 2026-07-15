@@ -34,38 +34,45 @@ export const OrderTimeline = ({ status }: OrderTimelineProps) => {
 
  const currentIndex = STATUS_ORDER.indexOf(status as OrderStatus);
 
- return (
- <div className="relative">
- <div className="flex items-center justify-between relative">
- {/* connector line */}
- <div className="absolute left-0 right-0 top-5 h-0.5 bg-muted z-0 mx-5" />
- <div
- className="absolute left-0 top-5 h-0.5 bg-primary z-0 mx-5 transition-all duration-700"
- style={{ width: currentIndex >= 0 ? `${(currentIndex / (STATUS_ORDER.length - 1)) * (100 - (100 / STATUS_ORDER.length))}%` : '0%' }}
- />
+  return (
+  <div className="relative w-full">
+    {/* Horizontal line for md+ */}
+    <div className="hidden md:block absolute left-0 right-0 top-5 h-0.5 bg-[#F1F5F9] z-0 mx-8" />
+    <div
+      className="hidden md:block absolute left-0 top-5 h-0.5 bg-[#FF6B00] z-0 mx-8 transition-all duration-700"
+      style={{ width: currentIndex >= 0 ? `${(currentIndex / (STATUS_ORDER.length - 1)) * (100 - (200 / STATUS_ORDER.length))}%` : '0%' }}
+    />
 
- {TIMELINE_STEPS.map((step, idx) => {
- const isCompleted = idx <= currentIndex;
- const isCurrent = idx === currentIndex;
- const Icon = step.icon;
- return (
- <div key={step.status} className="relative z-10 flex flex-col items-center gap-2 flex-1">
- <div
- className={`h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all duration-300
- ${isCompleted ? 'bg-primary border-primary text-primary-foreground shadow-md scale-110' :
- isCurrent ? 'bg-primary/10 border-primary text-primary' :
- 'bg-background border-muted text-muted-foreground'}`}
- >
- <Icon className="h-4 w-4" />
- </div>
- <p className={`text-[10px] text-center font-medium leading-tight max-w-[60px]
- ${isCompleted ? 'text-primary' : 'text-muted-foreground'}`}>
- {step.label}
- </p>
- </div>
- );
- })}
- </div>
- </div>
- );
+    {/* Vertical line for mobile */}
+    <div className="md:hidden absolute left-5 top-4 bottom-4 w-0.5 bg-[#F1F5F9] z-0" />
+    <div
+      className="md:hidden absolute left-5 top-4 w-0.5 bg-[#FF6B00] z-0 transition-all duration-700"
+      style={{ height: currentIndex >= 0 ? `${(currentIndex / (STATUS_ORDER.length - 1)) * 100}%` : '0%' }}
+    />
+
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-2 relative">
+    {TIMELINE_STEPS.map((step, idx) => {
+      const isCompleted = idx <= currentIndex;
+      const isCurrent = idx === currentIndex;
+      const Icon = step.icon;
+      return (
+        <div key={step.status} className="relative z-10 flex flex-row md:flex-col items-center gap-4 md:gap-2 md:flex-1 w-full md:w-auto">
+          <div
+            className={`h-10 w-10 md:h-12 md:w-12 shrink-0 rounded-full flex items-center justify-center border-[2px] transition-all duration-300
+            ${isCompleted ? 'bg-[#FF6B00] border-[#FF6B00] text-white shadow-md md:scale-110' :
+            isCurrent ? 'bg-[#FFF7ED] border-[#FF6B00] text-[#FF6B00]' :
+            'bg-white border-[#E5E7EB] text-[#9CA3AF]'}`}
+          >
+            <Icon className="h-5 w-5" />
+          </div>
+          <p className={`text-[13px] md:text-[12px] font-bold md:text-center leading-tight
+            ${isCompleted ? 'text-[#111827]' : 'text-[#6B7280]'}`}>
+            {step.label}
+          </p>
+        </div>
+      );
+    })}
+    </div>
+  </div>
+  );
 };

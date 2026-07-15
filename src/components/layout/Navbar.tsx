@@ -1,10 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Mic, ShoppingCart, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/store/CartStore";
 import { useAuthStore } from "@/store/AuthStore";
 import { useOrganizationStore } from "@/store/OrganizationStore";
@@ -17,11 +15,11 @@ import defaultLogo from "@/assets/Ieyal Logo.jpeg";
 
 export const Navbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const currentPath = location.pathname;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
-  const { grandTotal, cartItemCount, openDrawer } = useCartStore();
+  const { grandTotal, cartItemCount } = useCartStore();
   const cartTotal = grandTotal;
   const totalCartQuantity = cartItemCount;
 
@@ -36,9 +34,11 @@ export const Navbar = () => {
     (state) => state.formattedAddress,
   );
 
-  const headerConfig = organization?.theme?.sections?.header?.config;
-  const showCart = headerConfig?.showCart ?? true;
+  const headerConfig = organization?.theme?.config?.header?.config;
+  const showCart = (headerConfig?.showCart ?? true) && (organization?.isCartEnabled ?? true);
   const showLocation = headerConfig?.showLocation ?? true;
+  const showMenu = headerConfig?.showMenu ?? true;
+  const showProfile = headerConfig?.showProfile ?? true;
 
   const navLinks = [
     { id: "home", label: "Home", path: "/" },
@@ -59,148 +59,309 @@ export const Navbar = () => {
     return "";
   })();
 
+  // Use framer-motion container variants for smooth content transition
+  const fadeVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+    exit: { opacity: 0, y: 10, transition: { duration: 0.2 } }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) return;
+
+    const handleScroll = () => {
+      const sections = ["home", "how-it-works", "features"];
+      const headerOffset = 80; // height of navbar
+      
+      let currentSection = activeSection;
+      
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // If the top of the element is near the top of the viewport (accounting for header)
+          if (rect.top <= headerOffset + 150 && rect.bottom >= headerOffset) {
+            currentSection = sectionId;
+          }
+        }
+      }
+      
+      if (currentSection !== activeSection) {
+        setActiveSection(currentSection);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isAuthenticated, activeSection]);
+
+  const scrollToSection = (sectionId: string) => {
+    setIsMobileMenuOpen(false);
+    
+    if (sectionId === "home") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setActiveSection("home");
+      return;
+    }
+
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerOffset = 80;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementPosition - headerOffset,
+        behavior: "smooth"
+      });
+      setActiveSection(sectionId);
+    }
+  };
+
   return (
-    <header className="w-full fixed top-0 left-0 right-0 z-[100] h-[80px] flex items-center bg-gradient-to-r from-[#0F172A] to-[#111827] backdrop-blur-md border-b border-[rgba(255,255,255,0.08)] shadow-sm transition-colors px-4 md:px-8 xl:px-12">
-      <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-4">
+    <motion.header
+      layout
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+      className={cn(
+        "w-full fixed top-0 left-0 right-0 z-[100] flex items-center bg-gradient-to-r from-[#0F172A] to-[#111827] backdrop-blur-md px-4 md:px-8 xl:px-12",
+        isAuthenticated
+          ? "h-[80px] border-b border-[rgba(255,255,255,0.08)] shadow-sm"
+          : "h-[64px] md:h-[76px] border-b border-[rgba(255,255,255,0.05)] shadow-md"
+      )}
+    >
+      <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-4 relative">
         {/* LEFT SECTION: Logo & Delivery */}
         <div className="flex items-center gap-3 md:gap-4 shrink-0">
-          <button 
-            className="lg:hidden p-1.5 text-white -ml-1"
-            onClick={() => setIsMobileMenuOpen(true)}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-          
+          <AnimatePresence mode="wait">
+            {(!isAuthenticated || isAuthenticated) && (
+              <motion.button
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                className="lg:hidden p-1.5 text-white -ml-1 overflow-hidden"
+                onClick={() => setIsMobileMenuOpen(true)}
+              >
+                <Menu className="w-6 h-6 shrink-0" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+
           <Link
-            to={isAuthenticated ? "/" : "/login"}
+            to={isAuthenticated ? "/" : "/"}
+            onClick={(e) => {
+              if (!isAuthenticated) {
+                e.preventDefault();
+                scrollToSection('home');
+              }
+            }}
             className="flex items-center group"
           >
-            <img
-              src={defaultLogo}
-              alt="IEYAL Solutions"
-              className="w-[36px] h-[36px] md:w-[48px] md:h-[48px] object-contain drop-shadow-sm transition-transform group-hover:scale-105 rounded-[10px] md:rounded-[12px]"
+            <motion.img
+              layout
+              src={organization?.logoImage || defaultLogo}
+              alt={organization?.name || "IEYAL Solutions"}
+              className={cn(
+                "object-contain drop-shadow-sm transition-transform group-hover:scale-105",
+                isAuthenticated
+                  ? "w-[36px] h-[36px] md:w-[48px] md:h-[48px] rounded-[10px] md:rounded-[12px]"
+                  : "w-[32px] h-[32px] md:w-[40px] md:h-[40px] rounded-lg"
+              )}
             />
+            {!isAuthenticated && organization?.name && (
+              <motion.span 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="hidden sm:block ml-3 font-black text-white tracking-tight text-lg"
+              >
+                {organization.name}
+              </motion.span>
+            )}
           </Link>
 
-          {showLocation && (
-            <div className="flex items-center gap-3 lg:gap-4 shrink-0 min-w-0">
-              {/* Divider between Logo and Location Card */}
-              <div className="hidden md:block w-[1px] h-[40px] bg-[rgba(255,255,255,0.08)] ml-1 mr-1 lg:mx-0"></div>
-
-              {/* Desktop/Laptop/Tablet Location Card */}
-              <button
-                onClick={openOutletModal}
-                className="hidden md:flex flex-col items-start justify-center text-left w-[200px] lg:w-[260px] xl:w-[320px] h-[64px] bg-[#1F2937] border border-[rgba(255,255,255,0.08)] rounded-[16px] px-3 lg:px-4 py-3 hover:bg-[#1F2937]/80 hover:border-[rgba(255,255,255,0.15)] transition-all duration-300 group shadow-sm shrink-0"
+          <AnimatePresence mode="wait">
+            {isAuthenticated && showLocation && (
+              <motion.div 
+                variants={fadeVariants}
+                initial="hidden" animate="visible" exit="exit"
+                className="flex items-center gap-3 lg:gap-4 shrink-0 min-w-0"
               >
-                <div className="flex items-center w-full mb-1">
-                  <span className="text-[10px] lg:text-[11px] font-bold text-[#94A3B8] uppercase tracking-widest leading-none flex items-center gap-1.5">
-                    📍 DELIVERING TO
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 min-w-0 w-full">
-                  <span className="text-[14px] lg:text-[16px] xl:text-[18px] font-bold text-white truncate flex-1 leading-none">
-                    {userLocationAddress ||
-                      selectedOutlet?.outletDetails?.city ||
-                      selectedOutlet?.outletName ||
-                      "Select store"}
-                  </span>
-                  <span className="text-[11px] lg:text-[12px] font-bold text-[#FF6B00] group-hover:underline transition-colors shrink-0 leading-none">
-                    Change
-                  </span>
-                </div>
-              </button>
+                {/* Divider between Logo and Location Card */}
+                <div className="hidden md:block w-[1px] h-[40px] bg-[rgba(255,255,255,0.08)] ml-1 mr-1 lg:mx-0"></div>
 
-              {/* Mobile Compact Location Button */}
-              <button
-                onClick={openOutletModal}
-                className="md:hidden flex items-center gap-1.5 bg-[#1F2937] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-2.5 py-2 hover:bg-[#1F2937]/80 transition-colors max-w-[150px]"
-              >
-                <span className="text-sm leading-none">📍</span>
-                <span className="text-xs font-bold text-white truncate">
-                  {userLocationAddress ||
-                    selectedOutlet?.outletDetails?.city ||
-                    selectedOutlet?.outletName ||
-                    "Location"}
-                </span>
-              </button>
-            </div>
-          )}
+                {/* Desktop/Laptop/Tablet Location Card */}
+                <button
+                  onClick={openOutletModal}
+                  className="hidden md:flex flex-col items-start justify-center text-left w-[200px] lg:w-[260px] xl:w-[320px] h-[64px] bg-[#1F2937] border border-[rgba(255,255,255,0.08)] rounded-[16px] px-3 lg:px-4 py-2 hover:bg-[#1F2937]/80 hover:border-[rgba(255,255,255,0.15)] transition-all duration-300 group shadow-sm shrink-0"
+                >
+                  <div className="flex items-center w-full mb-1">
+                    <span className="text-[10px] lg:text-[11px] font-bold text-[#94A3B8] uppercase tracking-widest leading-none flex items-center gap-1.5">
+                      {selectedOutlet ? '📍 SELECTED OUTLET' : '📍 SELECT OUTLET'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between min-w-0 w-full">
+                    <div className="flex flex-col min-w-0 flex-1 truncate pr-2">
+                      {selectedOutlet ? (
+                        <>
+                          <span className="text-[14px] lg:text-[16px] xl:text-[17px] font-bold text-white leading-none truncate mb-0.5">
+                            {selectedOutlet.outletName}
+                          </span>
+                          {(selectedOutlet.outletDetails?.address || selectedOutlet.outletDetails?.city) && (
+                            <span className="text-[10px] lg:text-[11px] text-[#94A3B8] truncate leading-none">
+                              {selectedOutlet.outletDetails.address || selectedOutlet.outletDetails.city}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-[14px] lg:text-[15px] font-bold text-white leading-none truncate">
+                          Choose a nearby restaurant
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[11px] lg:text-[12px] font-bold text-[#FF6B00] group-hover:underline transition-colors shrink-0 leading-none">
+                      Change
+                    </span>
+                  </div>
+                </button>
+
+                {/* Mobile Compact Location Button */}
+                <button
+                  onClick={openOutletModal}
+                  className="md:hidden flex items-center gap-1.5 bg-[#1F2937] border border-[rgba(255,255,255,0.08)] rounded-[12px] px-2.5 py-2 hover:bg-[#1F2937]/80 transition-colors max-w-[150px]"
+                >
+                  <span className="text-sm leading-none">📍</span>
+                  <span className="text-xs font-bold text-white truncate">
+                    {selectedOutlet?.outletName || "Select Outlet"}
+                  </span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* CENTER SECTION: Nav Links */}
-        <nav className="hidden lg:flex items-center bg-[#1F2937]/50 backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[40px] p-1.5 relative shrink-0 shadow-inner">
-          {navLinks.map((link) => {
-            const active = activeTabId === link.id;
-            return (
-              <Link
-                key={link.id}
-                to={link.path}
-                className={cn(
-                  "relative px-6 py-2 rounded-[40px] text-sm font-semibold transition-all duration-300 z-10",
-                  active ? "text-white" : "text-[#94A3B8] hover:text-white",
-                )}
-              >
-                {active && (
-                  <motion.div
-                    layoutId="nav-link-pill-v5"
-                    className="absolute inset-0 bg-gradient-to-r from-[#FF6B00] to-[#E85D00] rounded-[40px] shadow-md shadow-[#FF6B00]/20"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-20">{link.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* RIGHT SECTION: Search Bar, Cart & Profile */}
-        <div className="flex items-center gap-2 md:gap-4 shrink-0">
-
-
-
-
-          {showCart && (
-            <Link 
-              to="/cart"
-              className="flex items-center gap-2 h-[40px] md:h-[48px] px-4 md:px-6 bg-gradient-to-r from-[#FF6B00] to-[#E85D00] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(255,107,0,0.4)] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_0_rgba(255,107,0,0.39)] shrink-0 group"
-            >
-              <ShoppingCart className="h-5 w-5 stroke-[2.5] group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-bold tracking-wide flex items-center gap-1.5">
-                {totalCartQuantity > 0 ? (
-                  <>
-                    <span>{totalCartQuantity} items</span>
-                    <span className="opacity-50">•</span>
-                    <span>
-                      {currency}
-                      {cartTotal.toLocaleString()}
-                    </span>
-                  </>
-                ) : (
-                  "Cart"
-                )}
-              </span>
-            </Link>
-          )}
-
+        {/* CENTER SECTION */}
+        <AnimatePresence mode="wait">
           {isAuthenticated ? (
-            <div className="flex items-center gap-2.5 shrink-0 ml-2">
-              <span className="hidden xl:inline text-sm font-bold text-white">
-                {user?.name || "Account"}
-              </span>
-              <AccountPanel />
-            </div>
+            <motion.nav 
+              key="auth-nav"
+              variants={fadeVariants}
+              initial="hidden" animate="visible" exit="exit"
+              className="hidden lg:flex items-center bg-[#1F2937]/50 backdrop-blur-sm border border-[rgba(255,255,255,0.05)] rounded-[40px] p-1.5 relative shrink-0 shadow-inner"
+            >
+              {showMenu && navLinks.map((link) => {
+                const active = activeTabId === link.id;
+                return (
+                  <Link
+                    key={link.id}
+                    to={link.path}
+                    className={cn(
+                      "relative px-6 py-2 rounded-[40px] text-sm font-semibold transition-all duration-300 z-10",
+                      active ? "text-white" : "text-[#94A3B8] hover:text-white",
+                    )}
+                  >
+                    {active && (
+                      <motion.div
+                        layoutId="nav-link-pill-v5"
+                        className="absolute inset-0 bg-gradient-to-r from-[#FF6B00] to-[#E85D00] rounded-[40px] shadow-md shadow-[#FF6B00]/20"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-20">{link.label}</span>
+                  </Link>
+                );
+              })}
+            </motion.nav>
           ) : (
-            <Link to="/login" className="ml-2">
-              <Button
-                size="sm"
-                className="rounded-full h-[40px] md:h-[48px] px-4 md:px-6 bg-[#1F2937] hover:bg-[#1F2937]/80 hover:border-[#FF6B00] border border-[rgba(255,255,255,0.05)] text-white font-bold text-sm shadow-sm transition-all duration-300 shrink-0"
+            <motion.div 
+              key="public-nav"
+              variants={fadeVariants}
+              initial="hidden" animate="visible" exit="exit"
+              className="hidden lg:flex items-center gap-8 text-[#94A3B8] font-semibold text-[14px]"
+            >
+              <button 
+                onClick={() => scrollToSection('home')} 
+                className={cn("transition-colors", activeSection === 'home' ? "text-[#FF6B00]" : "hover:text-white")}
               >
-                Sign In
-              </Button>
-            </Link>
+                Home
+              </button>
+              <button 
+                onClick={() => scrollToSection('how-it-works')} 
+                className={cn("transition-colors", activeSection === 'how-it-works' ? "text-[#FF6B00]" : "hover:text-white")}
+              >
+                How it Works
+              </button>
+              <button 
+                onClick={() => scrollToSection('features')} 
+                className={cn("transition-colors", activeSection === 'features' ? "text-[#FF6B00]" : "hover:text-white")}
+              >
+                Features
+              </button>
+            </motion.div>
           )}
+        </AnimatePresence>
+
+        {/* RIGHT SECTION: Cart & Profile / Sign In */}
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <AnimatePresence mode="wait">
+            {isAuthenticated ? (
+              <motion.div 
+                key="auth-right"
+                variants={fadeVariants}
+                initial="hidden" animate="visible" exit="exit"
+                className="flex items-center gap-2 md:gap-4"
+              >
+                {showCart && (
+                  <Link 
+                    to="/cart"
+                    className="flex items-center gap-2 h-[40px] md:h-[48px] px-4 md:px-6 bg-gradient-to-r from-[#FF6B00] to-[#E85D00] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(255,107,0,0.4)] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_0_rgba(255,107,0,0.39)] shrink-0 group"
+                  >
+                    <ShoppingCart className="h-5 w-5 stroke-[2.5] group-hover:scale-110 transition-transform" />
+                    <span className="text-sm font-bold tracking-wide flex items-center gap-1.5">
+                      {totalCartQuantity > 0 ? (
+                        <>
+                          <span>{totalCartQuantity} items</span>
+                          <span className="opacity-50">•</span>
+                          <span>
+                            {currency}
+                            {cartTotal.toLocaleString()}
+                          </span>
+                        </>
+                      ) : (
+                        "Cart"
+                      )}
+                    </span>
+                  </Link>
+                )}
+
+                {showProfile && (
+                  <div className="flex items-center gap-2.5 shrink-0 ml-2">
+                    <span className="hidden xl:inline text-sm font-bold text-white">
+                      {user?.name || "Account"}
+                    </span>
+                    <AccountPanel />
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="public-right"
+                variants={fadeVariants}
+                initial="hidden" animate="visible" exit="exit"
+                className="flex items-center gap-3"
+              >
+                <Link to="/products" className="hidden sm:block">
+                  <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white font-bold rounded-full h-[40px] px-5 transition-colors">
+                    Explore Menu
+                  </Button>
+                </Link>
+                <Link to="/login">
+                  <Button className="bg-[#FF6B00] hover:bg-[#E65C00] text-white font-bold rounded-full h-[40px] px-6 shadow-md transition-transform hover:-translate-y-0.5 border-0">
+                    Sign In
+                  </Button>
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
+      
       {/* Mobile Drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
@@ -220,30 +381,62 @@ export const Navbar = () => {
               className="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[120] lg:hidden flex flex-col"
             >
               <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-[#0F172A] to-[#111827]">
-                <img src={defaultLogo} alt="Logo" className="w-[40px] h-[40px] rounded-[10px]" />
+                <img src={organization?.logoImage || defaultLogo} alt="Logo" className="w-[40px] h-[40px] rounded-[10px]" />
                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-white/80 hover:text-white">
                   <X className="w-6 h-6" />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
-                {navLinks.map(link => (
-                  <Link 
-                    key={link.id} 
-                    to={link.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={cn(
-                      "p-3 rounded-xl text-[15px] font-bold transition-colors",
-                      activeTabId === link.id ? "bg-[#FFF7ED] text-[#FF6B00]" : "text-gray-700 hover:bg-gray-50"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {isAuthenticated ? (
+                  navLinks.map(link => (
+                    <Link 
+                      key={link.id} 
+                      to={link.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={cn(
+                        "p-3 rounded-xl text-[15px] font-bold transition-colors",
+                        activeTabId === link.id ? "bg-[#FFF7ED] text-[#FF6B00]" : "text-gray-700 hover:bg-gray-50"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))
+                ) : (
+                  <>
+                    <button 
+                      onClick={() => scrollToSection('home')} 
+                      className={cn(
+                        "p-3 rounded-xl text-[15px] font-bold transition-colors text-left",
+                        activeSection === 'home' ? "bg-[#FFF7ED] text-[#FF6B00]" : "text-gray-700 hover:bg-gray-50"
+                      )}
+                    >
+                      Home
+                    </button>
+                    <button 
+                      onClick={() => scrollToSection('how-it-works')} 
+                      className={cn(
+                        "p-3 rounded-xl text-[15px] font-bold transition-colors text-left",
+                        activeSection === 'how-it-works' ? "bg-[#FFF7ED] text-[#FF6B00]" : "text-gray-700 hover:bg-gray-50"
+                      )}
+                    >
+                      How it Works
+                    </button>
+                    <button 
+                      onClick={() => scrollToSection('features')} 
+                      className={cn(
+                        "p-3 rounded-xl text-[15px] font-bold transition-colors text-left",
+                        activeSection === 'features' ? "bg-[#FFF7ED] text-[#FF6B00]" : "text-gray-700 hover:bg-gray-50"
+                      )}
+                    >
+                      Features
+                    </button>
+                  </>
+                )}
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   );
 };

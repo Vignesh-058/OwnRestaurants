@@ -26,7 +26,7 @@ export const WhyChooseUs = () => {
   ];
 
   return (
-    <section className="py-20 bg-[#F8FAFC]">
+    <section id="features" className="py-20 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           

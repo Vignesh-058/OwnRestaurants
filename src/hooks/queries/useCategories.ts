@@ -13,10 +13,8 @@ export const useCategories = () => {
     queryFn: async () => {
       const outletId = selectedOutlet?._id || '';
       const orgId = organization?._id || '';
-      const payload = { belongsTo: orgId, outletId };
-      console.log('Category API Payload', payload);
+      console.log('[CATEGORIES] Loading categories');
       const data = await categoryService.getCategories(outletId, orgId);
-      console.log('[DEBUG-FLOW] CATEGORIES FETCHED - count:', data?.length);
       return data;
     },
     enabled: !!selectedOutlet?._id && !!organization?._id,

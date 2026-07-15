@@ -10,6 +10,7 @@ import { ArrowLeft, ArrowRight, Loader2, ShoppingBag, Coffee, UtensilsCrossed } 
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
 import { useAuthStore } from '@/store/AuthStore';
+import { useOrganizationStore } from '@/store/OrganizationStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import defaultLogo from '@/assets/Ieyal Logo.jpeg';
 
@@ -24,6 +25,8 @@ export const LoginPage = () => {
 
   const { mutate: sendOtp, isPending: isSendingOtp } = useLogin();
   const { mutate: verifyOtp, isPending: isVerifyingOtp } = useVerifyOTP();
+  const organization = useOrganizationStore(state => state.organization);
+  const loginConfig = organization?.theme?.config?.login;
 
   // Redirect to where they came from or home
   const from = location.state?.from?.pathname || '/';
@@ -77,6 +80,9 @@ export const LoginPage = () => {
       
       {/* Premium Ambient Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {loginConfig?.background ? (
+          <img src={loginConfig.background} alt="Background" className="absolute inset-0 w-full h-full object-cover opacity-20" />
+        ) : null}
         {/* Soft radial gradients */}
         <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] bg-orange-400/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]" />
@@ -113,8 +119,8 @@ export const LoginPage = () => {
               <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
               <div className="relative z-10 w-28 h-28 sm:w-32 sm:h-32 bg-white rounded-3xl p-4 shadow-xl border border-white/20 transform rotate-[-2deg] hover:rotate-0 transition-all duration-300">
                 <img 
-                  src={defaultLogo} 
-                  alt="IEYAL Solutions" 
+                  src={organization?.logoImage || defaultLogo} 
+                  alt={organization?.brandName || "IEYAL Solutions"} 
                   className="w-full h-full object-contain rounded-xl"
                 />
               </div>

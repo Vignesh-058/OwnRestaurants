@@ -105,6 +105,11 @@ export interface CartResponse {
  deliveryCharge: number;
  totalPackageCharge: number;
  totalTax: number;
+ discountAmount?: number;
+ couponDiscount?: number;
+ couponName?: string;
+ appliedOfferId?: string;
+ grandTotal: number;
  paymentMode: string;
  orderType: string;
  customerAddress: string | null;

@@ -66,16 +66,18 @@ export interface CustomerAddress {
 }
 
 export interface CreateAddressRequest {
- address1: string;
- address2: string;
- city: string;
- state: string;
- country: string;
- pincode: string;
- latitude: number;
- longitude: number;
- landMark?: string;
- type: AddressType;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  latitude: number;
+  longitude: number;
+  landMark?: string;
+  type: AddressType;
+  belongsTo: string;
+  customerPhoneNo: string;
 }
 
 export interface CreateAddressResponse {

@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Truck } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useBanners } from "@/hooks/queries/useBanners";
 import { useOrganizationStore } from "@/store/OrganizationStore";
 import { useOutletStore } from "@/store/OutletStore";
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 import ENV from "@/config/env";
-import defaultHero from "@/assets/hero.png";
-import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Banner } from "@/types/banner.types";
 
 export const HeroBanner = () => {
   const navigate = useNavigate();
@@ -17,301 +19,198 @@ export const HeroBanner = () => {
   const belongsTo = organization?._id || "";
   const outletId = selectedOutlet?._id || "";
 
-  const { data: banners, isLoading } = useBanners(belongsTo, outletId);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [direction, setDirection] = useState(1);
+  useEffect(() => {
+    if (outletId) {
+      console.log('[Selected Outlet]', outletId);
+    }
+  }, [outletId]);
 
-  const activeBanners = banners?.filter((b) => b.active) || [];
+  const { data: banners, isLoading } = useBanners(belongsTo, outletId);
+  const activeBanners = useMemo(() => (banners || []).filter((b) => b.active).sort((a, b) => (a.rank || 0) - (b.rank || 0)), [banners]);
   const hasBanners = activeBanners.length > 0;
 
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true },
+    hasBanners && activeBanners.length > 1 ? [Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: true })] : []
+  );
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
   useEffect(() => {
-    if (!hasBanners || isHovered || activeBanners.length <= 1) return;
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+  }, [emblaApi, onSelect]);
 
-    const timer = setInterval(() => {
-      setDirection(1);
-      setCurrentIndex((prev) => (prev + 1) % activeBanners.length);
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, [hasBanners, isHovered, activeBanners.length]);
-
-  const handleNext = () => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % activeBanners.length);
-  };
-
-  const handlePrev = () => {
-    setDirection(-1);
-    setCurrentIndex(
-      (prev) => (prev - 1 + activeBanners.length) % activeBanners.length,
-    );
-  };
-
-  const getImageUrl = (path: string) => {
-    if (!path) return defaultHero;
+  const getImageUrl = (path?: string) => {
+    if (!path) return '';
     if (path.startsWith("http")) return path;
     const baseUrl = ENV.API_BASE_URL || ENV.BANNER_API?.replace("/banner", "") || "";
     return `${baseUrl}/${path.replace(/^\//, "")}`;
   };
 
+  const handleBannerClick = (banner: Banner) => {
+    console.log('[Banner Click Event]', banner);
+    if (banner.buttonLink) {
+      if (banner.buttonLink.startsWith('http')) {
+        window.open(banner.buttonLink, '_blank');
+      } else {
+        navigate(banner.buttonLink);
+      }
+    } else if (banner.type === 'category' && banner.category?.length > 0) {
+      navigate(`/products?category=${banner.category[0]}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (banner.type === 'item' && banner.item?.length > 0) {
+      navigate(`/products?product=${banner.item[0]}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   if (isLoading) {
     return (
-      <section className="relative w-full min-h-[420px] md:min-h-[500px] lg:min-h-[700px] bg-gradient-to-br from-[#0F172A] to-[#111827] flex items-center py-16 lg:py-0 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col lg:flex-row items-center w-full gap-12">
-          <div className="w-full lg:w-[45%]">
-            <div className="h-8 w-48 bg-muted/20 rounded-full animate-pulse mb-6" />
-            <div className="h-16 w-full bg-muted/20 rounded animate-pulse mb-4" />
-            <div className="h-16 w-3/4 bg-muted/20 rounded animate-pulse mb-6" />
-            <div className="h-20 w-full max-w-md bg-muted/20 rounded animate-pulse mb-10" />
-            <div className="flex gap-4">
-              <div className="h-14 w-40 bg-muted/20 rounded-[16px] animate-pulse" />
-              <div className="h-14 w-40 bg-muted/20 rounded-[16px] animate-pulse" />
-            </div>
-          </div>
-          <div className="w-full lg:w-[55%] h-[400px] md:h-[500px] lg:h-[600px] bg-muted/10 rounded-[24px] animate-pulse mt-8 lg:mt-0" />
-        </div>
+      <section className="relative w-full h-[350px] md:h-[500px] lg:h-[700px] flex items-center justify-center overflow-hidden bg-[#F8FAFC]">
+        <Skeleton className="w-full h-full" />
       </section>
     );
   }
 
-  const currentBanner = hasBanners ? activeBanners[currentIndex] : undefined;
-
-  // Right side content renderer
-  const renderRightBanner = (banner?: (typeof activeBanners)[0]) => {
-    const isDefault = !banner;
-    const imageUrl = isDefault
-      ? defaultHero
-      : getImageUrl(banner.image?.webView || banner.image?.mobileView || "");
-
-    return (
-      <>
-        {/* Banner Image with gentle zoom animation */}
-        <motion.img
-          key={imageUrl}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, scale: [1, 1.05] }}
-          exit={{ opacity: 0 }}
-          transition={{
-            opacity: { duration: 1 },
-            scale: {
-              duration: 15,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "linear",
-            },
-          }}
-          src={imageUrl}
-          alt="Premium Food"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            if (target.src !== defaultHero) {
-              target.src = defaultHero;
-            }
-          }}
-          className="absolute inset-0 w-full h-full object-cover z-0 origin-center"
-        />
-
-        {/* Dark Gradient Overlay for readability */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-black/65 pointer-events-none" />
-      </>
-    );
-  };
+  if (!hasBanners) {
+    return null;
+  }
 
   return (
-    <section className="relative w-full min-h-[420px] md:min-h-[500px] lg:min-h-[700px] bg-gradient-to-br from-[#0F172A] to-[#111827] overflow-hidden flex flex-col lg:flex-row items-center pt-24 pb-16 lg:py-0">
-      {/* Orange Radial Glow behind text */}
-      <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] lg:w-[40vw] lg:h-[40vw] rounded-full bg-[radial-gradient(circle,_#FF6B00_0%,_transparent_60%)] opacity-15 mix-blend-screen pointer-events-none blur-[60px]" />
+    <section id="home" className="relative w-full h-[400px] md:h-[500px] lg:h-[700px] bg-gradient-to-br from-[#0F172A] to-[#111827] overflow-hidden group">
+      
+      <div className="overflow-hidden w-full h-full" ref={emblaRef}>
+        <div className="flex w-full h-full touch-pan-y">
+          {activeBanners.map((banner, index) => {
+             const desktopImg = getImageUrl(banner.image?.webView || banner.image?.mobileView);
+             const mobileImg = getImageUrl(banner.image?.mobileView || banner.image?.webView);
 
-      <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col lg:flex-row items-center justify-between w-full gap-10 lg:gap-16 z-20">
-        {/* LEFT SIDE: Static Hero Content (45%) */}
-        <div className="w-full lg:w-[45%] flex flex-col justify-center relative z-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <span className="inline-block bg-[#FF6B00]/10 text-[#FF6B00] border border-[#FF6B00]/20 font-bold text-xs md:text-sm tracking-widest uppercase mb-6 px-4 py-1.5 rounded-full backdrop-blur-sm shadow-[0_2px_10px_rgba(255,107,0,0.1)]">
-              Crafted for Perfection
-            </span>
-          </motion.div>
+             return (
+               <div 
+                 key={banner._id || index} 
+                 className="flex-[0_0_100%] min-w-0 relative h-full w-full cursor-pointer"
+                 onClick={() => handleBannerClick(banner)}
+               >
+                 <picture>
+                   <source media="(min-width: 768px)" srcSet={desktopImg} />
+                   <motion.img 
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     transition={{ duration: 0.4 }}
+                     src={mobileImg} 
+                     alt={banner.title || "Promotional Banner"} 
+                     className="w-full h-full object-cover origin-center"
+                     loading="lazy"
+                   />
+                 </picture>
+                 
+                 {/* Gradient Overlay for Text Readability */}
+                 <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-black/80 md:from-black/90 via-black/40 to-transparent pointer-events-none" />
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-white leading-[1.05] mb-6 tracking-tight">
-              PREMIUM <br className="hidden lg:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B00] to-[#FF8A00] drop-shadow-md">
-                CULINARY
-              </span>{" "}
-              <br className="hidden lg:block" />
-              EXPERIENCE
-            </h1>
-          </motion.div>
+                 {/* Text Content */}
+                 <div className="absolute inset-0 z-10 flex flex-col justify-center max-w-7xl mx-auto px-6 md:px-10 pointer-events-none">
+                   <div className="w-full md:w-[60%] lg:w-[50%]">
+                     <AnimatePresence mode="wait">
+                       {index === selectedIndex && (
+                         <motion.div
+                           key="content"
+                           initial={{ opacity: 0, y: 20 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           exit={{ opacity: 0, y: -20 }}
+                           transition={{ duration: 0.5, delay: 0.2 }}
+                         >
+                           {banner.subtitle && (
+                             <span className="inline-block bg-[#FF6B00]/10 text-[#FF6B00] border border-[#FF6B00]/20 font-bold text-xs md:text-sm tracking-widest uppercase mb-4 md:mb-6 px-4 py-1.5 rounded-full backdrop-blur-sm shadow-[0_2px_10px_rgba(255,107,0,0.1)]">
+                               {banner.subtitle}
+                             </span>
+                           )}
+                           
+                           {banner.title && (
+                             <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] mb-4 md:mb-6 tracking-tight drop-shadow-md">
+                               {banner.title}
+                             </h1>
+                           )}
+                           
+                           {banner.description && (
+                             <p className="text-[#D1D5DB] text-sm md:text-lg lg:text-xl font-medium mb-8 max-w-lg leading-relaxed drop-shadow-sm">
+                               {banner.description}
+                             </p>
+                           )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <p className="text-[#9CA3AF] text-lg md:text-xl font-medium mb-10 max-w-lg leading-relaxed">
-              Discover freshly prepared meals crafted with premium ingredients
-              and delivered directly to your doorstep.
-            </p>
-          </motion.div>
+                           {banner.buttonText && (
+                             <Button
+                               className="pointer-events-auto bg-[#FF6B00] hover:bg-[#E65C00] text-white px-6 md:px-8 py-5 md:py-7 rounded-[12px] md:rounded-[14px] text-[15px] md:text-[17px] font-bold transition-all shadow-[0_8px_25px_rgba(255,107,0,0.3)] hover:shadow-[0_12px_35px_rgba(255,107,0,0.4)] hover:-translate-y-1 border-0 w-full sm:w-auto"
+                               onClick={(e) => {
+                                 e.stopPropagation();
+                                 handleBannerClick(banner);
+                               }}
+                             >
+                               {banner.buttonText}
+                             </Button>
+                           )}
+                         </motion.div>
+                       )}
+                     </AnimatePresence>
+                   </div>
+                 </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row flex-wrap gap-4"
-          >
-            <Button
-              className="w-full sm:w-auto bg-[#FF6B00] hover:bg-[#E65C00] text-white px-8 py-7 rounded-[14px] text-[17px] font-bold transition-all shadow-[0_8px_25px_rgba(255,107,0,0.3)] hover:shadow-[0_12px_35px_rgba(255,107,0,0.4)] hover:-translate-y-1 border-0"
-              onClick={() => {
-                navigate('/products');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            >
-              Explore Products
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full sm:w-auto bg-transparent border-2 border-white/20 text-white hover:bg-white/10 hover:text-white px-8 py-7 rounded-[14px] text-[17px] font-bold transition-all hover:-translate-y-1"
-            >
-              View Menu
-            </Button>
-          </motion.div>
+               </div>
+             );
+          })}
         </div>
-
-        {/* RIGHT SIDE: Dynamic Banner Carousel (55%) */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full lg:w-[55%] flex justify-end relative z-20 mt-12 lg:mt-0"
-        >
-          <div
-            className="relative w-full h-[280px] md:h-[500px] lg:h-[650px] rounded-[30px] group overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.3)] transition-shadow duration-500 hover:shadow-[0_30px_60px_rgba(0,0,0,0.5)]"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div key={currentIndex} className="absolute inset-0">
-                {renderRightBanner(currentBanner)}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Carousel Controls */}
-            {hasBanners && activeBanners.length > 1 && (
-              <>
-                {/* Arrows */}
-                <div className="absolute inset-y-0 left-4 z-40 flex items-center justify-start pointer-events-none">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handlePrev();
-                    }}
-                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-[#FF6B00] hover:scale-110 transition-all pointer-events-auto opacity-0 group-hover:opacity-100 shadow-lg"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                </div>
-                <div className="absolute inset-y-0 right-4 z-40 flex items-center justify-end pointer-events-none">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleNext();
-                    }}
-                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-[#FF6B00] hover:scale-110 transition-all pointer-events-auto opacity-0 group-hover:opacity-100 shadow-lg"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Pagination Dots */}
-                <div className="absolute bottom-6 left-0 right-0 z-40 flex items-center justify-center gap-2 pointer-events-none">
-                  {activeBanners.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDirection(idx > currentIndex ? 1 : -1);
-                        setCurrentIndex(idx);
-                      }}
-                      className={cn(
-                        "h-2 rounded-full transition-all duration-300 pointer-events-auto shadow-sm",
-                        idx === currentIndex
-                          ? "w-8 bg-[#FF6B00]"
-                          : "w-2 bg-white/40 hover:bg-white/80",
-                      )}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-
-            {/* Static Badges & Content overlaid securely inside the card */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="absolute inset-0 z-30 pointer-events-none flex flex-col justify-between p-6 md:p-8"
-            >
-              {/* TOP ROW */}
-              <div className="flex items-start justify-between w-full">
-                {/* Top Left Badge */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[10px] sm:text-xs tracking-wider px-3 sm:px-4 py-2 rounded-full shadow-md flex items-center gap-1.5 sm:gap-2">
-                  <span className="text-sm">🔥</span> LIMITED OFFER
-                </div>
-                
-                {/* Top Right Badge */}
-                <div className="bg-[#FF6B00] text-white font-bold text-[10px] sm:text-xs tracking-wider px-3 sm:px-4 py-2 rounded-full shadow-md">
-                  50% OFF
-                </div>
-              </div>
-
-              {/* BOTTOM ROW */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between w-full gap-4">
-                {/* Bottom Left */}
-                <div className="text-white flex flex-col items-start">
-                  <span className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mb-2">
-                    Premium Dining
-                  </span>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-black mb-1 drop-shadow-md leading-tight">
-                    Freshly Prepared Every Day
-                  </h3>
-                  <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold">
-                    <span className="text-[#FFB800] tracking-widest drop-shadow-sm">★★★★★</span>
-                    <span className="drop-shadow-sm">4.9</span>
-                  </div>
-                </div>
-
-                {/* Bottom Right */}
-                <div className="flex flex-col items-start sm:items-end pointer-events-auto">
-                  <Button 
-                    className="bg-[#FF6B00] hover:bg-[#E65C00] text-white px-6 sm:px-8 py-5 sm:py-6 rounded-full text-xs sm:text-sm font-bold transition-all shadow-[0_8px_20px_rgba(255,107,0,0.4)] hover:shadow-[0_12px_25px_rgba(255,107,0,0.5)] group mb-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      document.getElementById('product-menu')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                  >
-                    Order Now <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                  </Button>
-                  <span className="text-white/80 text-[10px] sm:text-xs font-bold uppercase tracking-wider drop-shadow-sm ml-2 sm:ml-0">
-                    30 min delivery
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
       </div>
 
-      {/* Decorative bottom gradient to blend with the next section */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
+      {/* Navigation Arrows (Desktop) */}
+      {activeBanners.length > 1 && (
+        <>
+          <button 
+            onClick={scrollPrev}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex"
+            aria-label="Previous Slide"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+          
+          <button 
+            onClick={scrollNext}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-white z-20 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex"
+            aria-label="Next Slide"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        </>
+      )}
+
+      {/* Pagination Dots */}
+      {activeBanners.length > 1 && (
+        <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
+          {activeBanners.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => scrollTo(idx)}
+              className={`transition-all duration-300 rounded-full ${
+                selectedIndex === idx 
+                  ? "w-8 h-2.5 bg-[#FF6B00] shadow-[0_0_10px_rgba(255,107,0,0.5)]" 
+                  : "w-2.5 h-2.5 bg-white/40 hover:bg-white/60"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
     </section>
   );
 };

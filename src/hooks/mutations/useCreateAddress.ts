@@ -11,11 +11,16 @@ export const useCreateAddress = () => {
  const organization = useOrganizationStore((state) => state.organization);
 
  return useMutation({
- mutationFn: async (payload: CreateAddressRequest) => {
+ mutationFn: async (payload: Omit<CreateAddressRequest, 'belongsTo' | 'customerPhoneNo'>) => {
  if (!organization?._id) {
  throw new Error('Organization missing');
  }
- return customerService.createAddress(payload);
+ const fullPayload: CreateAddressRequest = {
+   ...payload,
+   belongsTo: organization._id,
+   customerPhoneNo: user?.phone || '0000000000',
+ };
+ return customerService.createAddress(fullPayload);
  },
  onSuccess: () => {
  // Invalidate addresses to trigger refetch

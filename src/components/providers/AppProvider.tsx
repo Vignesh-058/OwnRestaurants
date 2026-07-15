@@ -32,19 +32,20 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   useEffect(() => {
-    if (organization?.theme) {
-      applyOrganizationTheme(organization.theme);
+    if (organization?.theme?.config?.theme) {
+      applyOrganizationTheme(organization.theme.config.theme);
     }
 
     // Update browser title dynamically
+    const brandName = organization?.brandName || organization?.name || 'OwnCart';
     if (isAuthenticated && user?.name) {
-      document.title = `${user.name} | OwnCart`;
+      document.title = `${user.name} | ${brandName}`;
     } else {
-      document.title = 'OwnCart';
+      document.title = brandName;
     }
 
     // Update browser favicon
-    const faviconUrl = defaultLogo;
+    const faviconUrl = organization?.logoImage || defaultLogo;
     let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
     if (!link) {
       link = document.createElement('link');

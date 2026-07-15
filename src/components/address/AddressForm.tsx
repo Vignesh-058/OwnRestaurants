@@ -1,3 +1,4 @@
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -5,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CurrentLocationButton } from './CurrentLocationButton';
 import { Loader2 } from 'lucide-react';
+import { locationService } from '@/services/location.service';
+import { toast } from 'sonner';
 import type { CreateAddressRequest } from '@/types/customer.types';
 import {
  Select,
@@ -44,6 +47,7 @@ interface AddressFormProps {
 }
 
 export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
+  const [isGeocoding, setIsGeocoding] = React.useState(false);
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema) as any,
     defaultValues: {
@@ -52,16 +56,40 @@ export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
       addressLine2: '',
       city: '',
       state: '',
-      country: 'India',
+      country: '',
       pincode: '',
       landmark: '',
       addressType: 'Home',
     },
   });
 
-  const handleLocationFound = (lat: number, lng: number) => {
+  const handleLocationFound = async (lat: number, lng: number) => {
     form.setValue('latitude', lat);
     form.setValue('longitude', lng);
+    
+    setIsGeocoding(true);
+    try {
+      // Use getCustomerGeoLocation per requirements to reverse geocode
+      const response = await locationService.getCustomerGeoLocation({ lat, lng });
+      
+      if (response) {
+        if (response.formattedAddress) {
+          form.setValue('addressLine1', response.formattedAddress.split(',')[0] || response.formattedAddress);
+          form.setValue('addressLine2', response.formattedAddress.split(',').slice(1).join(',').trim());
+        }
+        if (response.city) form.setValue('city', response.city);
+        if (response.state) form.setValue('state', response.state);
+        if (response.country) form.setValue('country', response.country);
+        if (response.postalCode) form.setValue('pincode', response.postalCode);
+        
+        toast.success('Address auto-filled from location');
+      }
+    } catch (error) {
+      console.error('[AddressForm] Reverse Geocoding failed:', error);
+      toast.error('Failed to auto-fill address from location');
+    } finally {
+      setIsGeocoding(false);
+    }
   };
 
   const handleSubmit = (data: AddressFormValues) => {
@@ -84,6 +112,7 @@ export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
  <div className="mb-4">
  <CurrentLocationButton onLocationFound={handleLocationFound} />
+        {isGeocoding && <p className="text-xs text-blue-600 mt-2 font-medium">Fetching address details...</p>}
  {form.watch('latitude') && form.watch('longitude') && (
  <p className="text-xs text-green-600 mt-2 font-medium">
  ✓ Location coordinates captured successfully

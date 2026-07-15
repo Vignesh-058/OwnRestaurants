@@ -15,15 +15,17 @@ import { ErrorState } from '@/components/common/ErrorState';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { useAuthStore } from '@/store/AuthStore';
 import { isValidMongoId } from '@/utils/cartPayload';
-import { orderService } from '@/services/order.service';
+import { useOrderCheckout } from '@/hooks/mutations/useOrderCheckout';
 import { toast } from 'sonner';
+import { DiscountList } from '@/components/discount/DiscountList';
 
 export const CheckoutPage = () => {
   const navigate = useNavigate();
   const org = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
-  const { clearCart } = useCartStore();
+  const { clearCart, orderId } = useCartStore();
   const { user } = useAuthStore();
+  const { mutateAsync: checkoutOrder } = useOrderCheckout();
 
   const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
   const [deliveryType, setDeliveryType] = useState<string>('Door Delivery');
@@ -40,8 +42,7 @@ export const CheckoutPage = () => {
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   
-  const [couponCode, setCouponCode] = useState('');
-  const [isCouponApplied, setIsCouponApplied] = useState(false);
+  // Coupon handled by DiscountList
 
   const { data: cart, isLoading: isCartLoading, isError: isCartError } = useCartDetails({
     customerPhoneNo: user?.phone || '0000000000',
@@ -49,82 +50,71 @@ export const CheckoutPage = () => {
   });
   const { data: addresses, isLoading: isAddrLoading } = useAddresses();
 
-  const cartGrandTotal = cart ? (cart.orderTotal + (cart.deliveryCharge || 0) + (cart.totalTax || 0)) : 0;
-  const finalTotal = cartGrandTotal - (isCouponApplied ? 50 : 0);
+  const finalTotal = cart?.grandTotal ?? 0;
+  const discountAmount = cart?.discountAmount ?? cart?.couponDiscount ?? cart?.savedAmount ?? 0;
 
   const handlePlaceOrder = async () => {
+    if (!user) {
+      toast.error('You must be logged in to checkout');
+      return;
+    }
+    if (!selectedOutlet?._id) {
+      toast.error('Please select an outlet');
+      return;
+    }
+    if (!cart || cart.items.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
     if (!deliveryType) {
       toast.error('Please select a delivery type.');
       return;
     }
-
-    if (!selectedAddress) {
+    if (deliveryType === 'Door Delivery' && !selectedAddress) {
       toast.error('Please select a delivery address.');
       return;
     }
-    
     if (selectedPaymentMode === 'Online Payment' && !onlineMethod) {
       toast.error('Please select an online payment method');
       return;
     }
+    if (!orderId) {
+      toast.error('Invalid cart order ID');
+      return;
+    }
+    if (finalTotal <= 0 && cart.orderTotal <= 0) {
+       toast.error('Cart total must be greater than zero');
+       return;
+    }
 
-    // Prepare payload for when the Place Order API is integrated
     const payload: any = {
-      items: cart?.items?.map((item: any) => ({
-        itemId: item.product_retailer_id,
-        quantity: item.quantity,
-        price: item.item_price,
-        variation_id: item.variationId,
-        addons: item.addons
-      })) || [],
-      deliveryType,
-      orderType: deliveryType,
-      customerName: user?.name || (user as any)?.firstName || 'Guest',
+      orderId,
+      outletId: selectedOutlet._id,
       customerPhoneNo: user?.phone || '0000000000',
-      outletId: selectedOutlet?._id,
+      orderType: deliveryType,
       paymentMode: selectedPaymentMode,
     };
 
     if (onlineMethod) payload.onlineMethod = onlineMethod;
     if (scheduleDate) payload.scheduleDate = scheduleDate;
     if (scheduleTime) payload.scheduleTime = scheduleTime;
-    if (isCouponApplied && couponCode) payload.couponCode = couponCode;
-
+    
     if (selectedAddress) {
       if (isValidMongoId(selectedAddress._id)) {
         payload.addressId = selectedAddress._id;
-      } else {
-        const lat = Number(selectedAddress.latitude);
-        const lng = Number(selectedAddress.longitude);
-        
-        if (!selectedAddress.address1 || !selectedAddress.city || !selectedAddress.state || !selectedAddress.country || !selectedAddress.pincode || isNaN(lat) || isNaN(lng)) {
-          toast.error('Incomplete delivery address. Please provide all required fields including valid location.');
-          return;
-        }
-
-        payload.address1 = selectedAddress.address1;
-        payload.address2 = selectedAddress.address2 || '';
-        payload.city = selectedAddress.city;
-        payload.state = selectedAddress.state;
-        payload.country = selectedAddress.country;
-        payload.pincode = selectedAddress.pincode;
-        payload.latitude = lat;
-        payload.longitude = lng;
       }
     }
 
     setIsProcessing(true);
     
     try {
-      // Print the exact request payload as requested
-      console.log('--- EXACT PLACE ORDER PAYLOAD ---');
-      console.log('selectedAddress:', selectedAddress);
-      console.log('request payload:', JSON.stringify(payload, null, 2));
-      console.log('---------------------------------');
+      console.log('Order ID', orderId);
+      console.log('Customer Phone', user?.phone);
+      console.log('Outlet ID', selectedOutlet._id);
       
-      const response = await orderService.placeOrder(payload);
-      console.log('API response:', response);
+      const response = await checkoutOrder(payload);
       
+      // Success handling
       clearCart();
       if (selectedPaymentMode === 'COD') {
         toast.success("Order Placed Successfully!");
@@ -134,16 +124,10 @@ export const CheckoutPage = () => {
         navigate('/orders');
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to place order.');
+      // Do not clear cart on error
+      toast.error(error?.response?.data?.message || 'Unable to place order. Please try again.');
     } finally {
       setIsProcessing(false);
-    }
-  };
-
-  const handleApplyCoupon = () => {
-    if (couponCode.trim()) {
-      setIsCouponApplied(true);
-      toast.success("Coupon applied successfully!");
     }
   };
 
@@ -404,37 +388,7 @@ export const CheckoutPage = () => {
               
               {/* Coupon Section (Integrated) */}
               <div className="mb-5 pb-5 border-b border-[#F1F5F9]">
-                <div className="flex items-center gap-2 mb-2">
-                  <Ticket className="w-4 h-4 text-[#FF6B00]" />
-                  <span className="text-[13px] font-bold text-[#111827]">Have a Coupon?</span>
-                </div>
-                {!isCouponApplied ? (
-                  <div className="flex gap-2">
-                    <Input 
-                      placeholder="Enter promo code" 
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                      className="h-10 rounded-[10px] bg-[#F8FAFC] border-[#E5E7EB] focus-visible:ring-1 focus-visible:ring-[#FF6B00] uppercase font-bold text-[12px]" 
-                    />
-                    <Button 
-                      className="h-10 rounded-[10px] px-4 font-bold bg-[#111827] text-white hover:bg-[#374151] text-[12px]" 
-                      onClick={handleApplyCoupon}
-                      disabled={!couponCode.trim()}
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between p-3 rounded-[10px] bg-[#059669]/10 border border-[#059669]/20">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#059669]" />
-                      <p className="font-bold text-[12px] text-[#059669]">"{couponCode.toUpperCase()}" Applied!</p>
-                    </div>
-                    <Button variant="ghost" size="sm" className="h-6 text-[#059669] hover:bg-[#059669]/20 font-bold text-[11px] px-2" onClick={() => { setIsCouponApplied(false); setCouponCode(''); }}>
-                      Remove
-                    </Button>
-                  </div>
-                )}
+                <DiscountList />
               </div>
 
               <div className="space-y-2.5 mb-5">
@@ -453,10 +407,10 @@ export const CheckoutPage = () => {
                   <span className="text-[#111827] font-bold">{org?.currency || '₹'}{cart.totalTax.toFixed(2)}</span>
                 </div>
 
-                {isCouponApplied && (
+                {discountAmount > 0 && (
                   <div className="flex justify-between items-start text-[14px]">
                     <span className="text-[#059669] font-bold">Discount</span>
-                    <span className="text-[#059669] font-bold">-{org?.currency || '₹'}50.00</span>
+                    <span className="text-[#059669] font-bold">-{org?.currency || '₹'}{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
               </div>
@@ -477,10 +431,20 @@ export const CheckoutPage = () => {
                     selectedPaymentMode === 'Online Payment' ? 'bg-[#3B82F6] hover:bg-[#2563EB] shadow-[0_8px_24px_rgba(59,130,246,0.25)]' : 'bg-[#FF6B00] hover:bg-[#E65C00]'
                   }`}
                   onClick={handlePlaceOrder}
-                  disabled={!selectedAddress || isProcessing || (selectedPaymentMode === 'Online Payment' && !onlineMethod)}
+                  disabled={
+                    isProcessing ||
+                    (deliveryType === 'Door Delivery' && !selectedAddress) ||
+                    (selectedPaymentMode === 'Online Payment' && !onlineMethod)
+                  }
                 >
                   {isProcessing ? (
-                    <span className="font-extrabold text-[16px] text-white flex items-center justify-center w-full">Processing...</span>
+                    <span className="font-extrabold text-[16px] text-white flex items-center justify-center gap-2 w-full">
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </span>
                   ) : (
                     <div className="flex items-center justify-between w-full">
                       <span className="font-bold text-[16px] text-white">
@@ -493,9 +457,14 @@ export const CheckoutPage = () => {
                   )}
                 </Button>
                 
-                {(!selectedAddress || (selectedPaymentMode === 'Online Payment' && !onlineMethod)) && (
+                {deliveryType === 'Door Delivery' && !selectedAddress && !isProcessing && (
                   <p className="text-[#EF4444] text-[11px] font-bold text-center mt-2 hidden md:block">
-                    {!selectedAddress ? 'Select a delivery address to continue' : 'Select an online payment method'}
+                    Select a delivery address to continue
+                  </p>
+                )}
+                {selectedPaymentMode === 'Online Payment' && !onlineMethod && !isProcessing && (
+                  <p className="text-[#EF4444] text-[11px] font-bold text-center mt-2 hidden md:block">
+                    Select an online payment method
                   </p>
                 )}
               </div>

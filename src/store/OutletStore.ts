@@ -25,16 +25,19 @@ export const useOutletStore = create<OutletState>()(
       deliveryMode: null,
       setOutlets: (outlets) => set({ outlets }),
       setSelectedOutlet: (outlet) => {
-        console.log('[OUTLET CHANGE EVENT] User switched to outlet:', outlet.outletName);
+        if (import.meta.env.DEV) console.log('[OUTLET CHANGE EVENT] User switched to outlet:', outlet.outletName);
         set({ selectedOutlet: outlet, selectedOutletId: outlet._id });
 
-        // Invalidate related queries to trigger a refetch
+        // Invalidate all outlet-dependent queries to trigger a refetch
         const queryClient = getQueryClient();
         queryClient.invalidateQueries({ queryKey: ['categories-v2'] });
         queryClient.invalidateQueries({ queryKey: ['itemDetail'] });
         queryClient.invalidateQueries({ queryKey: ['cart'] });
         queryClient.invalidateQueries({ queryKey: ['settings'] });
         queryClient.invalidateQueries({ queryKey: ['storeStatus'] });
+        queryClient.invalidateQueries({ queryKey: ['discounts'] });
+        queryClient.invalidateQueries({ queryKey: ['user-discounts'] });
+        queryClient.invalidateQueries({ queryKey: ['active-banners'] });
       },
       setStoreStatus: (status) => set({ storeStatus: status }),
       setDeliveryMode: (mode) => set({ deliveryMode: mode }),

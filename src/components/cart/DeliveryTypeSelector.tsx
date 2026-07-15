@@ -44,7 +44,7 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled, compact }: Pro
         <div
           className={cn(
             compact
-              ? 'flex-1 relative flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-[12px] border-2 cursor-pointer transition-all duration-200 min-h-[72px]'
+              ? 'flex-1 relative flex flex-col items-center justify-center gap-1.5 py-2 px-2 rounded-[12px] border-2 cursor-pointer transition-all duration-200 min-h-[56px] py-1.5'
               : 'relative flex items-center justify-between p-4 rounded-[16px] border-2 cursor-pointer transition-all duration-300',
             value === 'Door Delivery'
               ? 'border-[#FF6B00] bg-[#FFF7ED] shadow-[0_2px_8px_rgba(255,107,0,0.08)]'
@@ -59,10 +59,10 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled, compact }: Pro
             // Compact: icon + label stacked vertically, centred
             <>
               <div className={cn(
-                'w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200 shrink-0',
+                'w-7 h-7 rounded-full flex items-center justify-center transition-colors duration-200 shrink-0',
                 value === 'Door Delivery' ? 'bg-[#FF6B00] text-white' : 'bg-[#FFF7ED] text-[#FF6B00]',
               )}>
-                <Bike className="w-[18px] h-[18px]" />
+                <Bike className="w-4 h-4" />
               </div>
               <span className="font-semibold text-[12px] text-[#111827] text-center leading-tight">
                 Door Delivery
@@ -101,7 +101,7 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled, compact }: Pro
         <div
           className={cn(
             compact
-              ? 'flex-1 relative flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-[12px] border-2 cursor-pointer transition-all duration-200 min-h-[72px]'
+              ? 'flex-1 relative flex flex-col items-center justify-center gap-1.5 py-2 px-2 rounded-[12px] border-2 cursor-pointer transition-all duration-200 min-h-[56px] py-1.5'
               : 'relative flex items-center justify-between p-4 rounded-[16px] border-2 cursor-pointer transition-all duration-300',
             value === 'Self Pickup'
               ? 'border-[#FF6B00] bg-[#FFF7ED] shadow-[0_2px_8px_rgba(255,107,0,0.08)]'
@@ -116,10 +116,10 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled, compact }: Pro
             // Compact: icon + label stacked vertically, centred
             <>
               <div className={cn(
-                'w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-200 shrink-0',
+                'w-7 h-7 rounded-full flex items-center justify-center transition-colors duration-200 shrink-0',
                 value === 'Self Pickup' ? 'bg-[#FF6B00] text-white' : 'bg-[#FFF7ED] text-[#FF6B00]',
               )}>
-                <Store className="w-[18px] h-[18px]" />
+                <Store className="w-4 h-4" />
               </div>
               <span className="font-semibold text-[12px] text-[#111827] text-center leading-tight">
                 Self Pickup

@@ -21,12 +21,8 @@ export const useOutlets = (belongsTo: string) => {
   const query = useQuery({
     queryKey: ['outlets', belongsTo, latitude, longitude],
     queryFn: async () => {
-      console.log('[LOCATION] Current browser location:', { lat: latitude, lng: longitude });
-      
       const data = await organizationService.getOutlets(belongsTo, latitude || undefined, longitude || undefined);
-      
-      console.log('[DEBUG] Number of outlets returned:', data.outlets.length);
-      console.log('[OUTLETS] Complete outlet list:', data.outlets);
+      console.log('[OUTLETS] Backend returned outlets', data.outlets);
       return data;
     },
     enabled: !!belongsTo && locationLoaded && isAuthenticated,
@@ -37,19 +33,13 @@ export const useOutlets = (belongsTo: string) => {
     if (query.data?.outlets) {
       setOutlets(query.data.outlets);
       
-      console.log('Available Outlets', query.data.outlets);
-
-      if (!selectedOutlet && query.data.outlets.length > 0) {
-        // Only auto-select if we successfully obtained GPS coordinates
-        if (latitude && longitude) {
+      if (!selectedOutlet) {
+        if (query.data.outlets.length === 1) {
           const firstOutlet = query.data.outlets[0];
-          console.log('Automatically Selected Nearest Outlet:', firstOutlet.outletName);
-          console.log('Selected Outlet ID:', firstOutlet._id);
-          console.log('Outlet selection popup skipped');
+          console.log('[OUTLET] Automatically selected the only available outlet', firstOutlet.outletName);
           setSelectedOutlet(firstOutlet);
         } else {
-          // Location denied or unavailable, force manual selection
-          console.log('Location unavailable, prompting user for manual outlet selection');
+          console.log(`[OUTLETS] Backend returned ${query.data.outlets.length} outlets. Prompting manual selection.`);
           openModal();
         }
       }

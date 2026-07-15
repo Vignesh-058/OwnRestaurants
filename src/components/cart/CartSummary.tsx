@@ -58,23 +58,36 @@ export const CartSummary = ({
     deliveryCharge,
     packageCharge,
     totalTax,
-    grandTotal,
-    hasDiscount,
+    grandTotal: storeGrandTotal,
+    hasDiscount: storeHasDiscount,
     checkoutEnable,
     checkOutMessage,
     cartItemCount,
+    appliedDiscount,
   } = useCartStore();
 
+  const hasDiscount = storeHasDiscount || !!appliedDiscount;
+  const displaySavedAmount = appliedDiscount?.discountAmount || savedAmount;
+  
+  // Base Grand Total is provided by the backend cart response
+  const grandTotal = storeGrandTotal;
+
+  if (appliedDiscount) {
+     console.log('[Updated Grand Total]', grandTotal);
+  }
+
   const organization = useOrganizationStore(state => state.organization);
-  const cartConfig = organization?.theme?.sections?.cart?.config;
+  const cartConfig = organization?.theme?.config?.cart?.config;
   const showSavings = cartConfig?.showSavings ?? true;
+  const showOffers = cartConfig?.showOffers ?? true;
+  const showBillDetails = cartConfig?.showBillDetails ?? true;
 
 
   return (
     <div className="bg-white rounded-[20px] shadow-[0_8px_40px_rgba(0,0,0,0.08)] border border-[#F0F0F0] overflow-hidden">
 
       {/* ── Header ── */}
-      <div className="flex items-center gap-3 px-7 pt-7 pb-5 border-b border-[#F3F4F6]">
+      <div className="flex items-center gap-3 px-6 pt-5 pb-4 border-b border-[#F3F4F6]">
         <div className="w-10 h-10 rounded-full bg-[#FFF7ED] flex items-center justify-center shrink-0">
           <ShoppingBag className="w-5 h-5 text-[#FF6B00]" />
         </div>
@@ -86,7 +99,7 @@ export const CartSummary = ({
         </div>
       </div>
 
-      <div className="px-7 py-5 space-y-5">
+      <div className="px-6 py-4 space-y-4">
 
         {/* ── Order Type ── */}
         {deliveryType && onDeliveryTypeChange && (
@@ -99,7 +112,8 @@ export const CartSummary = ({
         )}
 
         {/* ── Price Breakdown ── */}
-        <div className="space-y-3">
+        {showBillDetails && (
+        <div className="space-y-2">
           <PriceRow label="Subtotal" value={`${currency}${orderTotal.toLocaleString()}`} />
 
           {packageCharge > 0 && (
@@ -119,35 +133,32 @@ export const CartSummary = ({
             <PriceRow label="Tax (GST)" value={`${currency}${totalTax.toLocaleString()}`} />
           )}
 
-          {showSavings && hasDiscount && savedAmount > 0 && (
+          {showSavings && hasDiscount && displaySavedAmount > 0 && (
             <PriceRow
-              label="Coupon Discount"
-              value={`-${currency}${savedAmount.toLocaleString()}`}
+              label={appliedDiscount ? "Discount" : "Coupon Discount"}
+              value={`-${currency}${displaySavedAmount.toLocaleString()}`}
               isGreen
             />
           )}
         </div>
 
+        )}
         {/* ── Divider ── */}
         <div className="border-t-2 border-dashed border-[#F3F4F6]" />
 
         {/* ── Grand Total ── */}
         <div className="flex justify-between items-center">
           <span className="text-[20px] font-black text-[#111827]">Grand Total</span>
-          <span className="text-[32px] font-black text-[#FF6B00] tabular-nums leading-none">
+          <span className="text-[28px] font-black text-[#FF6B00] tabular-nums leading-none">
             {currency}{grandTotal.toLocaleString()}
           </span>
         </div>
 
 
         {/* ── Coupons ── */}
-        {showSavings && (
+        {showOffers && (
           <div>
-            {hasDiscount ? <AppliedCoupon /> : (
-              <div className="border border-dashed border-[#FF6B00]/40 rounded-[12px] p-1">
-                <DiscountList />
-              </div>
-            )}
+            <DiscountList />
           </div>
         )}
 

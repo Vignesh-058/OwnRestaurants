@@ -35,7 +35,16 @@ interface ProfileStatsProps {
   showTotalOrder?: boolean;
 }
 
+import { useOrders } from '@/hooks/queries/useOrders';
+import { useAddresses } from '@/hooks/queries/useAddresses';
+
 export const ProfileStats = ({ profile, showTotalSpent = true, showTotalOrder = true }: ProfileStatsProps) => {
+  const { data: ordersData } = useOrders(1);
+  const { data: addresses } = useAddresses();
+  
+  const liveOrdersCount = ordersData?.totalOrders || 0;
+  const liveAddressesCount = addresses?.length || 0;
+
   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
 
   // Dynamically compute mock rewards points based on spending
@@ -44,7 +53,7 @@ export const ProfileStats = ({ profile, showTotalSpent = true, showTotalOrder = 
   const allStats = [
   {
   title: 'Total Orders',
-  value: profile?.ordersCount || 0,
+  value: liveOrdersCount,
   prefix: '',
   icon: Package,
   gradient: 'from-[#FF6B00]/10 to-[#E85D00]/10',
@@ -62,7 +71,7 @@ export const ProfileStats = ({ profile, showTotalSpent = true, showTotalOrder = 
   },
   {
   title: 'Saved Addresses',
-  value: profile?.savedAddressesCount || 0,
+  value: liveAddressesCount,
   prefix: '',
   icon: MapPin,
   gradient: 'from-purple-500/10 to-pink-500/10',
@@ -76,7 +85,7 @@ export const ProfileStats = ({ profile, showTotalSpent = true, showTotalOrder = 
   icon: Sparkles,
   gradient: 'from-amber-500/10 to-orange-500/10',
   iconColor: 'text-amber-500',
-  show: true,
+  show: false,
   }
   ];
 

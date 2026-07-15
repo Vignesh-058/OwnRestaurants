@@ -27,6 +27,12 @@ interface CartState {
  loyalty: Loyalty | null;
  lastUpdatedAt: string | null;
  isDrawerOpen: boolean;
+ appliedDiscount: {
+    discountId: string;
+    discountType: string;
+    discountPercentage: number;
+    discountAmount: number;
+  } | null;
  
  // Methods
  setCart: (payload: CartResponse | null) => void;
@@ -37,6 +43,7 @@ interface CartState {
  setOrderId: (orderId: string | null) => void;
  openDrawer: () => void;
  closeDrawer: () => void;
+ setAppliedDiscount: (discount: any | null) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -63,6 +70,7 @@ export const useCartStore = create<CartState>()(
  loyalty: null,
  lastUpdatedAt: null,
  isDrawerOpen: false,
+ appliedDiscount: null,
 
  setCart: (payload) => {
  if (!payload) {
@@ -87,6 +95,7 @@ export const useCartStore = create<CartState>()(
  cartDiscountDetails: null,
  loyalty: null,
  lastUpdatedAt: null,
+ appliedDiscount: null,
  });
  return;
  }
@@ -100,13 +109,24 @@ export const useCartStore = create<CartState>()(
   deliveryCharge: payload.deliveryCharge || 0,
   packageCharge: payload.totalPackageCharge || 0,
   totalTax: payload.totalTax || 0,
-  grandTotal: (payload.orderTotal || 0) + (payload.deliveryCharge || 0) + (payload.totalTax || 0),
+  grandTotal: payload.grandTotal ?? 0, // Provided by backend now
   customerAddress: payload.customerAddress as any || null,
   addressId: payload.addressId || null,
   paymentMode: payload.paymentMode || null,
   orderType: payload.orderType || null,
   checkoutEnable: payload.checkoutEnable ?? true,
   checkOutMessage: payload.checkOutMessage || '',
+  
+  // Handle applied discounts if backend provides them directly
+  appliedDiscount: payload.appliedOfferId 
+    ? {
+        discountId: payload.appliedOfferId,
+        discountType: 'backend', // Let backend drive it
+        discountPercentage: 0,
+        discountAmount: payload.discountAmount || payload.couponDiscount || 0,
+        couponName: payload.couponName || ''
+      } 
+    : null
  });
  },
 
@@ -126,9 +146,15 @@ export const useCartStore = create<CartState>()(
  orderType: null,
  checkoutEnable: false,
  checkOutMessage: '',
+ appliedDiscount: null,
  }),
 
- updateItemQuantity: (cartItemId, newQuantity) => set((state) => ({
+ setAppliedDiscount: (discount) => {
+    set({ appliedDiscount: discount });
+    if (import.meta.env.DEV) console.log('[Selected Discount]', discount);
+  },
+
+  updateItemQuantity: (cartItemId, newQuantity) => set((state) => ({
  cartItems: state.cartItems.map(item => 
  item._id === cartItemId ? { ...item, quantity: newQuantity } : item
  )
@@ -140,11 +166,12 @@ export const useCartStore = create<CartState>()(
    );
    const newCount = newItems.reduce((acc, item) => acc + item.quantity, 0);
    const newTotal = newItems.reduce((acc, item) => acc + ((item.item_price || 0) * item.quantity), 0);
-   console.log('[Cart] Store Updated — removeCartItem, new count:', newCount);
+    if (import.meta.env.DEV) console.log('[Cart] Store Updated — removeCartItem, new count:', newCount);
    return {
     cartItems: newItems,
     cartItemCount: newCount,
     orderTotal: newTotal,
+    // Note: This optimistic grandTotal isn't perfect, but backend is source of truth and will override on next fetch
     grandTotal: newTotal + state.deliveryCharge + state.totalTax - state.savedAmount,
    };
   }),
@@ -182,6 +209,7 @@ export const useCartStore = create<CartState>()(
       cartItems: newItems,
       cartItemCount: newCount,
       orderTotal: newTotal,
+      // Note: This optimistic grandTotal isn't perfect, but backend is source of truth and will override on next fetch
       grandTotal: newTotal + state.deliveryCharge + state.totalTax - state.savedAmount
     };
   }),

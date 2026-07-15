@@ -169,9 +169,11 @@ export const ProductPage = () => {
         payload.orderId = orderId;
       }
 
-      console.log("=== CART UPDATE: ProductPage handleAddToCart ===");
-      console.log("addressPayload:", addressPayload);
-      console.log("Final Payload:", JSON.stringify(payload, null, 2));
+      if (import.meta.env.DEV) {
+        console.log("=== CART UPDATE: ProductPage handleAddToCart ===");
+        console.log("addressPayload:", addressPayload);
+        console.log("Final Payload:", JSON.stringify(payload, null, 2));
+      }
 
       if (orderId) {
         updateCart(payload);
@@ -200,7 +202,7 @@ export const ProductPage = () => {
         toast.success("Link copied to clipboard!");
       }
     } catch (error) {
-      console.log('Error sharing', error);
+      if (import.meta.env.DEV) console.log('Error sharing', error);
     }
   };
 

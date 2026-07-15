@@ -72,13 +72,14 @@ export const OTPInput = ({ otp, onChange, onSubmit, disabled }: OTPInputProps) =
   };
 
   return (
-    <div className="flex justify-center gap-3 sm:gap-4 w-full" onPaste={handlePaste}>
+    <div className="flex justify-center items-center gap-2 sm:gap-3 md:gap-4 w-full max-w-full box-border flex-nowrap" onPaste={handlePaste}>
       {otp.map((digit, index) => (
         <motion.div 
           key={index}
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: index * 0.05 + 0.1, duration: 0.3, type: "spring" }}
+          className="flex-1 max-w-[56px]"
         >
           <Input
             ref={(el) => { inputRefs.current[index] = el; }}
@@ -89,7 +90,7 @@ export const OTPInput = ({ otp, onChange, onSubmit, disabled }: OTPInputProps) =
             onChange={(e) => handleChange(index, e)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             disabled={disabled}
-            className="w-[56px] h-[56px] sm:w-[64px] sm:h-[64px] text-center text-[24px] font-bold rounded-[16px] border-white/10 shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 bg-[#1F2937] text-white placeholder:text-slate-500"
+            className="w-full aspect-square text-center text-[20px] font-bold rounded-[12px] border-white/10 shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 bg-[#1F2937] text-white placeholder:text-slate-500 p-0"
           />
         </motion.div>
       ))}

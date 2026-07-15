@@ -9,6 +9,8 @@ export const FloatingNav = () => {
  const { isAuthenticated } = useAuthStore();
  const currentPath = location.pathname;
 
+ if (!isAuthenticated) return null;
+
  const tabs = [
  {
  id: 'home',

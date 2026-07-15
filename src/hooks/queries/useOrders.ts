@@ -8,17 +8,33 @@ export const useOrders = () => {
  const { isAuthenticated } = useAuthStore();
  const { currentPage, pageSize, setOrdersData, setLoading, setError } = useOrderStore();
 
- const query = useQuery({
- queryKey: ['orders', currentPage, pageSize],
- queryFn: () => orderService.getOrdersByCustomer(currentPage, pageSize),
- enabled: isAuthenticated,
- staleTime: 2 * 60 * 1000, // 2 minutes
- retry: 1,
- });
+  const query = useQuery({
+  queryKey: ['orders', currentPage, pageSize],
+  queryFn: async () => {
+    console.log('[Order API Request]', { page: currentPage, limit: pageSize });
+    const response = await orderService.getOrdersByCustomer(currentPage, pageSize);
+    console.log('[Order API Response]', response);
+    console.log('[Orders Count]', response.data?.length);
+    if (response.data && response.data.length > 0) {
+      console.log('[Latest Order ID]', response.data[0]._id);
+    }
+    return response;
+  },
+  enabled: isAuthenticated,
+  staleTime: 0,
+  gcTime: 0,
+  refetchOnMount: true,
+  refetchOnWindowFocus: true,
+  refetchOnReconnect: true,
+  retry: false,
+  });
 
- useEffect(() => {
- setLoading(query.isLoading || query.isFetching);
- if (query.isError) {
+  useEffect(() => {
+  if (query.isFetching) {
+    console.log('[Refetch Triggered]', { queryKey: ['orders', currentPage, pageSize] });
+  }
+  setLoading(query.isLoading || query.isFetching);
+  if (query.isError) {
  setError(query.error?.message || 'Failed to fetch orders');
  } else {
  setError(null);

@@ -10,14 +10,23 @@ interface ProfileHeaderProps {
   profile: CustomerProfile | null;
 }
 
+import { useOrders } from '@/hooks/queries/useOrders';
+import { useAddresses } from '@/hooks/queries/useAddresses';
+
 export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
+  const { data: ordersData } = useOrders(1);
+  const { data: addresses } = useAddresses();
+  
+  const liveOrdersCount = ordersData?.totalOrders || 0;
+  const liveAddressesCount = addresses?.length || 0;
+
   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
 
   const joinDate = profile?.createdAt 
     ? new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  const ordersCount = profile?.ordersCount || 0;
+  const ordersCount = liveOrdersCount;
   const { tier, badgeColor } = (() => {
     if (ordersCount > 15) {
       return { 
@@ -57,14 +66,14 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
     },
     {
       label: 'Favorites',
-      value: profile?.savedAddressesCount || 0, // Using as mock for favorites if actual count isn't available
+      value: liveAddressesCount, // Using as mock for favorites if actual count isn't available
       icon: Heart,
       iconColor: 'text-[#FF6B00]',
       bgColor: 'bg-[#FF6B00]/10',
     },
     {
       label: 'Addresses',
-      value: profile?.savedAddressesCount || 0,
+      value: liveAddressesCount,
       icon: MapPin,
       iconColor: 'text-[#FF6B00]',
       bgColor: 'bg-[#FF6B00]/10',

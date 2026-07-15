@@ -1,74 +1,88 @@
-export interface ThemeSectionConfig {
-  layout?: string;
-  config?: any;
-}
-
-export interface ThemeSections {
-  header?: {
-  layout?: string;
-  config?: {
-  showSearch?: boolean;
-  showCart?: boolean;
-  showLocation?: boolean;
-  imageShape?: string;
-  };
-  };
-  banner?: {
-  layout?: string;
-  config?: {
-  showDots?: boolean;
-  showArrows?: boolean;
-  borderRadius?: number;
-  };
-  };
-  categories?: {
-  layout?: string;
-  config?: {
-  showLabel?: boolean;
-  imageShape?: string;
-  };
-  };
-  products?: ThemeSectionConfig;
-  login?: {
-  layout?: string;
-  config?: {
-  imageShape?: string;
-  };
-  };
-  profile?: {
-  layout?: string;
-  config?: {
-  showSavedAddresses?: boolean;
-  showTotalSpent?: boolean;
-  showOrderHistory?: boolean;
-  showTotalOrder?: boolean;
-  };
-  };
-  cart?: {
-  layout?: string;
-  config?: {
-  showRecommended?: boolean;
-  showInstructions?: boolean;
-  showSavings?: boolean;
-  };
-  };
-  searchList?: ThemeSectionConfig;
-  footer?: {
-  layout?: string;
-  config?: {
-  showContact?: boolean;
-  };
-  };
-}
-
-export interface Theme {
+export interface ThemeColors {
   primaryColor?: string;
   secondaryColor?: string;
   backgroundColor?: string;
   textColor?: string;
-  secondaryTextColor?: string;
   borderColor?: string;
-  sections?: ThemeSections;
+  headerBackgroundColor?: string;
+  footerBackgroundColor?: string;
+  fontFamily?: string;
+  fontSize?: string;
+  buttonRadius?: string;
+  cardRadius?: string;
+}
+
+export interface ThemeConfigSections {
+  theme?: ThemeColors;
+  header?: {
+    config?: {
+      showSearch?: boolean;
+      showCart?: boolean;
+      showMenu?: boolean;
+      showProfile?: boolean;
+      showLocation?: boolean;
+      showIcons?: boolean;
+      showLabels?: boolean;
+    };
+  };
+  home?: {
+    sectionOrder?: string[];
+    sections?: Record<string, { isActive?: boolean; layout?: string; config?: any }>;
+    hero?: {
+      tagline?: string;
+      title?: string;
+      description?: string;
+    };
+  };
+  menu?: any;
+  productDetail?: {
+    showReviews?: boolean;
+    showVariants?: boolean;
+    showAddons?: boolean;
+    showShareButton?: boolean;
+    showRelatedProducts?: boolean;
+  };
+  cart?: {
+    config?: {
+      showOffers?: boolean;
+      showAddressStrip?: boolean;
+      showCartItems?: boolean;
+      showRewards?: boolean;
+      showBillDetails?: boolean;
+      showPaymentMethod?: boolean;
+      showCookingInstructions?: boolean;
+      showRecommendedProducts?: boolean;
+      showSavings?: boolean;
+    };
+  };
+  profile?: {
+    config?: {
+      showSavedAddresses?: boolean;
+      showTotalOrders?: boolean;
+      showTotalSpent?: boolean;
+      showOrderHistory?: boolean;
+    };
+  };
+  login?: {
+    background?: string;
+    imageShape?: string;
+    showSocialLogin?: boolean;
+  };
+  footer?: {
+    config?: {
+      address?: string;
+      email?: string;
+      phone?: string;
+      facebook?: string;
+      instagram?: string;
+      twitter?: string;
+      youtube?: string;
+    };
+  };
+}
+
+export interface Theme {
+  config?: ThemeConfigSections;
 }
 
 export interface LocationCoordinates {
@@ -146,6 +160,10 @@ export interface Organization {
   storeType?: string; // fallback
   isActive?: boolean;
   isDoorDeliveryAvailable?: boolean;
+  isDineInAvailable?: boolean;
+  isCartEnabled?: boolean;
+  isStoreOpen?: boolean;
+  planName?: string;
   isSelfPickupAvailable?: boolean;
   theme?: Theme;
   currency?: string;

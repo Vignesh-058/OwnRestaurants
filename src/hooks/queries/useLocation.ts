@@ -13,9 +13,8 @@ export const useGeoLocation = () => {
  queryKey: ['geoLocation', latitude, longitude, belongsTo],
  queryFn: async () => {
  if (!latitude || !longitude || !belongsTo) return null;
- console.log('[DEBUG] Geo API Request:', { latitude, longitude, belongsTo });
- const data = await locationService.getCustomerGeoLocation({ latitude, longitude, belongsTo });
- console.log('[DEBUG] Geo API Response:', data);
+ const data = await locationService.getCustomerGeoLocation({ lat: latitude, lng: longitude });
+ console.log('[LOCATION] customer-geo-location response', data);
  return data;
  },
  enabled: !!latitude && !!longitude && !!belongsTo && !locationLoaded && useAuthStore.getState().isAuthenticated,
@@ -41,8 +40,6 @@ export const useGeoLocation = () => {
  formattedAddress: data.formattedAddress,
  locationLoaded: true
  };
-
- console.log('[DEBUG] Global Store Values (New Location State):', newState);
 
  setLocation(newState);
  }
@@ -70,14 +67,15 @@ export const useRequestBrowserLocation = () => {
  longitude: position.coords.longitude,
  locationLoaded: false, // Forces the API to fetch the address again for the new coordinates
  };
- console.log('[DEBUG] RequestBrowserLocation - Current Coordinates:', newState);
+ console.log('[LOCATION] Browser coordinates', newState);
  setLocation(newState);
  },
  () => {
  setPermissionStatus(false);
  setLoading(false);
  setError('Location permission is required to find nearby restaurants.');
- setLocation({ locationLoaded: true });
+ // Do not set locationLoaded to true so outlet API is not called
+ setLocation({ locationLoaded: false });
  },
  { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
  );

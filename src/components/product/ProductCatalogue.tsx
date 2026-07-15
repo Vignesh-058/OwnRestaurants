@@ -34,9 +34,9 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
     <section id="product-menu" className="w-full flex flex-col lg:flex-row relative z-10">
       {/* LEFT: Sidebar (Categories + Desktop Filters) */}
       <aside className="w-full lg:w-[360px] shrink-0 bg-white border-r border-[#E2E8F0] z-30 relative">
-        <div className="p-6 lg:p-6 flex flex-col lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-[#E2E8F0] scrollbar-track-transparent">
+        <div className="flex flex-col lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-[#E2E8F0] scrollbar-track-transparent">
           
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 sticky top-[64px] lg:top-0 bg-white z-40 px-6 pt-6 pb-2">
             <div className="mb-2 flex items-start justify-between">
               <div>
                 <h2 className="text-[26px] font-bold text-[#0F172A] tracking-tight leading-none mb-1.5">Categories</h2>
@@ -113,7 +113,7 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
           </AnimatePresence>
           
           {/* Categories List */}
-          <div className="flex flex-col gap-1.5 mb-8">
+          <div className="flex flex-col gap-1.5 mb-8 px-6 pt-2">
             {categories.map((category) => {
               const isActive = activeCategory._id === category._id;
               

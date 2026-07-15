@@ -5,6 +5,7 @@ import {
   HelpCircle, Info, LogOut, Bell, Globe, Moon
 } from 'lucide-react';
 import { useAuthStore } from '@/store/AuthStore';
+import { useOrganizationStore } from '@/store/OrganizationStore';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { LogoutDialog } from '@/components/auth/LogoutDialog';
@@ -16,6 +17,10 @@ interface ProfileMenuProps {
 
 export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
   const { logout } = useAuthStore();
+  const organization = useOrganizationStore((state) => state.organization);
+  const profileConfig = organization?.theme?.config?.profile?.config;
+  const showOrders = profileConfig?.showOrderHistory ?? true;
+  const showAddresses = profileConfig?.showSavedAddresses ?? true;
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -23,13 +28,13 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
 
   const menuItems = [
     { id: 'offers', icon: Ticket, title: 'Offers & Coupons' },
-    { id: 'orders', icon: Package, title: 'Orders' },
-    { id: 'addresses', icon: MapPin, title: 'Addresses' },
+    showOrders ? { id: 'orders', icon: Package, title: 'Orders' } : null,
+    showAddresses ? { id: 'addresses', icon: MapPin, title: 'Addresses' } : null,
     { id: 'rewards', icon: Wallet, title: 'Rewards' },
     { id: 'payments', icon: CreditCard, title: 'Payments' },
     { id: 'help', icon: HelpCircle, title: 'Help' },
     { id: 'about', icon: Info, title: 'About' },
-  ];
+  ].filter(Boolean) as Array<{ id: string, icon: any, title: string }>;
 
   const handleLanguageChange = () => {
     setLanguage(prev => prev === 'English' ? 'Español' : 'English');

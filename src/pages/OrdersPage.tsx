@@ -143,7 +143,7 @@ export const OrdersPage = () => {
  };
 
  return (
- <div className="bg-background min-h-screen py-10">
+ <div className="bg-[#F8FAFC] min-h-screen py-8 pb-32">
  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
  {/* Main Content */}
@@ -154,29 +154,23 @@ export const OrdersPage = () => {
  className="flex-1 min-w-0 space-y-6"
  >
  {/* Page header */}
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-6 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-border relative overflow-hidden">
- 
- <div className="flex items-center gap-4 relative z-10">
- <div className="h-14 w-14 rounded-2xl bg-[#FFF3E8] text-primary flex items-center justify-center">
- <Package className="h-7 w-7" />
- </div>
+ <div className="flex items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-[16px] shadow-sm border border-[#E5E7EB] mb-6">
+ <div className="flex items-center gap-3">
+ <div className="text-[28px] leading-none">📦</div>
  <div>
- <h1 className="text-2xl font-bold tracking-tight text-foreground">Order History</h1>
- <p className="text-muted-foreground text-sm font-normal mt-1">
- {data?.totalOrders
- ? `Review and track your ${data.totalOrders} past order${data.totalOrders > 1 ? 's' : ''}`
- : 'Track and view your past orders'}
+ <h1 className="text-[20px] sm:text-[22px] font-black text-[#111827] leading-none tracking-tight">Order History</h1>
+ <p className="text-[#6B7280] text-[13px] sm:text-[14px] font-medium mt-1">
+ Review your recent orders
  </p>
  </div>
  </div>
  <Button
  variant="outline"
- className="rounded-full gap-2 px-5 h-10 bg-white border-primary text-primary hover:bg-primary hover:text-white transition-all hover:-translate-y-[1px] font-bold text-xs shadow-sm shrink-0"
+ className="w-10 h-10 rounded-full p-0 bg-white border-[#E5E7EB] text-[#4B5563] hover:bg-[#FFF7ED] hover:text-[#FF6B00] hover:border-[#FFD8B3] transition-all shadow-sm shrink-0"
  onClick={() => refetch()}
  disabled={isLoading}
  >
- <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
- Refresh
+ <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
  </Button>
  </div>
 

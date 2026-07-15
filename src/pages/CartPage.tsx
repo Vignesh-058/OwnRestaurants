@@ -108,9 +108,11 @@ export const CartPage = () => {
        ...addressPayload
      };
 
-     console.log("=== CART UPDATE: CartPage handleUpdateQuantity ===");
-     console.log("addressPayload:", addressPayload);
-     console.log("Final Payload:", JSON.stringify(payload, null, 2));
+     if (import.meta.env.DEV) {
+       console.log("=== CART UPDATE: CartPage handleUpdateQuantity ===");
+       console.log("addressPayload:", addressPayload);
+       console.log("Final Payload:", JSON.stringify(payload, null, 2));
+     }
 
      updateCart(payload);
    };
@@ -128,7 +130,7 @@ export const CartPage = () => {
 
   if (newQuantity <= 0) {
    // Decrement to zero — delete directly without dialog
-   console.log('[Cart] Update Payload (delete via quantity=0):', item.product_retailer_id);
+   if (import.meta.env.DEV) console.log('[Cart] Update Payload (delete via quantity=0):', item.product_retailer_id);
    optimisticSetQuantity({ _id: item.product_retailer_id } as any, 0);
    removeItem({
     outletId: selectedOutlet._id,
@@ -138,10 +140,10 @@ export const CartPage = () => {
     customerName
    }, {
     onSuccess: () => {
-     console.log('[Cart] API Success — item deleted via qty=0');
+     if (import.meta.env.DEV) console.log('[Cart] API Success — item deleted via qty=0');
     },
     onError: () => {
-     console.error('[Cart] API Error — delete failed, reverting optimistic update');
+     if (import.meta.env.DEV) console.error('[Cart] API Error — delete failed, reverting optimistic update');
      // Revert: refetch from server
      updateItemQuantity(item._id || '', item.quantity);
     }
@@ -150,9 +152,9 @@ export const CartPage = () => {
   }
 
   // Optimistic update immediately
-  console.log('[Cart] Update Payload (quantity):', { itemId: item._id, newQuantity });
+  if (import.meta.env.DEV) console.log('[Cart] Update Payload (quantity):', { itemId: item._id, newQuantity });
   updateItemQuantity(item._id || '', newQuantity);
-  console.log('[Cart] Store Updated — quantity:', newQuantity);
+  if (import.meta.env.DEV) console.log('[Cart] Store Updated — quantity:', newQuantity);
 
   // Debounced network sync
   triggerCartUpdate(localDeliveryType, localInstruction);
@@ -167,7 +169,7 @@ export const CartPage = () => {
   if (!selectedOutlet || !orderId || !itemToRemove) return;
 
   // Optimistic: remove from store immediately so UI updates instantly
-  console.log('[Cart] Update Payload (remove):', itemToRemove.product_retailer_id);
+  if (import.meta.env.DEV) console.log('[Cart] Update Payload (remove):', itemToRemove.product_retailer_id);
   optimisticSetQuantity({ _id: itemToRemove.product_retailer_id } as any, 0);
   setIsRemoveDialogOpen(false);
   setItemToRemove(null);
@@ -180,10 +182,10 @@ export const CartPage = () => {
    customerName
   }, {
    onSuccess: () => {
-    console.log('[Cart] API Success — item removed');
+    if (import.meta.env.DEV) console.log('[Cart] API Success — item removed');
    },
    onError: () => {
-    console.error('[Cart] API Error — remove failed');
+    if (import.meta.env.DEV) console.error('[Cart] API Error — remove failed');
    }
  });
  };
@@ -209,7 +211,11 @@ export const CartPage = () => {
     <div className="w-full min-h-screen bg-[#F8FAFC]">
       <div className="w-full max-w-[1800px] mx-auto px-6 lg:px-8 py-6">
 
-         {/* ── Page Header ── */}
+         
+
+        {isEmpty ? (
+          <>
+            {/* ── Page Header ── */}
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
@@ -230,16 +236,36 @@ export const CartPage = () => {
             )}
           </div>
         </div>
-
-        {isEmpty ? (
-          <EmptyCart />
+            <EmptyCart />
+          </>
         ) : (
           <>
             {/* CSS Grid: cart items left / premium summary right */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_440px] gap-5 items-start pb-40 lg:pb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(380px,1fr)] gap-6 items-start pb-40 lg:pb-8">
 
             {/* Left — Cart Items */}
             <div className="min-w-0 space-y-5 w-full">
+              {/* ── Page Header ── */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="w-11 h-11 rounded-full hover:bg-[#E5E7EB] bg-white shadow-sm border border-[#E5E7EB] shrink-0"
+          >
+            <ArrowLeft className="w-5 h-5 text-[#111827]" />
+          </Button>
+          <div>
+            <h1 className="text-[32px] md:text-[38px] font-black text-[#111827] leading-none">
+              Shopping Cart
+            </h1>
+            {!isEmpty && (
+              <p className="text-[15px] text-[#6B7280] font-medium mt-1">
+                {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
+              </p>
+            )}
+          </div>
+        </div>
               <CartList
                 items={cartItems}
                 currency={currency}
@@ -250,7 +276,7 @@ export const CartPage = () => {
             </div>
 
             {/* Right — Order Summary: fixed 360px, sticky desktop / inline mobile */}
-            <div className="hidden lg:block lg:sticky lg:top-24 lg:self-start w-full max-w-[440px]">
+            <div className="hidden lg:block lg:sticky lg:top-[96px] lg:self-start w-full max-h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden rounded-[20px] custom-scrollbar shadow-sm">
               <CartSummary
                 currency={currency}
                 deliveryType={localDeliveryType}

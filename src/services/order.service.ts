@@ -37,11 +37,5 @@ export const orderService = {
   getOrderById: async (orderId: string): Promise<Order> => {
     const response = await axiosInstance.get<ApiResponse<Order>>(`${ENV.ORDER_API}/${orderId}`);
     return response.data.data;
-  },
-
-  placeOrder: async (payload: any): Promise<any> => {
-    console.log('[DEBUG - Place Order Payload]', JSON.stringify(payload, null, 2));
-    const response = await axiosInstance.post<ApiResponse<any>>(`${ENV.ORDER_API}/place-order`, payload);
-    return response.data;
   }
 };

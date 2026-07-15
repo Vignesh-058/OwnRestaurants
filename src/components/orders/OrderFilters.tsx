@@ -1,5 +1,4 @@
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Search, X, SlidersHorizontal } from 'lucide-react';
 import {
  Select,
@@ -20,26 +19,24 @@ interface OrderFiltersProps {
 }
 
 export const OrderFilters = ({ onSortChange, sort }: OrderFiltersProps) => {
- const { searchQuery, setSearchQuery, filters, setFilters, resetFilters } = useOrderStore();
- const hasActiveFilters =
- searchQuery || filters.status !== 'All' || filters.payment !== 'All' || filters.orderType !== 'All';
+ const { searchQuery, setSearchQuery, filters, setFilters } = useOrderStore();
 
  return (
- <div className="space-y-4">
+ <div className="space-y-3">
  {/* Search row */}
  <div className="flex flex-col sm:flex-row gap-3">
  <div className="relative flex-1">
- <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+ <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]" />
  <Input
  placeholder="Search by order ID, name or phone..."
- className="pl-11 rounded-[14px] h-12 bg-white border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary"
+ className="pl-11 rounded-[12px] h-11 bg-white border-[#E5E7EB] shadow-sm focus-visible:ring-1 focus-visible:ring-[#FF6B00] focus-visible:border-[#FF6B00]"
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  />
  {searchQuery && (
  <button
  onClick={() => setSearchQuery('')}
- className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+ className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#111827]"
  >
  <X className="h-4 w-4" />
  </button>
@@ -48,18 +45,18 @@ export const OrderFilters = ({ onSortChange, sort }: OrderFiltersProps) => {
 
  {/* Sort */}
  <div className="flex items-center gap-2">
- <div className="h-12 w-12 rounded-[14px] bg-white border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] flex items-center justify-center shrink-0">
- <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
+ <div className="h-11 w-11 rounded-[12px] bg-white border border-[#E5E7EB] shadow-sm flex items-center justify-center shrink-0">
+ <SlidersHorizontal className="h-4 w-4 text-[#6B7280]" />
  </div>
  <Select value={sort} onValueChange={onSortChange}>
- <SelectTrigger className="w-[170px] rounded-[14px] h-12 bg-white border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus:ring-1 focus:ring-primary focus:border-primary">
+ <SelectTrigger className="w-[160px] rounded-[12px] h-11 bg-white border-[#E5E7EB] shadow-sm focus:ring-1 focus:ring-[#FF6B00] font-medium text-[#111827]">
  <SelectValue placeholder="Sort by" />
  </SelectTrigger>
- <SelectContent className="rounded-2xl">
- <SelectItem value="newest" className="rounded-xl my-1">Newest First</SelectItem>
- <SelectItem value="oldest" className="rounded-xl my-1">Oldest First</SelectItem>
- <SelectItem value="highest" className="rounded-xl my-1">Highest Amount</SelectItem>
- <SelectItem value="lowest" className="rounded-xl my-1">Lowest Amount</SelectItem>
+ <SelectContent className="rounded-[12px]">
+ <SelectItem value="newest" className="rounded-lg my-1 cursor-pointer hover:bg-[#F9FAFB]">Newest First</SelectItem>
+ <SelectItem value="oldest" className="rounded-lg my-1 cursor-pointer hover:bg-[#F9FAFB]">Oldest First</SelectItem>
+ <SelectItem value="highest" className="rounded-lg my-1 cursor-pointer hover:bg-[#F9FAFB]">Highest Amount</SelectItem>
+ <SelectItem value="lowest" className="rounded-lg my-1 cursor-pointer hover:bg-[#F9FAFB]">Lowest Amount</SelectItem>
  </SelectContent>
  </Select>
  </div>
@@ -68,43 +65,37 @@ export const OrderFilters = ({ onSortChange, sort }: OrderFiltersProps) => {
  {/* Filter row */}
  <div className="flex flex-wrap gap-3 items-center">
  <Select value={filters.status} onValueChange={(v: string) => setFilters({ status: v as any })}>
- <SelectTrigger className="w-auto min-w-[130px] rounded-[14px] h-10 bg-white text-sm border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus:ring-1 focus:ring-primary focus:border-primary">
+ <SelectTrigger className="w-auto min-w-[130px] rounded-[12px] h-11 bg-white text-[14px] border-[#E5E7EB] shadow-sm focus:ring-1 focus:ring-[#FF6B00] font-medium text-[#111827]">
  <SelectValue placeholder="Status" />
  </SelectTrigger>
- <SelectContent className="rounded-2xl">
+ <SelectContent className="rounded-[12px]">
  {STATUS_OPTIONS.map((s) => (
- <SelectItem key={s} value={s} className="rounded-xl my-0.5">{s === 'All' ? 'All Statuses' : s}</SelectItem>
+ <SelectItem key={s} value={s} className="rounded-lg my-0.5 cursor-pointer hover:bg-[#F9FAFB]">{s === 'All' ? 'All Statuses' : s}</SelectItem>
  ))}
  </SelectContent>
  </Select>
 
  <Select value={filters.payment} onValueChange={(v: string) => setFilters({ payment: v as any })}>
- <SelectTrigger className="w-auto min-w-[140px] rounded-[14px] h-10 bg-white text-sm border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus:ring-1 focus:ring-primary focus:border-primary">
+ <SelectTrigger className="w-auto min-w-[130px] rounded-[12px] h-11 bg-white text-[14px] border-[#E5E7EB] shadow-sm focus:ring-1 focus:ring-[#FF6B00] font-medium text-[#111827]">
  <SelectValue placeholder="Payment" />
  </SelectTrigger>
- <SelectContent className="rounded-2xl">
+ <SelectContent className="rounded-[12px]">
  {PAYMENT_OPTIONS.map((p) => (
- <SelectItem key={p} value={p} className="rounded-xl my-0.5">{p === 'All' ? 'All Payments' : p}</SelectItem>
+ <SelectItem key={p} value={p} className="rounded-lg my-0.5 cursor-pointer hover:bg-[#F9FAFB]">{p === 'All' ? 'All Payments' : p}</SelectItem>
  ))}
  </SelectContent>
  </Select>
 
  <Select value={filters.orderType} onValueChange={(v: string) => setFilters({ orderType: v as any })}>
- <SelectTrigger className="w-auto min-w-[140px] rounded-[14px] h-10 bg-white text-sm border border-border shadow-[0_2px_8px_rgba(15,23,42,0.04)] focus:ring-1 focus:ring-primary focus:border-primary">
+ <SelectTrigger className="w-auto min-w-[130px] rounded-[12px] h-11 bg-white text-[14px] border-[#E5E7EB] shadow-sm focus:ring-1 focus:ring-[#FF6B00] font-medium text-[#111827]">
  <SelectValue placeholder="Order Type" />
  </SelectTrigger>
- <SelectContent className="rounded-2xl">
+ <SelectContent className="rounded-[12px]">
  {TYPE_OPTIONS.map((t) => (
- <SelectItem key={t} value={t} className="rounded-xl my-0.5">{t === 'All' ? 'All Types' : t}</SelectItem>
+ <SelectItem key={t} value={t} className="rounded-lg my-0.5 cursor-pointer hover:bg-[#F9FAFB]">{t === 'All' ? 'All Types' : t}</SelectItem>
  ))}
  </SelectContent>
  </Select>
-
- {hasActiveFilters && (
- <Button variant="ghost" className="rounded-full h-10 text-sm text-muted-foreground hover:text-foreground gap-2" onClick={resetFilters}>
- <X className="h-3.5 w-3.5" /> Clear All
- </Button>
- )}
  </div>
  </div>
  );

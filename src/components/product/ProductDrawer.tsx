@@ -36,7 +36,13 @@ interface ProductDrawerProps {
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) => {
- const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
+ const organization = useOrganizationStore((state) => state.organization);
+  const currency = organization?.currency || '₹';
+  const detailConfig = organization?.theme?.config?.productDetail;
+  const showVariants = detailConfig?.showVariants ?? true;
+  const showAddons = detailConfig?.showAddons ?? true;
+  const showReviews = detailConfig?.showReviews ?? true;
+  const isCartEnabled = organization?.isCartEnabled ?? true;
  const isDesktop = useMediaQuery('(min-width: 768px)');
 
  const {
@@ -81,6 +87,9 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
      addon_item_ids: addOnIds
    }));
 
+   console.log('[Selected Variation]', selectedVariation);
+   console.log('[Selected Addons]', currentAddonGroups);
+
    const matchingIndex = existingItems.findIndex(i => 
      i.itemId === item.itemid && 
      i.variationId === (selectedVariation || "") && 
@@ -118,7 +127,7 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
 
       console.log("=== CART UPDATE: ProductDrawer handleAddToCart ===");
       console.log("addressPayload:", addressPayload);
-      console.log("Final Payload:", JSON.stringify(payload, null, 2));
+      console.log("[Final Cart Payload]", JSON.stringify(payload, null, 2));
 
       if (orderId) {
         updateCart(payload, {
@@ -178,34 +187,36 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  name={item.itemname} 
  dietryType={item.dietryType} 
  inStock={item.stockStatus} 
- rating={4.8} 
+ rating={item.rating} 
  />
  </div>
 
  <div className="p-4 md:p-6 space-y-8 pb-32 bg-white relative z-20">
- <VariationSelector 
- variations={item.variations}
- selectedVariation={selectedVariation}
- onSelect={setSelectedVariation}
- currency={currency}
- />
+ {showVariants && (
+                <VariationSelector 
+                  variations={item.variations}
+                  selectedVariation={selectedVariation}
+                  onSelect={setSelectedVariation}
+                  currency={currency}
+                />
+              )}
 
- {item.addons && item.addons.map((group) => (
- <AddonGroup 
- key={group.addongroupid}
- group={group}
- selectedAddons={selectedAddons[group.addongroupid] || []}
- onChange={handleAddonChange}
- currency={currency}
- />
- ))}
+ {showAddons && item.addons && item.addons.map((group) => (
+                <AddonGroup 
+                  key={group.addongroupid}
+                  group={group}
+                  selectedAddons={selectedAddons[group.addongroupid] || []}
+                  onChange={handleAddonChange}
+                  currency={currency}
+                />
+              ))}
 
  <ProductTabs />
  </div>
  </ScrollArea>
 
  <div className="sticky bottom-0 w-full z-50">
- <PriceSummary 
+ {isCartEnabled && <PriceSummary 
  totalPrice={totalPrice}
  quantity={quantity}
  onQuantityChange={setQuantity}
@@ -213,7 +224,7 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  isValid={isValid && !isAdding}
  inStock={item.stockStatus}
  currency={currency}
- />
+ />}
  </div>
  </>
  )}
