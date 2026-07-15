@@ -112,10 +112,15 @@ export const Footer = () => {
         <div className="w-full h-[1px] bg-white/5 mb-6" />
 
         {/* Bottom Bar with Socials & Copyright */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-          <p className="text-[#94A3B8] text-[13px] font-medium">
-            &copy; {currentYear} {organization.brandName || organization.name || ""}. All Rights Reserved.
-          </p>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left mt-8">
+          <div className="flex flex-col items-center md:items-start gap-1">
+            <p className="text-[#94A3B8] text-[13px] font-medium">
+              &copy; {currentYear} {organization.brandName || organization.name || ""}. All Rights Reserved.
+            </p>
+            <p className="text-[#64748B] text-[12px]">
+              Powered by <span className="font-bold text-white">IEYAL</span>
+            </p>
+          </div>
           
           {/* Social Media Minified */}
           <div className="flex items-center gap-3">
@@ -135,7 +140,6 @@ export const Footer = () => {
               </a>
             ))}
           </div>
-
 
         </div>
 

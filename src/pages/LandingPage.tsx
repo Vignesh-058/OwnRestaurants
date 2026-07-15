@@ -18,10 +18,15 @@ import { StoreClosedPage } from "@/components/common/StoreClosedPage";
 import { SettingsLoader } from "@/components/common/SettingsLoader";
 import { StoreConfig } from "@/components/home/StoreConfig";
 import { HeroBanner } from "@/components/home/HeroBanner";
+import { DeliveryInfoBar } from "@/components/home/DeliveryInfoBar";
 import { CategoriesCarousel } from "@/components/home/CategoriesCarousel";
 import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { HowItWorks } from "@/components/home/HowItWorks";
+import { TodaysOffers } from "@/components/home/TodaysOffers";
+import { CustomerReviews } from "@/components/home/CustomerReviews";
+import { DownloadApp } from "@/components/home/DownloadApp";
+import { Newsletter } from "@/components/home/Newsletter";
 import { useSettings } from "@/hooks/queries/useSettings";
 import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
@@ -269,77 +274,33 @@ export const LandingPage = () => {
             <StoreConfig />
 
             <div className="w-full flex flex-col bg-background">
-              {organization?.theme?.config?.home?.sectionOrder && organization.theme.config.home.sectionOrder.length > 0 ? (
-                organization.theme.config.home.sectionOrder
-                  .filter((sectionName: string) => organization.theme?.config?.home?.sections?.[sectionName]?.isActive)
-                  .map((sectionName: string, idx: number) => {
-                    switch (sectionName) {
-                      case 'hero':
-                      case 'menuList':
-                        return <HeroBanner key={idx} />;
-                      case 'categories':
-                      case 'categoryBanner':
-                        return (!isCategoriesLoading && !isCategoriesError && categories.length > 0) ? (
-                          <CategoriesCarousel
-                            key={idx}
-                            categories={categories}
-                            activeCategoryId={activeCategoryId}
-                            onSelectCategory={handleCategorySelect}
-                          />
-                        ) : null;
-                      case 'features':
-                      case 'whyChooseUs':
-                        return <WhyChooseUs key={idx} />;
-                      case 'popular':
-                      case 'featuredProducts':
-                      case 'bestsellerProducts':
-                      case 'dynamicProducts':
-                      case 'newArrivalProducts':
-                        return (!isCategoriesLoading && !isCategoriesError && recommendedProducts.length > 0) ? (
-                          <PopularProducts
-                            key={idx}
-                            products={recommendedProducts}
-                            onProductClick={(p) => {
-                              if (p.variations && p.variations.length > 0) {
-                                setSelectedProductId(p._id);
-                              }
-                            }}
-                          />
-                        ) : null;
-                      case 'howItWorks':
-                        return <HowItWorks key={idx} />;
-                      case 'promo':
-case 'discountBanner':
-case 'prebookBanner':
-return null;
-                      default:
-                        return null;
-                    }
-                  })
-              ) : (
-                <>
-                  <HeroBanner />
-                  {!isCategoriesLoading && !isCategoriesError && categories.length > 0 && (
-                    <CategoriesCarousel
-                      categories={categories}
-                      activeCategoryId={activeCategoryId}
-                      onSelectCategory={handleCategorySelect}
-                    />
-                  )}
-                  <WhyChooseUs />
-                  {!isCategoriesLoading && !isCategoriesError && recommendedProducts.length > 0 && (
-                    <PopularProducts
-                      products={recommendedProducts}
-                      onProductClick={(p) => {
-                        if (p.variations && p.variations.length > 0) {
-                          setSelectedProductId(p._id);
-                        }
-                      }}
-                    />
-                  )}
-                  <HowItWorks />
-                                  </>
-              )}
+              <>
+                <HeroBanner />
+                <DeliveryInfoBar />
+                {!isCategoriesLoading && !isCategoriesError && (
+                  <CategoriesCarousel
+                    categories={categories}
+                    activeCategoryId={activeCategoryId}
+                    onSelectCategory={handleCategorySelect}
+                  />
+                )}
+                {!isCategoriesLoading && !isCategoriesError && (
+                  <PopularProducts
+                    products={recommendedProducts}
+                    onProductClick={(p) => {
+                      if (p.variations && p.variations.length > 0) {
+                        setSelectedProductId(p._id);
+                      }
+                    }}
+                  />
+                )}
+                <TodaysOffers />
+                <WhyChooseUs />
+                <HowItWorks />
+                <CustomerReviews />
+                <DownloadApp />
+                <Newsletter />
+              </>
 
               {/* Main Product Collection Grid removed as requested */}
             </div>

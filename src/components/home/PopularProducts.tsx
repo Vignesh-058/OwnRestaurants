@@ -28,7 +28,7 @@ export const PopularProducts = ({ products, onProductClick }: PopularProductsPro
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
             <h2 className="text-3xl md:text-4xl font-black text-[#111827] tracking-tight mb-4">
-              Our Top Picks
+              Featured Products
             </h2>
             <p className="text-[#64748B] text-lg font-medium max-w-xl">
               Hand-picked by our chefs, these signature dishes are loved by our customers.

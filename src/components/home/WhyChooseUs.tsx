@@ -1,86 +1,66 @@
 import { motion } from 'framer-motion';
-import { Leaf, Clock, Award, ShieldCheck } from 'lucide-react';
+import { Truck, Leaf, ShieldCheck, Heart } from 'lucide-react';
 
 export const WhyChooseUs = () => {
   const features = [
     {
-      icon: <Award className="w-8 h-8 text-[#FF6B00]" />,
-      title: 'Premium Quality',
-      description: 'Crafted from the finest ingredients to ensure a superior taste experience.'
+      icon: <Truck className="w-8 h-8 text-[#FF6B00]" />,
+      title: 'Fast Delivery',
+      description: 'Fresh food delivered quickly.'
     },
     {
       icon: <Leaf className="w-8 h-8 text-[#FF6B00]" />,
-      title: 'Freshly Prepared',
-      description: 'Every order is prepared fresh on demand by our expert chefs.'
-    },
-    {
-      icon: <Clock className="w-8 h-8 text-[#FF6B00]" />,
-      title: 'Fast Delivery',
-      description: 'Lightning-fast delivery ensures your food arrives hot and fresh.'
+      title: 'Fresh Ingredients',
+      description: 'Prepared using quality ingredients.'
     },
     {
       icon: <ShieldCheck className="w-8 h-8 text-[#FF6B00]" />,
-      title: 'Hygiene Assured',
-      description: 'We follow strict hygiene protocols for your safety and health.'
+      title: 'Secure Payments',
+      description: 'Safe and reliable payment methods.'
+    },
+    {
+      icon: <Heart className="w-8 h-8 text-[#FF6B00]" />,
+      title: 'Trusted by Customers',
+      description: 'Thousands of happy customers.'
     }
   ];
 
   return (
-    <section id="features" className="py-20 bg-[#F8FAFC]">
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          
-          {/* Left Content */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-black text-[#111827] tracking-tight mb-6">
-              WHY CHOOSE <br/>
-              <span className="text-[#FF6B00]">IEYAL?</span>
-            </h2>
-            <p className="text-[#64748B] text-lg mb-10 leading-relaxed">
-              Whether you're hosting friends, planning a house party, or simply relaxing after a long day, IEYAL helps you create delicious moments in minutes.
-            </p>
-            
-            <div className="space-y-8">
-              {features.map((feature, idx) => (
-                <div key={idx} className="flex gap-5">
-                  <div className="shrink-0 w-14 h-14 rounded-[16px] bg-[#FFF7ED] flex items-center justify-center border border-[rgba(255,107,0,0.1)]">
-                    {feature.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-[18px] font-bold text-[#111827] mb-1">{feature.title}</h3>
-                    <p className="text-[#64748B] text-[15px]">{feature.description}</p>
-                  </div>
+    <section id="features" className="py-20 md:py-28 bg-[#F8FAFC]">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-black text-[#111827] tracking-tight mb-4">
+            Why Choose Us
+          </h2>
+          <div className="w-24 h-1.5 bg-[#FF6B00] mx-auto rounded-full mb-6" />
+          <p className="text-[#64748B] text-lg font-medium max-w-2xl mx-auto">
+            We are committed to providing you with the best culinary experience.
+          </p>
+        </div>
+        
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, idx) => (
+            <motion.div 
+              key={idx}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1 }}
+              className="bg-white rounded-[24px] p-8 border border-[#E5E7EB] shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:border-[#FF6B00]/40 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-300 text-center flex flex-col items-center group"
+            >
+              <div className="w-20 h-20 rounded-full bg-[#FFF7ED] flex items-center justify-center mb-6 group-hover:bg-[#FF6B00] transition-colors duration-300">
+                <div className="group-hover:text-white transition-colors duration-300">
+                  {feature.icon}
                 </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Right Image */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative h-[600px] rounded-[32px] overflow-hidden shadow-2xl"
-          >
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80')" }}
-            />
-            {/* Decorative Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <div className="absolute bottom-8 left-8 right-8">
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-[20px]">
-                <p className="text-white font-bold text-lg">"The best culinary experience in town. Unmatched quality and taste!"</p>
               </div>
-            </div>
-          </motion.div>
-
+              <h3 className="text-xl font-bold text-[#111827] mb-3 group-hover:text-[#FF6B00] transition-colors">
+                {feature.title}
+              </h3>
+              <p className="text-[#64748B] leading-relaxed">
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
