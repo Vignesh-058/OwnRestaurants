@@ -79,7 +79,7 @@ export const FloatingNav = () => {
  {active && (
  <motion.div
  layoutId="active-nav-pill-mobile"
- className="absolute inset-0 bg-[#FF6B00] rounded-full shadow-[0_0_15px_rgba(255,107,0,0.4)]"
+ className="absolute inset-0 bg-primary rounded-full shadow-[0_0_15px_rgba(255,107,0,0.4)]"
  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
  />
  )}

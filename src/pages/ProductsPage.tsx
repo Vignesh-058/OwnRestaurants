@@ -40,7 +40,7 @@ export const ProductsPage = () => {
         setActiveCategoryId(categories[0]._id);
       }
     }
-  }, [categories, categoryParam]);
+  }, [categories, categoryParam, activeCategoryId]);
 
   const handleCategorySelect = (categoryId: string) => {
     if (categoryId !== activeCategoryId) {
@@ -51,7 +51,7 @@ export const ProductsPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-[calc(100vh-80px)] bg-[#F7F8FC] pt-0">
+    <div className="flex flex-col w-full min-h-[calc(100vh-80px)] bg-background pt-0">
       <motion.div
         key="products-page"
         initial={{ opacity: 0, y: 15 }}
@@ -64,7 +64,7 @@ export const ProductsPage = () => {
           <div className="w-full flex flex-col lg:flex-row p-6 gap-6">
              <div className="w-full lg:w-[360px] flex flex-col gap-4">
                 {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-14 w-full bg-[#E2E8F0] animate-pulse rounded-[16px]"></div>
+                  <div key={i} className="h-14 w-full bg-muted animate-pulse rounded-[16px]"></div>
                 ))}
              </div>
              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

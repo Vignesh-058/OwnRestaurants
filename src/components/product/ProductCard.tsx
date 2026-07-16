@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/CartStore';
@@ -13,9 +12,7 @@ import { useCreateCart } from '@/hooks/cart/useCreateCart';
 import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useLocationStore } from '@/store/LocationStore';
-import { useLocationModalStore } from '@/store/LocationModalStore';
-import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
+import { getCartAddressPayload } from '@/utils/cartPayload';
 import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 
 interface ProductCardProps {
@@ -24,7 +21,7 @@ interface ProductCardProps {
   onClick?: (product: CategoryItem) => void;
 }
 
-export const ProductCard = ({ product, className, onClick }: ProductCardProps) => {
+export const ProductCard = ({ product, className, onClick: _onClick }: ProductCardProps) => {
   const navigate = useNavigate();
   const cartItems = useCartStore((state) => state.cartItems) || [];
   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
@@ -281,12 +278,12 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
   return (
     <div
       className={cn(
-        "group relative flex flex-col w-full h-full min-h-[340px] bg-white rounded-[16px] border border-[#ECECEC] shadow-[0_8px_25px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_35px_rgba(0,0,0,0.12)] hover:-translate-y-[6px] transition-all duration-300 overflow-hidden cursor-default",
+        "group relative flex flex-col w-full h-full min-h-[340px] premium-card overflow-hidden cursor-default",
         className,
       )}
     >
       {/* 1. Large Product Image (Compact Height 200px) */}
-      <div className="relative w-full h-[200px] shrink-0 bg-[#F8F9FA] overflow-hidden">
+      <div className="relative w-full h-[200px] shrink-0 bg-muted overflow-hidden">
         <img
           src={product.imageUrl?.[0] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
           alt={product.name}
@@ -296,23 +293,23 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
 
         {/* Top Left: Veg/Non-Veg Badge */}
         {product.dietryType && (
-          <div className="absolute top-2.5 left-2.5 z-10 flex items-center justify-center w-6 h-6 rounded bg-white/90 backdrop-blur-sm shadow-sm">
+          <div className="absolute top-3 left-3 z-10 flex items-center justify-center w-7 h-7 rounded-md bg-card/90 backdrop-blur-md shadow-sm border border-border">
             <div
               className={cn(
                 "flex items-center justify-center w-3.5 h-3.5 border-[1.5px] rounded-[3px]",
                 isVeg ? "border-green-600" : "border-red-600"
               )}
             >
-              <div className={cn("w-1.5 h-1.5 rounded-full", isVeg ? "bg-green-600" : "bg-red-600")} />
+              <div className={cn("w-1.5 h-1.5 rounded-xl", isVeg ? "bg-green-600" : "bg-red-600")} />
             </div>
           </div>
         )}
 
         {/* Top Right: Discount & Bestseller */}
-        <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-10">
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-2 z-10">
 
           {discountDisplay && (
-            <div className="bg-[#FF6B00] text-white text-[11px] font-bold px-2 py-1 rounded-[6px] shadow-sm flex items-center gap-1">
+            <div className="bg-primary text-primary-foreground text-[11px] font-extrabold px-2.5 py-1.5 rounded-md shadow-sm flex items-center gap-1 tracking-wide">
               {discountDisplay}
             </div>
           )}
@@ -320,23 +317,23 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
       </div>
 
       {/* 2. Product Information & Actions */}
-      <div className="flex flex-col flex-1 p-3.5 md:p-4">
+      <div className="flex flex-col flex-1 p-4 md:p-5">
         {/* Title */}
-        <h3 className="font-semibold text-[18px] text-[#111827] line-clamp-2 leading-[22px] group-hover:text-[#FF6B00] transition-colors">
+        <h3 className="font-extrabold text-[17px] text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
           {product.name}
         </h3>
         
         {/* Rating */}
         {product.rating && (
-          <div className="flex items-center gap-1 mt-1">
-            <Star className="w-3.5 h-3.5 fill-[#EAB308] text-[#EAB308]" />
-            <span className="text-[12px] font-bold text-[#4B5563]">{product.rating}</span>
+          <div className="flex items-center gap-1 mt-1.5">
+            <Star className="w-4 h-4 fill-warning text-warning" />
+            <span className="text-[13px] font-bold text-muted-foreground">{product.rating}</span>
           </div>
         )}
         
         {/* Description */}
         {descText && (
-          <p className="text-[#6B7280] font-medium text-[12px] line-clamp-1 mt-1">
+          <p className="text-muted-foreground font-medium text-[13px] line-clamp-2 mt-2 leading-relaxed">
             {descText}
           </p>
         )}
@@ -344,21 +341,21 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
         <div className="flex-1" />
 
         {/* Price & Add Button Row */}
-        <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-[#F3F4F6]">
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
           {/* Price Column */}
           <div className="flex flex-col">
-            <span className="text-[20px] font-bold text-[#FF6B00] leading-none tracking-tight">
+            <span className="text-[18px] font-extrabold text-foreground leading-none tracking-tight">
               {currency}{sellingPrice.toLocaleString()}
             </span>
             {originalPrice > sellingPrice && (
-              <span className="text-[12px] font-medium text-[#9CA3AF] line-through leading-none mt-1">
+              <span className="text-[13px] font-medium text-muted-foreground line-through leading-none mt-1.5">
                 {currency}{originalPrice.toLocaleString()}
               </span>
             )}
           </div>
 
           {/* Add Button / Quantity Selector */}
-          <div className="relative h-[36px] lg:h-[40px] w-[100px] lg:w-[110px] shrink-0" onClick={(e) => e.stopPropagation()}>
+          <div className="relative h-[38px] lg:h-[42px] w-[105px] lg:w-[115px] shrink-0" onClick={(e) => e.stopPropagation()}>
             <AnimatePresence mode="wait">
               {totalQuantity > 0 ? (
                 <motion.div
@@ -366,25 +363,25 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.25 }}
-                  className="absolute inset-0 flex items-center justify-between bg-white rounded-full p-1 border-[1.5px] border-[#FFE4E6] shadow-[0_4px_12px_rgba(255,107,0,0.08)]"
+                  transition={{ duration: 0.2 }}
+                  className="absolute inset-0 flex items-center justify-between bg-card rounded-full p-1 border border-primary shadow-sm"
                 >
                   <button
                     onClick={handleDecrement}
                     disabled={isAdding || isRemoving}
-                    className="w-[28px] h-[28px] lg:w-[32px] lg:h-[32px] flex items-center justify-center rounded-full bg-[#FFF0F2] text-[#FF6B00] transition-colors duration-200 hover:bg-[#FF6B00] hover:text-white disabled:opacity-50"
+                    className="w-[30px] h-[30px] lg:w-[34px] lg:h-[34px] flex items-center justify-center rounded-full bg-accent text-primary transition-colors duration-200 hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
                   >
-                    <Minus className="w-4 h-4 lg:w-4.5 lg:h-4.5 stroke-[3]" />
+                    <Minus className="w-4 h-4 stroke-[3]" />
                   </button>
-                  <span className="text-[14px] lg:text-[15px] font-semibold text-[#FF6B00] select-none flex-1 text-center">
+                  <span className="text-[14px] lg:text-[15px] font-extrabold text-primary select-none flex-1 text-center">
                     {totalQuantity}
                   </span>
                   <button
                     onClick={handleIncrement}
                     disabled={isAdding || isRemoving}
-                    className="w-[28px] h-[28px] lg:w-[32px] lg:h-[32px] flex items-center justify-center rounded-full bg-[#FFF0F2] text-[#FF6B00] transition-colors duration-200 hover:bg-[#FF6B00] hover:text-white disabled:opacity-50"
+                    className="w-[30px] h-[30px] lg:w-[34px] lg:h-[34px] flex items-center justify-center rounded-full bg-accent text-primary transition-colors duration-200 hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
                   >
-                    <Plus className="w-4 h-4 lg:w-4.5 lg:h-4.5 stroke-[3]" />
+                    <Plus className="w-4 h-4 stroke-[3]" />
                   </button>
                 </motion.div>
               ) : (
@@ -393,11 +390,11 @@ export const ProductCard = ({ product, className, onClick }: ProductCardProps) =
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.25 }}
+                  transition={{ duration: 0.2 }}
                   className="absolute inset-0"
                 >
                   <Button
-                    className="w-full h-full rounded-full bg-[#FF6B00] hover:bg-[#E65C00] text-white font-bold text-[13px] lg:text-[14px] shadow-[0_4px_12px_rgba(255,107,0,0.18)] hover:shadow-[0_6px_16px_rgba(255,107,0,0.28)] transition-all duration-300 border-0"
+                    className="w-full h-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-[14px] shadow-sm hover:shadow-md transition-all duration-300 border-0"
                     onClick={handleQuickAdd}
                     disabled={isAdding}
                   >

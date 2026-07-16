@@ -31,6 +31,7 @@ export interface DiscountItem {
  name?: string;
  amount?: number;
  code?: string;
+ couponName?: string;
 }
 
 export interface OrderItem {
@@ -49,6 +50,7 @@ export interface OrderItem {
  packageCharge?: number;
  tax?: number;
  discount?: number;
+ variationId?: string;
 }
 
 export interface OrderAddress {
@@ -107,6 +109,11 @@ export interface Order {
  notes?: string;
  currentDelivery?: Delivery;
  instructions?: string;
+ orderStatus?: string;
+ transactionId?: string;
+ bill?: any;
+ subtotal?: number;
+ price?: number;
 }
 
 export interface Pagination {

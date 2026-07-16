@@ -27,6 +27,7 @@ export interface Customer {
  ordersCount?: number;
  totalSpent?: number;
  savedAddressesCount?: number;
+ organizationId?: string;
 }
 
 export interface AuthResponse {

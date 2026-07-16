@@ -42,7 +42,7 @@ export const QuantitySelector = ({
 
   return (
     <div className={cn(
-      'inline-flex items-center border-2 border-[#FF6B00] overflow-hidden select-none',
+      'inline-flex items-center border-2 border-primary overflow-hidden select-none',
       roundCls,
     )}>
       <button
@@ -52,7 +52,7 @@ export const QuantitySelector = ({
         disabled={disabled}
         className={cn(
           btnCls,
-          'flex items-center justify-center text-[#FF6B00] hover:bg-[#FF6B00] hover:text-white transition-colors duration-150 disabled:opacity-40 disabled:pointer-events-none font-bold shrink-0',
+          'flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-150 disabled:opacity-40 disabled:pointer-events-none font-bold shrink-0',
         )}
       >
         <Minus className={iconCls} strokeWidth={2.5} />
@@ -60,7 +60,7 @@ export const QuantitySelector = ({
 
       <span className={cn(
         numCls,
-        'font-black tabular-nums text-[#111827] bg-[#FFF7ED] flex items-center justify-center border-x-2 border-[#FF6B00] shrink-0',
+        'font-black tabular-nums text-foreground bg-accent flex items-center justify-center border-x-2 border-primary shrink-0',
       )}>
         {quantity}
       </span>
@@ -72,7 +72,7 @@ export const QuantitySelector = ({
         disabled={disabled}
         className={cn(
           btnCls,
-          'flex items-center justify-center text-[#FF6B00] hover:bg-[#FF6B00] hover:text-white transition-colors duration-150 disabled:opacity-40 disabled:pointer-events-none font-bold shrink-0',
+          'flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors duration-150 disabled:opacity-40 disabled:pointer-events-none font-bold shrink-0',
         )}
       >
         <Plus className={iconCls} strokeWidth={2.5} />

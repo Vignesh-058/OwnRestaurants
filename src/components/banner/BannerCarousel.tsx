@@ -53,7 +53,7 @@ export const BannerCarousel = () => {
  }
  };
 
- const bannerConfig = organization?.theme?.sections?.banner?.config;
+ const bannerConfig = (organization?.theme as any)?.sections?.banner?.config;
  const showDots = bannerConfig?.showDots ?? true;
  const borderRadius = bannerConfig?.borderRadius ?? 48;
 

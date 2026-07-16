@@ -8,7 +8,6 @@ import { LocationPermissionModal } from '@/components/modals/LocationPermissionM
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useLocationStore } from '@/store/LocationStore';
 import { useCart } from '@/hooks/cart/useCart';
 import { applyOrganizationTheme } from '@/utils/theme';
 import defaultLogo from '@/assets/Ieyal Logo.jpeg';

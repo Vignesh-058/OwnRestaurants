@@ -9,16 +9,16 @@ export const PageLoader = () => {
  <div className="relative flex flex-col items-center">
  {/* Pulse rings */}
  <div className="absolute inset-0 flex items-center justify-center">
- <div className="h-24 w-24 bg-[#0C6CEA]/20 rounded-full animate-ping" />
+ <div className="h-24 w-24 bg-info/20 rounded-full animate-ping" />
  </div>
  
  {/* Core spinner */}
  <div className="relative bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl mb-6">
- <Loader2 className="h-10 w-10 text-[#0C6CEA] animate-spin" />
+ <Loader2 className="h-10 w-10 text-info animate-spin" />
  </div>
  
  {/* Text */}
- <h2 className="text-xl font-bold text-[#111827] dark:text-white animate-pulse">
+ <h2 className="text-xl font-bold text-foreground dark:text-white animate-pulse">
  {brandName}
  </h2>
  <p className="text-sm text-muted-foreground mt-2 font-medium">

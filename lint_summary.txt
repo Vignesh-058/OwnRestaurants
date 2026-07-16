@@ -1,0 +1,991 @@
+
+> owncart-web@0.0.0 lint
+> oxlint
+
+
+  ! react(only-export-components): Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.
+     ,-[src/components/ui/form.tsx:170:2]
+ 169 | export {
+ 170 |  useFormField,
+     :  ^^^^^^^^^^^^
+ 171 |  Form,
+     `----
+
+  ! eslint(no-unused-vars): Variable 'openLocationModal' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/location/OutletSelectorModal.tsx:13:9]
+ 12 |   const { isOpen, closeModal } = useOutletModalStore();
+ 13 |   const openLocationModal = useLocationModalStore((state) => state.openModal);
+    :         ^^^^^^^^|^^^^^^^^
+    :                 `-- 'openLocationModal' is declared here
+ 14 |   
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'Ticket' is imported but never used.
+    ,-[src/pages/ProfilePage.tsx:11:10]
+ 10 | import { motion, AnimatePresence } from 'framer-motion';
+ 11 | import { Ticket, Gift } from 'lucide-react';
+    :          ^^^|^^
+    :             `-- 'Ticket' is imported here
+ 12 | import { Button } from '@/components/ui/button';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'organization' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/ProfilePage.tsx:47:9]
+ 46 |   const { isAuthenticated, user } = useAuthStore();
+ 47 |   const organization = useOrganizationStore((state) => state.organization);
+    :         ^^^^^^|^^^^^
+    :               `-- 'organization' is declared here
+ 48 |   const [activeTab, setActiveTab] = useState('offers');
+    `----
+  help: Consider removing this declaration.
+
+  ! react(only-export-components): Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.
+    ,-[src/components/providers/QueryProvider.tsx:33:14]
+ 32 | 
+ 33 | export const getQueryClient = () => queryClient;
+    :              ^^^^^^^^^^^^^^
+ 34 | 
+    `----
+
+  ! eslint(no-unused-vars): Identifier 'toast' is imported but never used.
+   ,-[src/components/cart/CartItem.tsx:4:10]
+ 3 | import { motion, AnimatePresence } from 'framer-motion';
+ 4 | import { toast } from 'sonner';
+   :          ^^|^^
+   :            `-- 'toast' is imported here
+ 5 | import { QuantitySelector } from './QuantitySelector';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'NavLink' is imported but never used.
+   ,-[src/components/profile/ProfileMenu.tsx:2:10]
+ 1 | import { useState } from 'react';
+ 2 | import { NavLink, useLocation } from 'react-router-dom';
+   :          ^^^|^^^
+   :             `-- 'NavLink' is imported here
+ 3 | import { 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useLocation' is imported but never used.
+   ,-[src/components/profile/ProfileMenu.tsx:2:19]
+ 1 | import { useState } from 'react';
+ 2 | import { NavLink, useLocation } from 'react-router-dom';
+   :                   ^^^^^|^^^^^
+   :                        `-- 'useLocation' is imported here
+ 3 | import { 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Moon' is imported but never used.
+   ,-[src/components/profile/ProfileMenu.tsx:5:42]
+ 4 |   Package, MapPin, Ticket, Wallet, CreditCard, 
+ 5 |   HelpCircle, Info, LogOut, Bell, Globe, Moon
+   :                                          ^^|^
+   :                                            `-- 'Moon' is imported here
+ 6 | } from 'lucide-react';
+   `----
+  help: Consider removing this import.
+
+  ! react(only-export-components): Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.
+    ,-[src/components/ui/button.tsx:59:18]
+ 58 | 
+ 59 | export { Button, buttonVariants }
+    :                  ^^^^^^^^^^^^^^
+    `----
+
+  ! react(only-export-components): Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.
+    ,-[src/components/ui/badge.tsx:36:17]
+ 35 | 
+ 36 | export { Badge, badgeVariants }
+    :                 ^^^^^^^^^^^^^
+    `----
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'activeCategoryId'
+    ,-[src/pages/ProductsPage.tsx:43:6]
+ 38 |       }
+ 39 |       if (activeCategoryId === "all" || !activeCategoryId) {
+    :           ^^^^^^^^|^^^^^^^
+    :                   `-- useEffect uses `activeCategoryId` here
+ 40 |         setActiveCategoryId(categories[0]._id);
+ 41 |       }
+ 42 |     }
+ 43 |   }, [categories, categoryParam]);
+    :      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 44 | 
+    `----
+  help: Either include it or remove the dependency array.
+
+  ! eslint(no-unused-vars): Identifier 'Card' is imported but never used.
+   ,-[src/components/profile/ProfileHeader.tsx:2:10]
+ 1 | import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 2 | import { Card, CardContent } from '@/components/ui/card';
+   :          ^^|^
+   :            `-- 'Card' is imported here
+ 3 | import { Badge } from '@/components/ui/badge';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'CardContent' is imported but never used.
+   ,-[src/components/profile/ProfileHeader.tsx:2:16]
+ 1 | import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+ 2 | import { Card, CardContent } from '@/components/ui/card';
+   :                ^^^^^|^^^^^
+   :                     `-- 'CardContent' is imported here
+ 3 | import { Badge } from '@/components/ui/badge';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'currency' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/profile/ProfileHeader.tsx:23:9]
+ 22 | 
+ 23 |   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
+    :         ^^^^|^^^
+    :             `-- 'currency' is declared here
+ 24 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! react(only-export-components): Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.
+     ,-[src/components/ui/navigation-menu.tsx:119:2]
+ 118 | export {
+ 119 |  navigationMenuTriggerStyle,
+     :  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 120 |  NavigationMenu,
+     `----
+
+  ! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.
+    ,-[src/components/providers/AppProvider.tsx:11:10]
+ 10 | import { useOutletStore } from '@/store/OutletStore';
+ 11 | import { useLocationStore } from '@/store/LocationStore';
+    :          ^^^^^^^^|^^^^^^^
+    :                  `-- 'useLocationStore' is imported here
+ 12 | import { useCart } from '@/hooks/cart/useCart';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'storeStatus' is declared but never used. Unused variables should start with a '_'.
+   ,-[src/hooks/queries/useSettings.ts:8:8]
+ 7 |  const setSettings = useSettingsStore((state) => state.setSettings);
+ 8 |  const storeStatus = useOutletStore((state) => state.storeStatus);
+   :        ^^^^^|^^^^^
+   :             `-- 'storeStatus' is declared here
+ 9 | 
+   `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.
+    ,-[src/pages/ProductPage.tsx:10:10]
+  9 | import { useOutletStore } from '@/store/OutletStore';
+ 10 | import { useLocationStore } from "@/store/LocationStore";
+    :          ^^^^^^^^|^^^^^^^
+    :                  `-- 'useLocationStore' is imported here
+ 11 | import { useLocationModalStore } from "@/store/LocationModalStore";
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.
+    ,-[src/pages/ProductPage.tsx:11:10]
+ 10 | import { useLocationStore } from "@/store/LocationStore";
+ 11 | import { useLocationModalStore } from "@/store/LocationModalStore";
+    :          ^^^^^^^^^^|^^^^^^^^^^
+    :                    `-- 'useLocationModalStore' is imported here
+ 12 | import { getCartAddressPayload, hasValidDeliveryAddress } from "@/utils/cartPayload";
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'hasValidDeliveryAddress' is imported but never used.
+    ,-[src/pages/ProductPage.tsx:12:33]
+ 11 | import { useLocationModalStore } from "@/store/LocationModalStore";
+ 12 | import { getCartAddressPayload, hasValidDeliveryAddress } from "@/utils/cartPayload";
+    :                                 ^^^^^^^^^^^|^^^^^^^^^^^
+    :                                            `-- 'hasValidDeliveryAddress' is imported here
+ 13 | import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Type 'Variation' is imported but never used.
+    ,-[src/pages/ProductPage.tsx:14:15]
+ 13 | import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
+ 14 | import type { Variation, AddonGroup, ItemDetail } from "@/types/product.types";
+    :               ^^^^|^^^^
+    :                   `-- 'Variation' is imported here
+ 15 | import { useCartStore } from '@/store/CartStore';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Type 'AddonGroup' is imported but never used.
+    ,-[src/pages/ProductPage.tsx:14:26]
+ 13 | import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
+ 14 | import type { Variation, AddonGroup, ItemDetail } from "@/types/product.types";
+    :                          ^^^^^|^^^^
+    :                               `-- 'AddonGroup' is imported here
+ 15 | import { useCartStore } from '@/store/CartStore';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Type 'ItemDetail' is imported but never used.
+    ,-[src/pages/ProductPage.tsx:14:38]
+ 13 | import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
+ 14 | import type { Variation, AddonGroup, ItemDetail } from "@/types/product.types";
+    :                                      ^^^^^|^^^^
+    :                                           `-- 'ItemDetail' is imported here
+ 15 | import { useCartStore } from '@/store/CartStore';
+    `----
+  help: Consider removing this import.
+
+  ! react(only-export-components): Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.
+    ,-[src/components/providers/ThemeProvider.tsx:63:14]
+ 62 | 
+ 63 | export const useTheme = () => {
+    :              ^^^^^^^^
+ 64 |  const context = useContext(ThemeProviderContext);
+    `----
+
+  ! eslint(no-unused-vars): Variable 'setSelectedOutlet' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/location/LocationSelectorModal.tsx:46:9]
+ 45 |   const { setLocation, loading: isLocating, permissionGranted, locationLoaded } = useLocationStore();
+ 46 |   const setSelectedOutlet = useOutletStore((state) => state.setSelectedOutlet);
+    :         ^^^^^^^^|^^^^^^^^
+    :                 `-- 'setSelectedOutlet' is declared here
+ 47 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has missing dependencies: 'currentPage', and 'pageSize'
+    ,-[src/hooks/queries/useOrders.ts:45:5]
+ 33 |   if (query.isFetching) {
+ 34 |     console.log('[Refetch Triggered]', { queryKey: ['orders', currentPage, pageSize] });
+    :                                                               ^^^^^^^^^^^  ^^^^^^^^
+ 35 |   }
+ 36 |   setLoading(query.isLoading || query.isFetching);
+ 37 |   if (query.isError) {
+ 38 |  setError(query.error?.message || 'Failed to fetch orders');
+ 39 |  } else {
+ 40 |  setError(null);
+ 41 |  }
+ 42 |  if (query.data) {
+ 43 |  setOrdersData(query.data.data, query.data.totalOrders, query.data.pagination);
+ 44 |  }
+ 45 |  }, [query.data, query.isLoading, query.isFetching, query.isError, query.error, setLoading, setError, setOrdersData]);
+    :     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 46 | 
+    `----
+  help: Either include it or remove the dependency array.
+
+  ! eslint(no-unused-vars): Identifier 'Heart' is imported but never used.
+   ,-[src/components/cart/CartDrawer.tsx:3:75]
+ 2 | import { motion, AnimatePresence } from "framer-motion";
+ 3 | import { X, Trash2, ShoppingBag, Clock, Percent, Info, ChevronRight, Tag, Heart } from "lucide-react";
+   :                                                                           ^^|^^
+   :                                                                             `-- 'Heart' is imported here
+ 4 | import { useNavigate } from "react-router-dom";
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'isClearing' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/cart/CartDrawer.tsx:61:10]
+ 60 |   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
+ 61 |   const [isClearing, setIsClearing] = useState(false);
+    :          ^^^^^|^^^^
+    :               `-- 'isClearing' is declared here
+ 62 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'setIsClearing' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/cart/CartDrawer.tsx:61:22]
+ 60 |   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
+ 61 |   const [isClearing, setIsClearing] = useState(false);
+    :                      ^^^^^^|^^^^^^
+    :                            `-- 'setIsClearing' is declared here
+ 62 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'Package' is imported but never used.
+    ,-[src/pages/OrdersPage.tsx:13:21]
+ 12 | import { Button } from '@/components/ui/button';
+ 13 | import { RefreshCw, Package, AlertCircle } from 'lucide-react';
+    :                     ^^^|^^^
+    :                        `-- 'Package' is imported here
+ 14 | import { motion, AnimatePresence } from 'framer-motion';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'data' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/OrdersPage.tsx:20:10]
+ 19 |  const { isAuthenticated } = useAuthStore();
+ 20 |  const { data, isLoading, isError, refetch } = useOrders();
+    :          ^^|^
+    :            `-- 'data' is declared here
+ 21 |  const { orders, pagination, loading, error, selectedOrder, setSelectedOrder, filters, searchQuery } = useOrderStore();
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'useNavigate' is imported but never used.
+   ,-[src/components/layout/Navbar.tsx:2:29]
+ 1 | import { useState, useEffect } from "react";
+ 2 | import { Link, useLocation, useNavigate } from "react-router-dom";
+   :                             ^^^^^|^^^^^
+   :                                  `-- 'useNavigate' is imported here
+ 3 | import { ShoppingCart, Menu, X } from "lucide-react";
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'userLocationAddress' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/layout/Navbar.tsx:33:9]
+ 32 |   const openOutletModal = useOutletModalStore((state) => state.openModal);
+ 33 |   const userLocationAddress = useLocationStore(
+    :         ^^^^^^^^^|^^^^^^^^^
+    :                  `-- 'userLocationAddress' is declared here
+ 34 |     (state) => state.formattedAddress,
+    `----
+  help: Consider removing this declaration.
+
+  ! oxc(const-comparisons): Unexpected constant comparison
+     ,-[src/components/layout/Navbar.tsx:134:15]
+ 133 |           <AnimatePresence mode="wait">
+ 134 |             {(!isAuthenticated || isAuthenticated) && (
+     :               ^^^^^^^^|^^^^^^^    ^^^^^^^|^^^^^^^
+     :                       |                  `-- This expression must evaluate to true
+     :                       `-- If this expression evaluates to false
+ 135 |               <motion.button
+     `----
+  help: This logical expression will always evaluate to true
+
+  ! eslint(no-unused-vars): Identifier 'APP_CONFIG' is imported but never used.
+    ,-[src/layouts/MainLayout.tsx:20:10]
+ 19 | import { PageTransition } from '@/components/common/PageTransition';
+ 20 | import { APP_CONFIG } from '@/constants';
+    :          ^^^^^|^^^^
+    :               `-- 'APP_CONFIG' is imported here
+ 21 | import { FloatingNav } from '@/components/layout/FloatingNav';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'RefreshCw' is imported but never used.
+   ,-[src/components/product/ProductFilterPanel.tsx:6:23]
+ 5 | import { Button } from '@/components/ui/button';
+ 6 | import { ChevronDown, RefreshCw } from 'lucide-react';
+   :                       ^^^^|^^^^
+   :                           `-- 'RefreshCw' is imported here
+ 7 | import { motion, AnimatePresence } from 'framer-motion';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Truck' is imported but never used.
+    ,-[src/components/orders/OrderDetailsDialog.tsx:11:57]
+ 10 | import { OrderTimeline } from './OrderTimeline';
+ 11 | import { MapPin, User, Phone, Package, CreditCard, Tag, Truck, X, RotateCcw, Loader2 } from 'lucide-react';
+    :                                                         ^^|^^
+    :                                                           `-- 'Truck' is imported here
+ 12 | import { Button } from '@/components/ui/button';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'toast' is imported but never used.
+    ,-[src/components/orders/OrderDetailsDialog.tsx:15:10]
+ 14 | import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+ 15 | import { toast } from 'sonner';
+    :          ^^|^^
+    :            `-- 'toast' is imported here
+ 16 | 
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.
+    ,-[src/pages/LoginPage.tsx:10:10]
+  9 | import { ArrowLeft, ArrowRight, Loader2, ShoppingBag, Coffee, UtensilsCrossed } from 'lucide-react';
+ 10 | import { useLocationStore } from '@/store/LocationStore';
+    :          ^^^^^^^^|^^^^^^^
+    :                  `-- 'useLocationStore' is imported here
+ 11 | import { useLocationModalStore } from '@/store/LocationModalStore';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.
+    ,-[src/pages/LoginPage.tsx:11:10]
+ 10 | import { useLocationStore } from '@/store/LocationStore';
+ 11 | import { useLocationModalStore } from '@/store/LocationModalStore';
+    :          ^^^^^^^^^^|^^^^^^^^^^
+    :                    `-- 'useLocationModalStore' is imported here
+ 12 | import { useAuthStore } from '@/store/AuthStore';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.
+    ,-[src/components/product/ProductDrawer.tsx:9:10]
+  8 | import { useOutletStore } from '@/store/OutletStore';
+  9 | import { useLocationStore } from '@/store/LocationStore';
+    :          ^^^^^^^^|^^^^^^^
+    :                  `-- 'useLocationStore' is imported here
+ 10 | import { useLocationModalStore } from '@/store/LocationModalStore';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.
+    ,-[src/components/product/ProductDrawer.tsx:10:10]
+  9 | import { useLocationStore } from '@/store/LocationStore';
+ 10 | import { useLocationModalStore } from '@/store/LocationModalStore';
+    :          ^^^^^^^^^^|^^^^^^^^^^
+    :                    `-- 'useLocationModalStore' is imported here
+ 11 | import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'hasValidDeliveryAddress' is imported but never used.
+    ,-[src/components/product/ProductDrawer.tsx:11:33]
+ 10 | import { useLocationModalStore } from '@/store/LocationModalStore';
+ 11 | import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
+    :                                 ^^^^^^^^^^^|^^^^^^^^^^^
+    :                                            `-- 'hasValidDeliveryAddress' is imported here
+ 12 | import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'showReviews' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/product/ProductDrawer.tsx:44:9]
+ 43 |   const showAddons = detailConfig?.showAddons ?? true;
+ 44 |   const showReviews = detailConfig?.showReviews ?? true;
+    :         ^^^^^|^^^^^
+    :              `-- 'showReviews' is declared here
+ 45 |   const isCartEnabled = organization?.isCartEnabled ?? true;
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'openDrawer' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/product/ProductDrawer.tsx:64:10]
+ 63 |  const { mutate: createCart, isPending: isCreating } = useCreateCart();
+ 64 |  const { openDrawer, cartItems, orderId, orderType } = useCartStore();
+    :          ^^^^^|^^^^
+    :               `-- 'openDrawer' is declared here
+ 65 |  const { user } = useAuthStore();
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Type 'CategoryItem' is imported but never used.
+   ,-[src/services/product.service.ts:4:15]
+ 3 | import type { ItemDetail } from '@/types/product.types';
+ 4 | import type { CategoryItem } from '@/types/category.types';
+   :               ^^^^^^|^^^^^
+   :                     `-- 'CategoryItem' is imported here
+ 5 | import type { ApiResponse } from '@/types/api.types';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'setCart' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/hooks/cart/useUpdateCart.ts:9:23]
+  8 |   const queryClient = useQueryClient();
+  9 |   const { setOrderId, setCart } = useCartStore();
+    :                       ^^^|^^^
+    :                          `-- 'setCart' is declared here
+ 10 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'AnimatePresence' is imported but never used.
+   ,-[src/pages/LandingPage.tsx:3:18]
+ 2 | import { useNavigate } from "react-router-dom";
+ 3 | import { motion, AnimatePresence } from "framer-motion";
+   :                  ^^^^^^^|^^^^^^^
+   :                         `-- 'AnimatePresence' is imported here
+ 4 | import { MapPin, Sparkles, Ticket } from "lucide-react";
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'MapPin' is imported but never used.
+   ,-[src/pages/LandingPage.tsx:4:10]
+ 3 | import { motion, AnimatePresence } from "framer-motion";
+ 4 | import { MapPin, Sparkles, Ticket } from "lucide-react";
+   :          ^^^|^^
+   :             `-- 'MapPin' is imported here
+ 5 | import { useOrganizationStore } from "@/store/OrganizationStore";
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Sparkles' is imported but never used.
+   ,-[src/pages/LandingPage.tsx:4:18]
+ 3 | import { motion, AnimatePresence } from "framer-motion";
+ 4 | import { MapPin, Sparkles, Ticket } from "lucide-react";
+   :                  ^^^^|^^^
+   :                      `-- 'Sparkles' is imported here
+ 5 | import { useOrganizationStore } from "@/store/OrganizationStore";
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Ticket' is imported but never used.
+   ,-[src/pages/LandingPage.tsx:4:28]
+ 3 | import { motion, AnimatePresence } from "framer-motion";
+ 4 | import { MapPin, Sparkles, Ticket } from "lucide-react";
+   :                            ^^^|^^
+   :                               `-- 'Ticket' is imported here
+ 5 | import { useOrganizationStore } from "@/store/OrganizationStore";
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'CategoryList' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:14:10]
+ 13 | import { useStoreStatus } from "@/hooks/queries/useStoreStatus";
+ 14 | import { CategoryList } from "@/components/product/CategoryList";
+    :          ^^^^^^|^^^^^
+    :                `-- 'CategoryList' is imported here
+ 15 | import { ProductDrawer } from "@/components/product/ProductDrawer";
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Sheet' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:34:3]
+ 33 | import {
+ 34 |   Sheet,
+    :   ^^|^^
+    :     `-- 'Sheet' is imported here
+ 35 |   SheetContent,
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'SheetContent' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:35:3]
+ 34 |   Sheet,
+ 35 |   SheetContent,
+    :   ^^^^^^|^^^^^
+    :         `-- 'SheetContent' is imported here
+ 36 |   SheetTrigger,
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'SheetTrigger' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:36:3]
+ 35 |   SheetContent,
+ 36 |   SheetTrigger,
+    :   ^^^^^^|^^^^^
+    :         `-- 'SheetTrigger' is imported here
+ 37 |   SheetTitle,
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'SheetTitle' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:37:3]
+ 36 |   SheetTrigger,
+ 37 |   SheetTitle,
+    :   ^^^^^|^^^^
+    :        `-- 'SheetTitle' is imported here
+ 38 |   SheetHeader,
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'SheetHeader' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:38:3]
+ 37 |   SheetTitle,
+ 38 |   SheetHeader,
+    :   ^^^^^|^^^^^
+    :        `-- 'SheetHeader' is imported here
+ 39 | } from "@/components/ui/sheet";
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Menu' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:40:10]
+ 39 | } from "@/components/ui/sheet";
+ 40 | import { Menu } from "lucide-react";
+    :          ^^|^
+    :            `-- 'Menu' is imported here
+ 41 | import type { CategoryItem } from "@/types/category.types";
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Type 'CategoryItem' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:41:15]
+ 40 | import { Menu } from "lucide-react";
+ 41 | import type { CategoryItem } from "@/types/category.types";
+    :               ^^^^^^|^^^^^
+    :                     `-- 'CategoryItem' is imported here
+ 42 | import { ProductGrid } from "@/components/product/ProductGrid";
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'ProductGrid' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:42:10]
+ 41 | import type { CategoryItem } from "@/types/category.types";
+ 42 | import { ProductGrid } from "@/components/product/ProductGrid";
+    :          ^^^^^|^^^^^
+    :               `-- 'ProductGrid' is imported here
+ 43 | import type { FilterState } from "@/components/product/FilterSidebar";
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'cn' is imported but never used.
+    ,-[src/pages/LandingPage.tsx:44:10]
+ 43 | import type { FilterState } from "@/components/product/FilterSidebar";
+ 44 | import { cn } from "@/lib/utils";
+    :          ^|
+    :           `-- 'cn' is imported here
+ 45 | 
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'formattedAddress' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:52:11]
+ 51 | 
+ 52 |   const { formattedAddress, street, city } = useLocationStore();
+    :           ^^^^^^^^|^^^^^^^
+    :                   `-- 'formattedAddress' is declared here
+ 53 |   const openModal = useLocationModalStore((state) => state.openModal);
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'street' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:52:29]
+ 51 | 
+ 52 |   const { formattedAddress, street, city } = useLocationStore();
+    :                             ^^^|^^
+    :                                `-- 'street' is declared here
+ 53 |   const openModal = useLocationModalStore((state) => state.openModal);
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'city' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:52:37]
+ 51 | 
+ 52 |   const { formattedAddress, street, city } = useLocationStore();
+    :                                     ^^|^
+    :                                       `-- 'city' is declared here
+ 53 |   const openModal = useLocationModalStore((state) => state.openModal);
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'openModal' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:53:9]
+ 52 |   const { formattedAddress, street, city } = useLocationStore();
+ 53 |   const openModal = useLocationModalStore((state) => state.openModal);
+    :         ^^^^|^^^^
+    :             `-- 'openModal' is declared here
+ 54 |   const { user } = useAuthStore();
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'user' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:54:11]
+ 53 |   const openModal = useLocationModalStore((state) => state.openModal);
+ 54 |   const { user } = useAuthStore();
+    :           ^^|^
+    :             `-- 'user' is declared here
+ 55 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'isProductsLoading' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:72:16]
+ 71 |     data: allProducts = [],
+ 72 |     isLoading: isProductsLoading,
+    :                ^^^^^^^^|^^^^^^^^
+    :                        `-- 'isProductsLoading' is declared here
+ 73 |     isError: isProductsError,
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'isProductsError' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:73:14]
+ 72 |     isLoading: isProductsLoading,
+ 73 |     isError: isProductsError,
+    :              ^^^^^^^|^^^^^^^
+    :                     `-- 'isProductsError' is declared here
+ 74 |   } = useProductsQuery();
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'setFilters' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:80:19]
+ 79 |   const [activeCategoryId, setActiveCategoryId] = useState("all");
+ 80 |   const [filters, setFilters] = useState<FilterState>({
+    :                   ^^^^^|^^^^
+    :                        `-- 'setFilters' is declared here
+ 81 |     categories: [],
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'isFilterDrawerOpen' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:90:10]
+ 89 |   });
+ 90 |   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+    :          ^^^^^^^^^|^^^^^^^^
+    :                   `-- 'isFilterDrawerOpen' is declared here
+ 91 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'setIsFilterDrawerOpen' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/LandingPage.tsx:90:30]
+ 89 |   });
+ 90 |   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+    :                              ^^^^^^^^^^|^^^^^^^^^^
+    :                                        `-- 'setIsFilterDrawerOpen' is declared here
+ 91 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'coupons' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/pages/LandingPage.tsx:104:17]
+ 103 | 
+ 104 |   const { data: coupons = [] } = useCoupons();
+     :                 ^^^|^^^
+     :                    `-- 'coupons' is declared here
+ 105 |   useGeoLocation();
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'MapPin' is imported but never used.
+   ,-[src/components/home/StoreConfig.tsx:6:10]
+ 5 | import { Button } from '@/components/ui/button';
+ 6 | import { MapPin, Navigation, Store } from 'lucide-react';
+   :          ^^^|^^
+   :             `-- 'MapPin' is imported here
+ 7 | import {
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Navigation' is imported but never used.
+   ,-[src/components/home/StoreConfig.tsx:6:18]
+ 5 | import { Button } from '@/components/ui/button';
+ 6 | import { MapPin, Navigation, Store } from 'lucide-react';
+   :                  ^^^^^|^^^^
+   :                       `-- 'Navigation' is imported here
+ 7 | import {
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'storeStatus' is declared but never used. Unused variables should start with a '_'.
+   ,-[src/hooks/queries/useCategories.ts:8:8]
+ 7 |  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
+ 8 |  const storeStatus = useOutletStore((state) => state.storeStatus);
+   :        ^^^^^|^^^^^
+   :             `-- 'storeStatus' is declared here
+ 9 |  const organization = useOrganizationStore((state) => state.organization);
+   `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'motion' is imported but never used.
+   ,-[src/pages/CheckoutPage.tsx:3:10]
+ 2 | import { useNavigate } from 'react-router-dom';
+ 3 | import { motion, AnimatePresence } from 'framer-motion';
+   :          ^^^|^^
+   :             `-- 'motion' is imported here
+ 4 | import { ChevronLeft, MapPin, CheckCircle2, Lock, Gift, Calendar, Ticket, Plus } from 'lucide-react';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'AnimatePresence' is imported but never used.
+   ,-[src/pages/CheckoutPage.tsx:3:18]
+ 2 | import { useNavigate } from 'react-router-dom';
+ 3 | import { motion, AnimatePresence } from 'framer-motion';
+   :                  ^^^^^^^|^^^^^^^
+   :                         `-- 'AnimatePresence' is imported here
+ 4 | import { ChevronLeft, MapPin, CheckCircle2, Lock, Gift, Calendar, Ticket, Plus } from 'lucide-react';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'CheckCircle2' is imported but never used.
+   ,-[src/pages/CheckoutPage.tsx:4:31]
+ 3 | import { motion, AnimatePresence } from 'framer-motion';
+ 4 | import { ChevronLeft, MapPin, CheckCircle2, Lock, Gift, Calendar, Ticket, Plus } from 'lucide-react';
+   :                               ^^^^^^|^^^^^
+   :                                     `-- 'CheckCircle2' is imported here
+ 5 | import { Wallet, CreditCard as CreditCardIcon, Banknote, Smartphone } from 'lucide-react'; 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Lock' is imported but never used.
+   ,-[src/pages/CheckoutPage.tsx:4:45]
+ 3 | import { motion, AnimatePresence } from 'framer-motion';
+ 4 | import { ChevronLeft, MapPin, CheckCircle2, Lock, Gift, Calendar, Ticket, Plus } from 'lucide-react';
+   :                                             ^^|^
+   :                                               `-- 'Lock' is imported here
+ 5 | import { Wallet, CreditCard as CreditCardIcon, Banknote, Smartphone } from 'lucide-react'; 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Gift' is imported but never used.
+   ,-[src/pages/CheckoutPage.tsx:4:51]
+ 3 | import { motion, AnimatePresence } from 'framer-motion';
+ 4 | import { ChevronLeft, MapPin, CheckCircle2, Lock, Gift, Calendar, Ticket, Plus } from 'lucide-react';
+   :                                                   ^^|^
+   :                                                     `-- 'Gift' is imported here
+ 5 | import { Wallet, CreditCard as CreditCardIcon, Banknote, Smartphone } from 'lucide-react'; 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Ticket' is imported but never used.
+   ,-[src/pages/CheckoutPage.tsx:4:67]
+ 3 | import { motion, AnimatePresence } from 'framer-motion';
+ 4 | import { ChevronLeft, MapPin, CheckCircle2, Lock, Gift, Calendar, Ticket, Plus } from 'lucide-react';
+   :                                                                   ^^^|^^
+   :                                                                      `-- 'Ticket' is imported here
+ 5 | import { Wallet, CreditCard as CreditCardIcon, Banknote, Smartphone } from 'lucide-react'; 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Wallet' is imported but never used.
+   ,-[src/pages/CheckoutPage.tsx:5:10]
+ 4 | import { ChevronLeft, MapPin, CheckCircle2, Lock, Gift, Calendar, Ticket, Plus } from 'lucide-react';
+ 5 | import { Wallet, CreditCard as CreditCardIcon, Banknote, Smartphone } from 'lucide-react'; 
+   :          ^^^|^^
+   :             `-- 'Wallet' is imported here
+ 6 | import { Button } from '@/components/ui/button';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'response' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/pages/CheckoutPage.tsx:128:13]
+ 127 |       
+ 128 |       const response = await checkoutOrder(payload);
+     :             ^^^^|^^^
+     :                 `-- 'response' is declared here
+ 129 |       
+     `----
+  help: Consider removing this declaration.
+
+  x Failed to open file D:\Ecommerce\owncart-web\src\utils\cartAddress.ts with error "stream did not contain valid UTF-8"
+
+  ! eslint(no-unused-vars): Identifier 'useEffect' is imported but never used.
+   ,-[src/components/product/ProductCard.tsx:1:10]
+ 1 | import { useEffect } from 'react';
+   :          ^^^^|^^^^
+   :              `-- 'useEffect' is imported here
+ 2 | import { useNavigate } from 'react-router-dom';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.
+    ,-[src/components/product/ProductCard.tsx:16:10]
+ 15 | import { useOutletStore } from '@/store/OutletStore';
+ 16 | import { useLocationStore } from '@/store/LocationStore';
+    :          ^^^^^^^^|^^^^^^^
+    :                  `-- 'useLocationStore' is imported here
+ 17 | import { useLocationModalStore } from '@/store/LocationModalStore';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.
+    ,-[src/components/product/ProductCard.tsx:17:10]
+ 16 | import { useLocationStore } from '@/store/LocationStore';
+ 17 | import { useLocationModalStore } from '@/store/LocationModalStore';
+    :          ^^^^^^^^^^|^^^^^^^^^^
+    :                    `-- 'useLocationModalStore' is imported here
+ 18 | import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'hasValidDeliveryAddress' is imported but never used.
+    ,-[src/components/product/ProductCard.tsx:18:33]
+ 17 | import { useLocationModalStore } from '@/store/LocationModalStore';
+ 18 | import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
+    :                                 ^^^^^^^^^^^|^^^^^^^^^^^
+    :                                            `-- 'hasValidDeliveryAddress' is imported here
+ 19 | import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Parameter 'onClick' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/components/product/ProductCard.tsx:27:51]
+ 26 | 
+ 27 | export const ProductCard = ({ product, className, onClick }: ProductCardProps) => {
+    :                                                   ^^^|^^^
+    :                                                      `-- 'onClick' is declared here
+ 28 |   const navigate = useNavigate();
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Variable 'isLoading' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/home/PromotionalBanner.tsx:18:26]
+ 17 | 
+ 18 |   const { data: banners, isLoading } = useBanners(belongsTo, outletId);
+    :                          ^^^^|^^^^
+    :                              `-- 'isLoading' is declared here
+ 19 |   
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'ShoppingCart' is imported but never used.
+    ,-[src/pages/CartPage.tsx:12:21]
+ 11 | import { Button } from '@/components/ui/button';
+ 12 | import { ArrowLeft, ShoppingCart } from 'lucide-react';
+    :                     ^^^^^^|^^^^^
+    :                           `-- 'ShoppingCart' is imported here
+ 13 | import { CartList } from '@/components/cart/CartList';
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'setCustomerName' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/CartPage.tsx:58:23]
+ 57 |  // Hardcoded for now per requirements (Guest flow without Auth if null)
+ 58 |  const [customerName, setCustomerName] = useState(user?.name || "Guest");
+    :                       ^^^^^^^|^^^^^^^
+    :                              `-- 'setCustomerName' is declared here
+ 59 |  const [customerPhoneNo, setCustomerPhoneNo] = useState(user?.phone || "0000000000");
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'setCustomerPhoneNo' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/CartPage.tsx:59:26]
+ 58 |  const [customerName, setCustomerName] = useState(user?.name || "Guest");
+ 59 |  const [customerPhoneNo, setCustomerPhoneNo] = useState(user?.phone || "0000000000");
+    :                          ^^^^^^^^^|^^^^^^^^
+    :                                   `-- 'setCustomerPhoneNo' is declared here
+ 60 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'isRemoveDialogOpen' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/CartPage.tsx:64:9]
+ 63 |  const [itemToRemove, setItemToRemove] = useState<CartItem | null>(null);
+ 64 |  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
+    :         ^^^^^^^^^|^^^^^^^^
+    :                  `-- 'isRemoveDialogOpen' is declared here
+ 65 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'setLocalInstruction' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/pages/CartPage.tsx:67:27]
+ 66 |  const [localDeliveryType, setLocalDeliveryType] = useState(orderType || 'Door Delivery');
+ 67 |  const [localInstruction, setLocalInstruction] = useState('');
+    :                           ^^^^^^^^^|^^^^^^^^^
+    :                                    `-- 'setLocalInstruction' is declared here
+ 68 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'handleConfirmRemove' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/pages/CartPage.tsx:168:8]
+ 167 | 
+ 168 |  const handleConfirmRemove = () => {
+     :        ^^^^^^^^^|^^^^^^^^^
+     :                 `-- 'handleConfirmRemove' is declared here
+ 169 |   if (!selectedOutlet || !orderId || !itemToRemove) return;
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'AppliedCoupon' is imported but never used.
+   ,-[src/components/cart/CartSummary.tsx:6:10]
+ 5 | import { DiscountList } from '@/components/discount/DiscountList';
+ 6 | import { AppliedCoupon } from '@/components/discount/AppliedCoupon';
+   :          ^^^^^^|^^^^^^
+   :                `-- 'AppliedCoupon' is imported here
+ 7 | import { useOrganizationStore } from '@/store/OrganizationStore';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'AnimatePresence' is imported but never used.
+   ,-[src/components/home/HeroBanner.tsx:3:18]
+ 2 | import { useNavigate } from "react-router-dom";
+ 3 | import { motion, AnimatePresence } from "framer-motion";
+   :                  ^^^^^^^|^^^^^^^
+   :                         `-- 'AnimatePresence' is imported here
+ 4 | import { Button } from "@/components/ui/button";
+   `----
+  help: Consider removing this import.
+
+Found 98 warnings and 1 error.
+Finished in 25ms on 281 files with 103 rules using 16 threads.

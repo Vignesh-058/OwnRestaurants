@@ -1,0 +1,9 @@
+D:\Ecommerce\owncart-web\src\components\product\ProductFilterPanel.tsx: #E2E8F0
+D:\Ecommerce\owncart-web\src\styles\globals.css: #cbd5e1
+D:\Ecommerce\owncart-web\src\styles\globals.css: #334155
+D:\Ecommerce\owncart-web\src\styles\globals.css: #cbd5e1
+D:\Ecommerce\owncart-web\src\styles\globals.css: #334155
+D:\Ecommerce\owncart-web\src\styles\theme.css: #FF6B00
+D:\Ecommerce\owncart-web\src\styles\theme.css: #FF8A3D
+D:\Ecommerce\owncart-web\src\styles\theme.css: #FFAE73
+D:\Ecommerce\owncart-web\src\styles\theme.css: #FF6B00

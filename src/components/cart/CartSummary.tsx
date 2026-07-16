@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/CartStore';
 import { useNavigate } from 'react-router-dom';
 import { DiscountList } from '@/components/discount/DiscountList';
-import { AppliedCoupon } from '@/components/discount/AppliedCoupon';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { DeliveryTypeSelector } from '@/components/cart/DeliveryTypeSelector';
 
@@ -28,15 +27,15 @@ const PriceRow = ({
   isLarge?: boolean;
 }) => (
   <div className={`flex justify-between items-center ${isLarge ? 'py-1' : ''}`}>
-    <span className={`${isLarge ? 'text-[18px] font-bold text-[#111827]' : 'text-[15px] font-medium text-[#6B7280]'}`}>
+    <span className={`${isLarge ? 'text-[18px] font-bold text-foreground' : 'text-[15px] font-medium text-muted-foreground'}`}>
       {label}
     </span>
     <span className={`tabular-nums font-bold ${
       isLarge
-        ? 'text-[18px] text-[#111827]'
+        ? 'text-[18px] text-foreground'
         : isGreen
-          ? 'text-[15px] text-[#10B981]'
-          : 'text-[15px] text-[#111827]'
+          ? 'text-[15px] text-green-500'
+          : 'text-[15px] text-foreground'
     }`}>
       {value}
     </span>
@@ -84,16 +83,16 @@ export const CartSummary = ({
 
 
   return (
-    <div className="bg-white rounded-[20px] shadow-[0_8px_40px_rgba(0,0,0,0.08)] border border-[#F0F0F0] overflow-hidden">
+    <div className="bg-card rounded-[20px] shadow-sm border border-border overflow-hidden">
 
       {/* ── Header ── */}
-      <div className="flex items-center gap-3 px-6 pt-5 pb-4 border-b border-[#F3F4F6]">
-        <div className="w-10 h-10 rounded-full bg-[#FFF7ED] flex items-center justify-center shrink-0">
-          <ShoppingBag className="w-5 h-5 text-[#FF6B00]" />
+      <div className="flex items-center gap-3 px-6 pt-5 pb-4 border-b border-border">
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+          <ShoppingBag className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h3 className="text-[22px] font-black text-[#111827] leading-none">Order Summary</h3>
-          <p className="text-[13px] text-[#9CA3AF] font-medium mt-0.5">
+          <h3 className="text-[22px] font-extrabold text-foreground leading-none">Order Summary</h3>
+          <p className="text-[13px] text-muted-foreground font-medium mt-0.5">
             {cartItemCount} item{cartItemCount !== 1 ? 's' : ''} selected
           </p>
         </div>
@@ -124,8 +123,8 @@ export const CartSummary = ({
             <PriceRow label="Delivery Charge" value={`${currency}${deliveryCharge.toLocaleString()}`} />
           ) : (
             <div className="flex justify-between items-center">
-              <span className="text-[15px] font-medium text-[#6B7280]">Delivery Charge</span>
-              <span className="text-[13px] font-bold text-[#10B981] bg-[#F0FDF4] px-2 py-0.5 rounded-full">FREE</span>
+              <span className="text-[15px] font-medium text-muted-foreground">Delivery Charge</span>
+              <span className="text-[13px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">FREE</span>
             </div>
           )}
 
@@ -144,12 +143,12 @@ export const CartSummary = ({
 
         )}
         {/* ── Divider ── */}
-        <div className="border-t-2 border-dashed border-[#F3F4F6]" />
+        <div className="border-t-2 border-dashed border-border" />
 
         {/* ── Grand Total ── */}
         <div className="flex justify-between items-center">
-          <span className="text-[20px] font-black text-[#111827]">Grand Total</span>
-          <span className="text-[28px] font-black text-[#FF6B00] tabular-nums leading-none">
+          <span className="text-[20px] font-extrabold text-foreground">Grand Total</span>
+          <span className="text-[28px] font-extrabold text-primary tabular-nums leading-none">
             {currency}{grandTotal.toLocaleString()}
           </span>
         </div>
@@ -165,7 +164,7 @@ export const CartSummary = ({
         {/* ── Action Buttons ── */}
         <div className={hideMobileActions ? 'hidden lg:flex flex-col gap-3' : 'flex flex-col gap-3'}>
           <Button
-            className="w-full h-[56px] rounded-full text-[16px] font-black bg-gradient-to-r from-[#FF6B00] to-[#FF8C38] hover:from-[#E65C00] hover:to-[#FF6B00] text-white shadow-[0_8px_24px_rgba(255,107,0,0.30)] hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(255,107,0,0.40)] transition-all duration-300 border-0 group"
+            className="w-full h-[56px] rounded-full text-[16px] font-extrabold bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-300 border-0 group"
             disabled={!checkoutEnable}
             onClick={() => navigate('/checkout')}
           >
@@ -174,14 +173,14 @@ export const CartSummary = ({
           </Button>
 
           {!checkoutEnable && checkOutMessage && (
-            <p className="text-[#EF4444] text-[12px] font-bold text-center -mt-1">
+            <p className="text-destructive text-[12px] font-bold text-center -mt-1">
               {checkOutMessage}
             </p>
           )}
 
           <Button
             variant="outline"
-            className="w-full h-[48px] rounded-full text-[15px] font-bold border-2 border-[#FF6B00] text-[#FF6B00] hover:bg-[#FFF7ED] transition-all duration-300 bg-white"
+            className="w-full h-[48px] rounded-full text-[15px] font-bold border-2 border-primary text-primary hover:bg-primary/5 transition-all duration-300 bg-card"
             onClick={() => navigate('/products')}
           >
             Continue Shopping

@@ -5,7 +5,6 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 
 export const useCategories = () => {
  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
- const storeStatus = useOutletStore((state) => state.storeStatus);
  const organization = useOrganizationStore((state) => state.organization);
 
  return useQuery({

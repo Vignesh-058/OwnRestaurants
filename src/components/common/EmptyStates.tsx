@@ -48,7 +48,7 @@ export const EmptySearch = () => (
 );
 
 export const EmptyBanner = ({ brandName, description }: { brandName?: string, description?: string }) => (
- <div className="relative overflow-hidden bg-[#0C6CEA] rounded-3xl min-h-[300px] flex items-center justify-center px-6 py-12">
+ <div className="relative overflow-hidden bg-info rounded-3xl min-h-[300px] flex items-center justify-center px-6 py-12">
  <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent z-10" />
  <motion.div 
  initial={{ opacity: 0, scale: 0.95 }}

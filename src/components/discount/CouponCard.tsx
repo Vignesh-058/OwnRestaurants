@@ -15,7 +15,7 @@ interface CouponCardProps {
 const GRADIENT_POOL = [
  'from-violet-500 via-purple-500 to-indigo-500',
  'from-rose-500 via-pink-500 to-fuchsia-500',
- 'from-[#FF6B00] via-orange-500 to-amber-500',
+ 'from-primary via-orange-500 to-amber-500',
  'from-orange-500 via-amber-500 to-yellow-500',
  'from-emerald-500 via-green-500 to-lime-500',
  'from-slate-600 via-zinc-600 to-stone-600',
@@ -84,7 +84,7 @@ export const CouponCard = memo(({ coupon, onApply, isApplying }: CouponCardProps
  </div>
 
  {/* Card body */}
- <div className="bg-white p-5">
+ <div className="bg-card p-5">
  {coupon.name && (
  <h4 className="font-bold text-foreground text-base mb-1">{coupon.name}</h4>
  )}

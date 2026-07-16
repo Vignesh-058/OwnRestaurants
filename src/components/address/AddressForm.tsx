@@ -1,3 +1,5 @@
+import { useOrganizationStore } from "@/store/OrganizationStore";
+import { useAuthStore } from "@/store/AuthStore";
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -104,6 +106,8 @@ export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
       longitude: data.longitude || 0,
       landMark: data.landmark || '',
       type: data.addressType.toLowerCase() as any,
+      belongsTo: useOrganizationStore.getState().organization?._id || "",
+      customerPhoneNo: useAuthStore.getState().user?.phone || "",
     });
   };
 
@@ -262,7 +266,7 @@ export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
 
  <Button 
  type="submit" 
- className="w-full rounded-full h-12 shadow-premium font-bold text-base" 
+ className="w-full rounded-xl h-12 shadow-premium font-bold text-base" 
  disabled={isLoading}
  >
  {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}

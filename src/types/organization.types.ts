@@ -71,6 +71,7 @@ export interface ThemeConfigSections {
   footer?: {
     config?: {
       address?: string;
+      description?: string;
       email?: string;
       phone?: string;
       facebook?: string;
@@ -83,6 +84,12 @@ export interface ThemeConfigSections {
 
 export interface Theme {
   config?: ThemeConfigSections;
+  primaryColor?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  borderColor?: string;
+  secondaryColor?: string;
+  secondaryTextColor?: string;
 }
 
 export interface LocationCoordinates {
@@ -121,6 +128,8 @@ export interface OutletDetails {
 }
 
 export interface Outlet {
+  city?: string;
+  phone?: string;
   _id: string;
   outletName: string;
   storeStatus: boolean;
@@ -138,6 +147,9 @@ export interface Outlet {
   orderType: string[];
   distance?: number;
   eta?: string;
+  email?: string;
+  openingTime?: string;
+  closingTime?: string;
 }
 
 export interface Organization {
@@ -167,6 +179,7 @@ export interface Organization {
   isSelfPickupAvailable?: boolean;
   theme?: Theme;
   currency?: string;
+  
 }
 
 export interface OrganizationResponse {
@@ -178,6 +191,7 @@ export interface OutletResponse {
 }
 
 export interface StoreStatusResponse {
+  deliveryExpectedTime?: string;
   _id: string;
   storeStatus: boolean;
   storeOpen?: boolean;
@@ -185,4 +199,8 @@ export interface StoreStatusResponse {
   pickupAvailable?: boolean;
   manualOverrideType: string | null;
   overrideEndTime: string | null;
+}
+
+export interface GeoLocationResponse {
+  results?: any[];
 }

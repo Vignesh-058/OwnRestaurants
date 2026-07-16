@@ -1,4 +1,5 @@
 export interface GeoLocationResponse {
+  results?: any[];
   latitude: number;
   longitude: number;
   city: string;

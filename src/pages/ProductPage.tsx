@@ -1,3 +1,4 @@
+import type { CategoryItemVariation, CategoryItemAddonItem } from '@/types/category.types';
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Minus, Plus, Share2, Star, Clock } from 'lucide-react';
@@ -7,11 +8,8 @@ import { useItemDetail } from '@/hooks/queries/useItemDetail';
 import { useAddToCart, useUpdateCart } from '@/hooks/queries/useCart';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useLocationStore } from "@/store/LocationStore";
-import { useLocationModalStore } from "@/store/LocationModalStore";
-import { getCartAddressPayload, hasValidDeliveryAddress } from "@/utils/cartPayload";
+import { getCartAddressPayload } from "@/utils/cartPayload";
 import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
-import type { Variation, AddonGroup, ItemDetail } from "@/types/product.types";
 import { useCartStore } from '@/store/CartStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { PageLoader } from '@/components/common/PageLoader';
@@ -70,7 +68,7 @@ export const ProductPage = () => {
       item.addons.forEach((group: any) => {
         const selected = addonSelections[group.addongroupid] || [];
         selected.forEach((selId) => {
-          const addonItem = group.items.find((i: any) => i.addonitemid === selId);
+          const addonItem = group.items.find((i: CategoryItemAddonItem) => i.addonitemid === selId);
           if (addonItem) {
             total += addonItem.addonitem_price;
           }
@@ -133,7 +131,7 @@ export const ProductPage = () => {
         currency: cartCurrency
       }));
 
-      const isSameAddon = (a1: any[], a2: any[]) => JSON.stringify(a1) === JSON.stringify(a2);
+      const isSameAddon = (a1: unknown[], a2: unknown[]) => JSON.stringify(a1) === JSON.stringify(a2);
 
       const existingIndex = updatedItems.findIndex(i => 
         i.itemId === newItem.itemId && 
@@ -252,7 +250,7 @@ export const ProductPage = () => {
       </div>
       
       <Button 
-        className="flex-1 lg:max-w-[300px] h-[52px] text-lg rounded-full shadow-lg bg-[#FF6B00] hover:bg-[#E65C00] font-black tracking-wide transition-transform active:scale-[0.98]" 
+        className="flex-1 lg:max-w-[300px] h-[52px] text-lg rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground font-black tracking-wide transition-transform active:scale-[0.98]" 
         onClick={handleAddToCart}
         disabled={!isValidSelection || isOutOfStock || isPending}
       >
@@ -268,7 +266,7 @@ export const ProductPage = () => {
   );
 
   return (
-    <div className="pb-[100px] lg:pb-12 w-full min-h-screen bg-[#F8FAFC]">
+    <div className="pb-[100px] lg:pb-12 w-full min-h-screen bg-background">
       
       {/* 1. HERO SECTION */}
       <div className="relative w-full lg:h-[500px] bg-black">
@@ -375,11 +373,11 @@ export const ProductPage = () => {
                 )}
               </div>
 
-              <h1 className="text-4xl xl:text-5xl font-black text-[#0F172A] leading-tight mb-4 tracking-tight">
+              <h1 className="text-4xl xl:text-5xl font-extrabold text-foreground leading-tight mb-4 tracking-tight">
                 {item.itemname}
               </h1>
 
-              <div className="flex items-center gap-6 text-[#64748B] text-base font-bold mb-6">
+              <div className="flex items-center gap-6 text-muted-foreground text-base font-bold mb-6">
                 <span className="flex items-center gap-1.5 bg-green-50 px-3 py-1 rounded-lg text-green-700 border border-green-100 shadow-sm">
                   <Star className="w-5 h-5 fill-current" /> {rating} (120+ Reviews)
                 </span>
@@ -395,7 +393,7 @@ export const ProductPage = () => {
                       {org?.currency || '₹'}{item.basePrice}
                     </p>
                   )}
-                  <p className="text-4xl font-black text-[#FF6B00]">
+                  <p className="text-4xl font-extrabold text-primary">
                     {org?.currency || '₹'}{item.sellingPrice || item.basePrice}
                   </p>
                 </div>
@@ -422,24 +420,24 @@ export const ProductPage = () => {
               {item.variations && item.variations.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-black/5">
                   <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
-                    <span className="w-1.5 h-6 bg-[#FF6B00] rounded-full" />
+                    <span className="w-1.5 h-6 bg-primary rounded-full" />
                     Select Size/Variation
                   </h3>
                   <div className="grid grid-cols-1 gap-3">
-                    {item.variations.map((v: any) => {
+                    {item.variations.map((v: CategoryItemVariation) => {
                       const isActive = selectedVariation === v.variationid || (!selectedVariation && item.variationid === v.variationid);
                       return (
                         <div
                           key={v.variationid}
                           className={cn(
                             "flex items-center justify-between p-4 rounded-[16px] border-2 transition-all cursor-pointer group",
-                            isActive ? "border-[#FF6B00] bg-orange-50/50 shadow-sm" : "border-border hover:border-[#FF6B00]/40 hover:bg-muted/30"
+                            isActive ? "border-primary bg-primary/5 shadow-sm" : "border-border hover:border-primary/40 hover:bg-muted/30"
                           )}
                           onClick={() => handleVariationChange(v.variationid)}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors", isActive ? 'border-[#FF6B00]' : 'border-muted-foreground/30 group-hover:border-[#FF6B00]/50')}>
-                              {isActive && <div className="w-2.5 h-2.5 rounded-full bg-[#FF6B00]" />}
+                            <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors", isActive ? 'border-primary' : 'border-muted-foreground/30 group-hover:border-primary/50')}>
+                              {isActive && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
                             </div>
                             <span className={cn("font-bold text-lg", isActive ? "text-foreground" : "text-muted-foreground")}>{v.variation_name}</span>
                           </div>
@@ -459,7 +457,7 @@ export const ProductPage = () => {
                       <div className="flex items-start justify-between border-b border-black/5 pb-4">
                         <div>
                           <h3 className="font-bold text-lg flex items-center gap-2">
-                            <span className="w-1.5 h-5 bg-[#FF6B00] rounded-full" />
+                            <span className="w-1.5 h-5 bg-primary rounded-full" />
                             {group.addongroup_name}
                           </h3>
                           <p className="text-sm text-muted-foreground font-medium mt-1">
@@ -474,14 +472,14 @@ export const ProductPage = () => {
                         )}
                       </div>
                       <div className="space-y-3 pt-2">
-                        {group.items.map((addon: any) => {
+                        {group.items.map((addon: CategoryItemAddonItem) => {
                           const isSelected = (addonSelections[group.addongroupid] || []).includes(addon.addonitemid);
                           return (
                             <div 
                               key={addon.addonitemid}
                               className={cn(
                                 "flex items-center justify-between p-4 rounded-[16px] border-2 transition-all cursor-pointer group",
-                                isSelected ? "border-[#FF6B00] bg-orange-50/50 shadow-sm" : "border-border hover:border-[#FF6B00]/40 hover:bg-muted/30"
+                                isSelected ? "border-primary bg-primary/5 shadow-sm" : "border-border hover:border-primary/40 hover:bg-muted/30"
                               )}
                               onClick={() => handleAddonChange(group.addongroupid, addon.addonitemid, group.min, group.max)}
                             >
@@ -489,7 +487,7 @@ export const ProductPage = () => {
                                 <div className={cn(
                                   "w-5 h-5 border-2 flex items-center justify-center transition-colors", 
                                   group.max === 1 ? "rounded-full" : "rounded-[6px]",
-                                  isSelected ? "border-[#FF6B00] bg-[#FF6B00]" : "border-muted-foreground/30 group-hover:border-[#FF6B00]/50"
+                                  isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 group-hover:border-primary/50"
                                 )}>
                                   {isSelected && (
                                     <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5 text-white" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">

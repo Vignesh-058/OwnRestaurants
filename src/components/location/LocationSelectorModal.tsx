@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import { useLocationStore } from '@/store/LocationStore';
 import { useLocationModalStore } from '@/store/LocationModalStore';
-import { useOutletStore } from '@/store/OutletStore';
 import { useRequestBrowserLocation } from '@/hooks/queries/useLocation';
 import { useAddressSearch } from '@/hooks/queries/useAddressSearch';
 import { useCreateAddress } from '@/hooks/mutations/useCreateAddress';
@@ -43,8 +42,8 @@ export const LocationSelectorModal = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { isOpen, closeModal, openModal } = useLocationModalStore();
   const { setLocation, loading: isLocating, permissionGranted, locationLoaded } = useLocationStore();
-  const setSelectedOutlet = useOutletStore((state) => state.setSelectedOutlet);
 
+  
   const [view, setView] = useState<'search' | 'add-address'>('search');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -93,7 +92,7 @@ export const LocationSelectorModal = () => {
 
   const handleSelectSearchResult = async (result: any) => {
     try {
-      setLoading(true);
+      
       // Backend handles Google Maps / Geocoding, just send the entered string
       const response = await locationService.getCustomerLatLng({ 
         enteredAddress: result.description || result.formatted_address || result.name || JSON.stringify(result),
@@ -115,7 +114,7 @@ export const LocationSelectorModal = () => {
       console.error(err);
       setValidationError('Failed to resolve address location.');
     } finally {
-      setLoading(false);
+      
     }
   };
 
@@ -249,13 +248,13 @@ export const LocationSelectorModal = () => {
               <div className="p-4 space-y-4">
                 {/* Search Bar */}
                 <div className="relative group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-[#FF6B00] transition-colors" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                   <input 
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search by area, street or landmark..."
-                    className="w-full h-[48px] pl-12 pr-4 bg-slate-800/50 border border-white/10 shadow-sm rounded-2xl text-[16px] font-medium focus:outline-none focus:border-[#FF6B00] focus:bg-slate-900 transition-all text-white placeholder:text-slate-500"
+                    className="w-full h-[48px] pl-12 pr-4 bg-slate-800/50 border border-white/10 shadow-sm rounded-2xl text-[16px] font-medium focus:outline-none focus:border-primary focus:bg-slate-900 transition-all text-white placeholder:text-slate-500"
                   />
                 </div>
 
@@ -364,17 +363,17 @@ export const LocationSelectorModal = () => {
                                 onClick={() => handleSelectSavedAddress(addr)}
                                 className={`w-full text-left p-4 rounded-[16px] transition-all flex items-start gap-2.5 group relative overflow-hidden ${
                                   isSelected 
-                                    ? 'bg-[#FF6B00]/10 border border-[#FF6B00] shadow-md' 
+                                    ? 'bg-primary/10 border border-primary shadow-md' 
                                     : 'bg-slate-800/80 border border-white/10 hover:border-white/20 hover:shadow-lg hover:bg-slate-800/90'
                                 }`}
                               >
                                 {isSelected && (
-                                  <div className="absolute top-4 right-4 text-[#FF6B00]">
+                                  <div className="absolute top-4 right-4 text-primary">
                                     <CheckCircle2 className="w-5 h-5" />
                                   </div>
                                 )}
                                 
-                                <div className={`mt-0.5 p-3 rounded-full transition-colors ${isSelected ? 'bg-[#FF6B00]/20 text-[#FF6B00]' : 'bg-slate-800 text-slate-400 group-hover:text-white'}`}>
+                                <div className={`mt-0.5 p-3 rounded-full transition-colors ${isSelected ? 'bg-primary/20 text-primary' : 'bg-slate-800 text-slate-400 group-hover:text-white'}`}>
                                   <AddressIcon type={addr.type} />
                                 </div>
                                 <div className="flex-1 pr-6">
@@ -495,7 +494,7 @@ export const LocationSelectorModal = () => {
                   <Button 
                     onClick={handleContinue}
                     disabled={!selectedAddressId}
-                    className="w-full h-[48px] rounded-2xl bg-gradient-to-r from-[#FF6B00] to-[#E85D00] hover:from-[#E85D00] hover:to-[#CC5200] text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(255,107,0,0.4)] disabled:opacity-50 disabled:shadow-none transition-all group relative overflow-hidden"
+                    className="w-full h-[48px] rounded-2xl bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(255,107,0,0.4)] disabled:opacity-50 disabled:shadow-none transition-all group relative overflow-hidden"
                   >
                     Continue
                   </Button>

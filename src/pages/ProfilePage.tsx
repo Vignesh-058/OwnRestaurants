@@ -1,27 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/AuthStore';
-import { useOrganizationStore } from '@/store/OrganizationStore';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { ProfileMenu } from '@/components/profile/ProfileMenu';
 import { ProfileInfo } from '@/components/profile/ProfileInfo';
 import { AddressPreview } from '@/components/profile/AddressPreview';
 import { RecentOrders } from '@/components/profile/RecentOrders';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ticket, Gift } from 'lucide-react';
+import { Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const EmptyOffers = () => (
-  <div className="bg-white rounded-[24px] shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-[#E4E7EC] p-10 flex flex-col items-center justify-center min-h-[400px] text-center">
-    <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
-      <Gift className="w-12 h-12 text-[#FF6B00]" />
+  <div className="bg-card rounded-[24px] shadow-sm border border-border p-10 flex flex-col items-center justify-center min-h-[400px] text-center">
+    <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-inner">
+      <Gift className="w-12 h-12 text-primary" />
     </div>
-    <h3 className="text-[24px] font-bold text-[#101828] mb-2">No Offers Available</h3>
-    <p className="text-[#667085] text-[15px] max-w-[300px] mb-8 leading-relaxed">
+    <h3 className="text-[24px] font-bold text-foreground mb-2">No Offers Available</h3>
+    <p className="text-muted-foreground text-[15px] max-w-[300px] mb-8 leading-relaxed">
       There are currently no active coupons or offers for your account. Check back later!
     </p>
     <Button 
-      className="bg-[#FF6B00] hover:bg-[#E65C00] text-white font-bold h-[48px] px-8 rounded-full shadow-[0_8px_20px_rgba(255,107,0,0.2)] transition-all"
+      className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-[48px] px-8 rounded-full shadow-sm hover:shadow-md transition-all"
       onClick={() => window.location.href = '/products'}
     >
       Browse Products
@@ -30,11 +29,11 @@ const EmptyOffers = () => (
 );
 
 const PremiumCardWrapper = ({ children, title, subtitle }: { children: React.ReactNode, title?: string, subtitle?: string }) => (
-  <div className="bg-white rounded-[24px] shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-[#E4E7EC] p-6 lg:p-8">
+  <div className="bg-card rounded-[24px] shadow-sm border border-border p-6 lg:p-8">
     {(title || subtitle) && (
-      <div className="mb-6 pb-6 border-b border-[#F2F4F7]">
-        {title && <h2 className="text-[22px] font-bold text-[#101828] leading-tight">{title}</h2>}
-        {subtitle && <p className="text-[14px] text-[#667085] mt-1">{subtitle}</p>}
+      <div className="mb-6 pb-6 border-b border-border">
+        {title && <h2 className="text-[22px] font-bold text-foreground leading-tight">{title}</h2>}
+        {subtitle && <p className="text-[14px] text-muted-foreground mt-1">{subtitle}</p>}
       </div>
     )}
     {children}
@@ -44,7 +43,6 @@ const PremiumCardWrapper = ({ children, title, subtitle }: { children: React.Rea
 export const ProfilePage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
-  const organization = useOrganizationStore((state) => state.organization);
   const [activeTab, setActiveTab] = useState('offers');
 
   useEffect(() => {
@@ -63,10 +61,10 @@ export const ProfilePage = () => {
           <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-[24px] font-bold text-[#101828]">Offers & Coupons</h2>
-                <p className="text-[#667085] text-[14px]">View and apply your available discounts.</p>
+                <h2 className="text-[24px] font-bold text-foreground">Offers & Coupons</h2>
+                <p className="text-muted-foreground text-[14px]">View and apply your available discounts.</p>
               </div>
-              <Button variant="outline" className="h-10 rounded-full bg-white border-[#E4E7EC] text-[#101828] font-bold">
+              <Button variant="outline" className="h-10 rounded-full bg-card border-border text-foreground font-bold">
                 Refresh
               </Button>
             </div>
@@ -93,16 +91,16 @@ export const ProfilePage = () => {
         );
       default:
         return (
-          <div className="bg-white rounded-[24px] shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-[#E4E7EC] p-10 flex flex-col items-center justify-center min-h-[400px] text-center">
-            <h3 className="text-[20px] font-bold text-[#101828] mb-2">Coming Soon</h3>
-            <p className="text-[#667085] text-[15px]">This section is currently under development.</p>
+          <div className="bg-card rounded-[24px] shadow-sm border border-border p-10 flex flex-col items-center justify-center min-h-[400px] text-center">
+            <h3 className="text-[20px] font-bold text-foreground mb-2">Coming Soon</h3>
+            <p className="text-muted-foreground text-[15px]">This section is currently under development.</p>
           </div>
         );
     }
   };
 
   return (
-    <div className="bg-[#F7F8FC] min-h-screen pt-24 pb-32">
+    <div className="bg-background min-h-screen pt-24 pb-32">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-[40px] flex flex-col space-y-[32px]">
         
         {/* Profile Header (Top) */}

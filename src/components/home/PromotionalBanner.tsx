@@ -15,7 +15,7 @@ export const PromotionalBanner = () => {
   const belongsTo = organization?._id || "";
   const outletId = selectedOutlet?._id || "";
 
-  const { data: banners, isLoading } = useBanners(belongsTo, outletId);
+  const { data: banners } = useBanners(belongsTo, outletId);
   
   // Find a banner specifically meant for promo/discount, or just use the last active banner as a fallback
   let promoBanner = banners?.find(b => b.active && (b.type === 'promo' || b.type === 'discountBanner')) 
@@ -31,6 +31,8 @@ export const PromotionalBanner = () => {
       active: true
     } as any;
   }
+
+  if (!promoBanner) return null;
 
   const getImageUrl = (path?: string) => {
     if (!path) return '';
@@ -54,22 +56,22 @@ export const PromotionalBanner = () => {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-white border-b border-[#E5E7EB]">
+    <section className="py-20 md:py-28 bg-white border-b border-border">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="relative rounded-[32px] overflow-hidden bg-[#111827] shadow-2xl flex flex-col md:flex-row min-h-[450px]"
+          className="relative rounded-[32px] overflow-hidden bg-foreground shadow-2xl flex flex-col md:flex-row min-h-[450px]"
         >
           {/* Text Content */}
           <div className="w-full md:w-1/2 p-10 md:p-16 lg:p-20 flex flex-col justify-center relative z-10 order-2 md:order-1">
-            <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-[#FF6B00]/10 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[80px] -translate-x-1/2 -translate-y-1/2" />
             
             <div className="relative">
               {promoBanner.subtitle && (
-                <span className="inline-block px-4 py-1.5 rounded-full bg-[#FF6B00]/20 text-[#FF6B00] font-bold text-xs tracking-widest uppercase mb-6 w-fit border border-[#FF6B00]/30">
+                <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary font-bold text-xs tracking-widest uppercase mb-6 w-fit border border-primary/30">
                   {promoBanner.subtitle}
                 </span>
               )}
@@ -78,12 +80,12 @@ export const PromotionalBanner = () => {
                 {promoBanner.title || "Experience Premium Dining"}
               </h2>
               
-              <p className="text-[#94A3B8] text-lg mb-10 leading-relaxed max-w-md">
+              <p className="text-muted-foreground text-lg mb-10 leading-relaxed max-w-md">
                 {promoBanner.description || "Treat yourself to an extraordinary culinary journey. Order now and discover your new favorite dish."}
               </p>
               
               <Button 
-                className="bg-[#FF6B00] hover:bg-[#E65C00] text-white h-14 px-8 rounded-full text-lg font-bold w-fit shadow-[0_10px_30px_rgba(255,107,0,0.3)] hover:-translate-y-1 transition-all group flex items-center gap-3"
+                className="bg-primary hover:bg-primary text-white h-14 px-8 rounded-full text-lg font-bold w-fit shadow-[0_10px_30px_rgba(255,107,0,0.3)] hover:-translate-y-1 transition-all group flex items-center gap-3"
                 onClick={handleBannerClick}
               >
                 {promoBanner.buttonText || "Order Now"} 
@@ -94,8 +96,8 @@ export const PromotionalBanner = () => {
           
           {/* Image Content */}
           <div className="w-full md:w-1/2 relative order-1 md:order-2 min-h-[300px]">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#111827] via-[#111827]/80 to-transparent z-10 hidden md:block" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-[#111827]/80 to-transparent z-10 md:hidden" />
+            <div className="absolute inset-0 bg-gradient-to-r from-foreground via-foreground/80 to-transparent z-10 hidden md:block" />
+            <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/80 to-transparent z-10 md:hidden" />
             <img 
               src={imgUrl || "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1200&q=80"} 
               alt={promoBanner.title || "Promotional Offer"} 

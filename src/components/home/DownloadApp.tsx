@@ -3,7 +3,7 @@ import { Apple, Play } from 'lucide-react';
 
 export const DownloadApp = () => {
   return (
-    <section className="py-20 md:py-28 bg-[#FF6B00] overflow-hidden relative">
+    <section className="py-20 md:py-28 bg-primary overflow-hidden relative">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
       
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12 relative z-10">
@@ -19,14 +19,14 @@ export const DownloadApp = () => {
           >
             <div className="relative w-[280px] md:w-[320px] h-full">
               {/* Using a placeholder for a phone mockup */}
-              <div className="absolute top-10 right-10 w-[240px] md:w-[280px] h-[500px] md:h-[580px] bg-white rounded-[40px] shadow-2xl border-[8px] border-[#111827] overflow-hidden rotate-12 origin-bottom-right z-0 opacity-50">
+              <div className="absolute top-10 right-10 w-[240px] md:w-[280px] h-[500px] md:h-[580px] bg-background rounded-[40px] shadow-2xl border-[8px] border-foreground overflow-hidden rotate-12 origin-bottom-right z-0 opacity-50">
                 <img 
                   src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80" 
                   alt="App Preview" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute top-0 left-0 w-[240px] md:w-[280px] h-[500px] md:h-[580px] bg-white rounded-[40px] shadow-2xl border-[8px] border-[#111827] overflow-hidden -rotate-6 origin-bottom-left z-10">
+              <div className="absolute top-0 left-0 w-[240px] md:w-[280px] h-[500px] md:h-[580px] bg-background rounded-[40px] shadow-2xl border-[8px] border-foreground overflow-hidden -rotate-6 origin-bottom-left z-10">
                 <img 
                   src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80" 
                   alt="App Interface" 
@@ -46,30 +46,30 @@ export const DownloadApp = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-white order-1 lg:order-2 text-center lg:text-left"
+            className="text-primary-foreground order-1 lg:order-2 text-center lg:text-left"
           >
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-6 leading-tight">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
               Get the Best <br className="hidden lg:block"/>
               Experience
             </h2>
-            <p className="text-white/80 text-lg md:text-xl font-medium mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-primary-foreground/80 text-lg md:text-xl font-medium mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed">
               Download our mobile app to track your orders in real-time, get exclusive app-only discounts, and reorder your favorites with a single tap.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <button className="flex items-center justify-center gap-3 bg-[#111827] text-white px-8 py-4 rounded-[20px] hover:bg-black hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto min-w-[200px]">
+              <button className="flex items-center justify-center gap-3 bg-foreground text-background px-8 py-4 rounded-[20px] hover:bg-foreground/90 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto min-w-[200px]">
                 <Apple className="w-8 h-8" />
                 <div className="text-left">
-                  <div className="text-[10px] uppercase tracking-wider text-white/70 font-bold">Download on the</div>
-                  <div className="text-lg font-black leading-tight">App Store</div>
+                  <div className="text-[10px] uppercase tracking-wider text-background/70 font-extrabold">Download on the</div>
+                  <div className="text-lg font-extrabold leading-tight">App Store</div>
                 </div>
               </button>
               
-              <button className="flex items-center justify-center gap-3 bg-white text-[#111827] px-8 py-4 rounded-[20px] hover:bg-[#F8FAFC] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto min-w-[200px]">
+              <button className="flex items-center justify-center gap-3 bg-background text-foreground px-8 py-4 rounded-[20px] hover:bg-muted hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto min-w-[200px]">
                 <Play className="w-8 h-8" />
                 <div className="text-left">
-                  <div className="text-[10px] uppercase tracking-wider text-[#111827]/70 font-bold">GET IT ON</div>
-                  <div className="text-lg font-black leading-tight">Google Play</div>
+                  <div className="text-[10px] uppercase tracking-wider text-foreground/70 font-extrabold">GET IT ON</div>
+                  <div className="text-lg font-extrabold leading-tight">Google Play</div>
                 </div>
               </button>
             </div>

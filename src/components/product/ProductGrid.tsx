@@ -14,7 +14,7 @@ export const ProductGrid = ({ products, onProductClick, title }: ProductGridProp
   return (
     <div className="w-full">
       {title && (
-        <h2 className="text-2xl md:text-3xl font-bold text-[#111827] mb-6">{title}</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">{title}</h2>
       )}
       <motion.div 
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-[20px]"

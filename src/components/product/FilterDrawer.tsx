@@ -37,13 +37,13 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
       <SheetContent side="right" className="w-[90vw] sm:max-w-[400px] p-0 flex flex-col bg-white border-none rounded-l-[24px]">
         
         {/* Header */}
-        <SheetHeader className="px-6 py-5 border-b border-[#E5E7EB] flex flex-row items-center justify-between">
-          <SheetTitle className="text-[20px] font-bold text-[#111827] flex items-center gap-2 m-0">
-            <Filter className="w-5 h-5 text-[#FF6B00]" /> Filters
+        <SheetHeader className="px-6 py-5 border-b border-border flex flex-row items-center justify-between">
+          <SheetTitle className="text-[20px] font-bold text-foreground flex items-center gap-2 m-0">
+            <Filter className="w-5 h-5 text-primary" /> Filters
           </SheetTitle>
           <button 
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#64748B] transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-muted hover:bg-muted text-muted-foreground transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -54,7 +54,7 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
           
           {/* Veg / Non-Veg */}
           <div>
-            <h3 className="text-[15px] font-bold text-[#111827] mb-3">Dietary Preference</h3>
+            <h3 className="text-[15px] font-bold text-foreground mb-3">Dietary Preference</h3>
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'all', label: 'All' },
@@ -67,8 +67,8 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 rounded-full text-[14px] font-semibold transition-all border",
                     filters.foodType === type.id
-                      ? "bg-[#FF6B00] text-white border-[#FF6B00] shadow-[0_2px_10px_rgba(255,107,0,0.2)]"
-                      : "bg-white text-[#64748B] border-[#E5E7EB] hover:border-[#FF6B00] hover:text-[#FF6B00]"
+                      ? "bg-primary text-white border-primary shadow-[0_2px_10px_rgba(255,107,0,0.2)]"
+                      : "bg-white text-muted-foreground border-border hover:border-primary hover:text-primary"
                   )}
                 >
                   {type.icon}
@@ -80,7 +80,7 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
 
           {/* Sort By */}
           <div>
-            <h3 className="text-[15px] font-bold text-[#111827] mb-3">Sort By</h3>
+            <h3 className="text-[15px] font-bold text-foreground mb-3">Sort By</h3>
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'recommended', label: 'Recommended' },
@@ -96,8 +96,8 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
                   className={cn(
                     "px-4 py-2 rounded-full text-[14px] font-semibold transition-all border",
                     filters.sortBy === sort.id
-                      ? "bg-[#FFF7ED] text-[#FF6B00] border-[#FF6B00]"
-                      : "bg-white text-[#64748B] border-[#E5E7EB] hover:border-[#FF6B00] hover:text-[#FF6B00]"
+                      ? "bg-accent text-primary border-primary"
+                      : "bg-white text-muted-foreground border-border hover:border-primary hover:text-primary"
                   )}
                 >
                   {sort.label}
@@ -108,7 +108,7 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
 
           {/* Rating */}
           <div>
-            <h3 className="text-[15px] font-bold text-[#111827] mb-3">Rating</h3>
+            <h3 className="text-[15px] font-bold text-foreground mb-3">Rating</h3>
             <div className="flex flex-wrap gap-2">
               {[4.5, 4.0, 3.5].map(rating => (
                 <button
@@ -117,11 +117,11 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
                   className={cn(
                     "flex items-center gap-1.5 px-4 py-2 rounded-full text-[14px] font-semibold transition-all border",
                     filters.rating === rating
-                      ? "bg-[#FFF7ED] text-[#FF6B00] border-[#FF6B00]"
-                      : "bg-white text-[#64748B] border-[#E5E7EB] hover:border-[#F59E0B] hover:text-[#F59E0B]"
+                      ? "bg-accent text-primary border-primary"
+                      : "bg-white text-muted-foreground border-border hover:border-warning hover:text-warning"
                   )}
                 >
-                  {rating}+ <Star className={cn("w-3.5 h-3.5", filters.rating === rating ? "fill-[#FF6B00] text-[#FF6B00]" : "fill-[#F59E0B] text-[#F59E0B]")} />
+                  {rating}+ <Star className={cn("w-3.5 h-3.5", filters.rating === rating ? "fill-primary text-primary" : "fill-warning text-warning")} />
                 </button>
               ))}
             </div>
@@ -129,7 +129,7 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
 
           {/* Offers */}
           <div>
-            <h3 className="text-[15px] font-bold text-[#111827] mb-3">Special Offers</h3>
+            <h3 className="text-[15px] font-bold text-foreground mb-3">Special Offers</h3>
             <div className="flex flex-col gap-2">
               {[
                 { id: 'discount', label: 'Discounted Items', icon: <Sparkles className="w-4 h-4 text-pink-500" /> },
@@ -143,8 +143,8 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
                     className={cn(
                       "flex items-center justify-between p-3 rounded-[12px] border transition-all",
                       isActive 
-                        ? "bg-[#FFF7ED] border-[#FF6B00] text-[#FF6B00]" 
-                        : "bg-white border-[#E5E7EB] text-[#111827] hover:border-[#FF6B00]"
+                        ? "bg-accent border-primary text-primary" 
+                        : "bg-white border-border text-foreground hover:border-primary"
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -153,7 +153,7 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
                     </div>
                     <div className={cn(
                       "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors",
-                      isActive ? "border-[#FF6B00] bg-[#FF6B00]" : "border-[#CBD5E1]"
+                      isActive ? "border-primary bg-primary" : "border-border"
                     )}>
                       {isActive && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
@@ -166,10 +166,10 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[#E5E7EB] bg-white flex items-center gap-3">
+        <div className="p-4 border-t border-border bg-white flex items-center gap-3">
           <Button 
             variant="outline" 
-            className="flex-1 h-12 rounded-[14px] border-[#E5E7EB] text-[#64748B] font-bold text-[15px] hover:bg-[#F8FAFC]"
+            className="flex-1 h-12 rounded-[14px] border-border text-muted-foreground font-bold text-[15px] hover:bg-muted"
             onClick={() => {
               onFilterChange({
                 ...filters,
@@ -186,7 +186,7 @@ export const FilterDrawer = ({ isOpen, onClose, filters, onFilterChange }: Filte
             Clear All
           </Button>
           <Button 
-            className="flex-1 h-12 rounded-[14px] bg-[#FF6B00] hover:bg-[#E65C00] text-white font-bold text-[15px] shadow-[0_4px_14px_rgba(255,107,0,0.25)]"
+            className="flex-1 h-12 rounded-[14px] bg-primary hover:bg-primary text-white font-bold text-[15px] shadow-[0_4px_14px_rgba(255,107,0,0.25)]"
             onClick={onClose}
           >
             Apply Filters

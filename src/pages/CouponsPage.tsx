@@ -67,7 +67,7 @@ export const CouponsPage = () => {
  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-6 sm:p-8 rounded-2xl shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-border relative overflow-hidden">
  
  <div className="flex items-center gap-4 relative z-10">
- <div className="h-14 w-14 rounded-2xl bg-[#FFF3E8] text-primary flex items-center justify-center">
+ <div className="h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
  <Gift className="h-7 w-7" />
  </div>
  <div>
@@ -79,7 +79,7 @@ export const CouponsPage = () => {
  </div>
  <Button 
  variant="outline" 
- className="rounded-full gap-2 px-5 h-10 bg-white border-primary text-primary hover:bg-primary hover:text-white transition-all hover:-translate-y-[1px] font-bold text-xs shadow-sm shrink-0"
+ className="rounded-full gap-2 px-5 h-10 bg-card border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all hover:-translate-y-[1px] font-bold text-xs shadow-sm shrink-0"
  onClick={() => refetch()} 
  disabled={isLoading}
  >

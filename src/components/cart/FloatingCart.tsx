@@ -29,13 +29,13 @@ export const FloatingCart = () => {
         >
           <div
             onClick={() => navigate('/cart')}
-            className="bg-[#FF6B00] backdrop-blur-md shadow-[0_8px_32px_rgba(255,107,0,0.35)] rounded-full w-auto p-3 pr-3 pl-5 pointer-events-auto cursor-pointer flex items-center justify-between border border-white/20 hover:bg-[#E65C00] transition-all duration-200 hover:scale-[1.02] gap-6"
+            className="bg-primary backdrop-blur-md shadow-[0_8px_32px_rgba(255,107,0,0.35)] rounded-full w-auto p-3 pr-3 pl-5 pointer-events-auto cursor-pointer flex items-center justify-between border border-white/20 hover:bg-primary transition-all duration-200 hover:scale-[1.02] gap-6"
           >
             {/* Left: icon + count + price */}
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center relative shrink-0">
                 <ShoppingBag className="h-5 w-5 text-white" />
-                <span className="absolute -top-1 -right-1 h-5 w-5 bg-white text-[#FF6B00] text-[10px] font-black rounded-full flex items-center justify-center shadow-sm">
+                <span className="absolute -top-1 -right-1 h-5 w-5 bg-white text-primary text-[10px] font-black rounded-full flex items-center justify-center shadow-sm">
                   {itemCount}
                 </span>
               </div>
@@ -50,7 +50,7 @@ export const FloatingCart = () => {
             </div>
 
             {/* Right: View Cart pill */}
-            <div className="h-11 px-5 bg-white text-[#FF6B00] rounded-full flex items-center justify-center font-bold text-[14px] gap-1.5 shadow-sm shrink-0">
+            <div className="h-11 px-5 bg-white text-primary rounded-full flex items-center justify-center font-bold text-[14px] gap-1.5 shadow-sm shrink-0">
               View Cart <ArrowRight className="h-4 w-4" />
             </div>
           </div>

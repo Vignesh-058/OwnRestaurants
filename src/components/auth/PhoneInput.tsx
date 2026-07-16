@@ -68,12 +68,12 @@ export const PhoneInput = ({ phone, onChange, countryCode = '+91', onCountryCode
         Mobile Number
       </Label>
       <div 
-        className="relative flex items-center w-full h-[56px] rounded-[16px] bg-[#1F2937] border border-white/10 shadow-sm hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 group z-10"
+        className="relative flex items-center w-full h-[56px] rounded-[16px] bg-foreground border border-white/10 shadow-sm hover:border-primary/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300 group z-10"
       >
         
         <div 
           onClick={() => !disabled && setIsOpen(!isOpen)}
-          className={`flex items-center h-full px-4 border-r border-white/10 bg-[#111827] hover:bg-primary/5 transition-colors cursor-pointer select-none rounded-l-[16px] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`flex items-center h-full px-4 border-r border-white/10 bg-foreground hover:bg-primary/5 transition-colors cursor-pointer select-none rounded-l-[16px] ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <img 
             src={`https://flagcdn.com/w40/${selectedCountry.abbr.toLowerCase()}.png`} 

@@ -32,6 +32,7 @@ interface CartState {
     discountType: string;
     discountPercentage: number;
     discountAmount: number;
+    couponName: string;
   } | null;
  
  // Methods

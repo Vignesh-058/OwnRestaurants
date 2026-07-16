@@ -29,7 +29,7 @@ export const CategoryList = ({ categories, activeCategoryId, onSelectCategory }:
               onClick={() => {
                 if (scrollRef.current) scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
               }}
-              className="h-9 w-9 rounded-full bg-card border border-border/50 flex items-center justify-center hover:bg-muted hover:text-[#FF6B00] transition-all shadow-sm"
+              className="h-9 w-9 rounded-full bg-card border border-border/50 flex items-center justify-center hover:bg-muted hover:text-primary transition-all shadow-sm"
             >
               <ChevronRight className="h-5 w-5 rotate-180" />
             </button>
@@ -37,7 +37,7 @@ export const CategoryList = ({ categories, activeCategoryId, onSelectCategory }:
               onClick={() => {
                 if (scrollRef.current) scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
               }}
-              className="h-9 w-9 rounded-full bg-card border border-border/50 flex items-center justify-center hover:bg-muted hover:text-[#FF6B00] transition-all shadow-sm"
+              className="h-9 w-9 rounded-full bg-card border border-border/50 flex items-center justify-center hover:bg-muted hover:text-primary transition-all shadow-sm"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -65,14 +65,14 @@ export const CategoryList = ({ categories, activeCategoryId, onSelectCategory }:
                   className={cn(
                     "flex-none w-[170px] h-[220px] flex flex-col items-center justify-center p-[20px] rounded-[16px] transition-all duration-300 snap-start relative group shadow-sm border",
                     isActive 
-                      ? "bg-gradient-to-r from-[#FF6B00] to-[#FF8A3D] border-transparent shadow-[0_8px_20px_rgba(255,107,0,0.3)]" 
-                      : "bg-[#111827] border-[rgba(255,255,255,0.08)] hover:bg-[#FF6B00]/10 hover:border-[#FF6B00]/30 hover:scale-[1.02]"
+                      ? "bg-gradient-to-r from-primary to-primary border-transparent shadow-[0_8px_20px_rgba(255,107,0,0.3)]" 
+                      : "bg-foreground border-[rgba(255,255,255,0.08)] hover:bg-primary/10 hover:border-primary/30 hover:scale-[1.02]"
                   )}
                 >
                   {/* Image Container */}
                   <div className={cn(
                     "w-[72px] h-[72px] rounded-full overflow-hidden shrink-0 border-4 transition-all duration-300 mb-3 flex items-center justify-center",
-                    isActive ? "border-white/20 shadow-inner" : "border-background group-hover:border-[#FF6B00]/10 shadow-sm"
+                    isActive ? "border-white/20 shadow-inner" : "border-background group-hover:border-primary/10 shadow-sm"
                   )}>
                     {category.imageUrl ? (
                       <img 
@@ -99,7 +99,7 @@ export const CategoryList = ({ categories, activeCategoryId, onSelectCategory }:
                   </div>
                   <span className={cn(
                     "text-[13px] font-medium mt-1 tracking-wide",
-                    isActive ? "text-white/80" : "text-[#94A3B8]"
+                    isActive ? "text-white/80" : "text-muted-foreground"
                   )}>
                     {productCount > 0 ? `${productCount} Items` : 'Coming Soon'}
                   </span>

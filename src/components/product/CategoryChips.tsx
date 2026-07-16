@@ -35,31 +35,31 @@ export const CategoryChips = ({ categories, activeCategoryId, onSelectCategory }
  className={cn(
  "snap-center flex-none flex items-center gap-2 p-1.5 pr-4 rounded-full transition-all duration-300 ease-out border shadow-sm group",
  isActive 
- ? "bg-[#0C6CEA] text-white border-[#0C6CEA] shadow-md scale-[1.02]" 
- : "bg-white dark:bg-slate-900 border-[#E5E7EB] dark:border-white/10 text-[#111827] dark:text-white hover:border-[#0C6CEA]/30 hover:shadow-md hover:-translate-y-0.5"
+ ? "bg-info text-white border-info shadow-md scale-[1.02]" 
+ : "bg-white dark:bg-slate-900 border-border dark:border-white/10 text-foreground dark:text-white hover:border-info/30 hover:shadow-md hover:-translate-y-0.5"
  )}
  >
- {!isAll && (category.iconImage || category.image?.webView) ? (
- <div className="w-8 h-8 rounded-full overflow-hidden bg-[#F3F7FC] dark:bg-slate-800 shrink-0">
+ {!isAll && (category.iconImage || (category.image as any)?.webView) ? (
+ <div className="w-8 h-8 rounded-full overflow-hidden bg-accent dark:bg-slate-800 shrink-0">
  <img 
- src={category.iconImage || category.image?.webView} 
+ src={category.iconImage || (category.image as any)?.webView} 
  alt={category.name} 
  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
  />
  </div>
  ) : !isAll ? (
- <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#F3F7FC] dark:bg-slate-800 shrink-0 font-bold text-sm">
+ <div className="w-8 h-8 rounded-full flex items-center justify-center bg-accent dark:bg-slate-800 shrink-0 font-bold text-sm">
  {category.name.charAt(0)}
  </div>
  ) : null}
  
  <div className={cn("flex items-center gap-2", isAll && "px-3 py-1")}>
- <span className={cn("font-semibold text-sm whitespace-nowrap", isActive ? "text-white" : "text-[#111827] dark:text-white group-hover:text-[#0C6CEA]")}>
+ <span className={cn("font-semibold text-sm whitespace-nowrap", isActive ? "text-white" : "text-foreground dark:text-white group-hover:text-info")}>
  {category.name}
  </span>
  
  {!isAll && (
- <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full font-bold", isActive ? "bg-white/20 text-white" : "bg-[#F3F7FC] dark:bg-slate-800 text-[#6B7280]")}>
+ <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full font-bold", isActive ? "bg-white/20 text-white" : "bg-accent dark:bg-slate-800 text-muted-foreground")}>
  {category.items?.length || 0}
  </span>
  )}

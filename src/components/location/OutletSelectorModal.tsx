@@ -1,17 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Clock, Navigation, CheckCircle2, Store, Bike, ShoppingBag, Utensils } from 'lucide-react';
+import { X, Clock, Navigation, CheckCircle2, Store, Bike, ShoppingBag, Utensils } from 'lucide-react';
 import { useOutletModalStore } from '@/store/OutletModalStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useLocationModalStore } from '@/store/LocationModalStore';
 import { useRequestBrowserLocation } from '@/hooks/queries/useLocation';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Outlet } from '@/types/organization.types';
 
 export const OutletSelectorModal = () => {
   const { isOpen, closeModal } = useOutletModalStore();
-  const openLocationModal = useLocationModalStore((state) => state.openModal);
-  
+
   const outlets = useOutletStore((state) => state.outlets);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   const setSelectedOutlet = useOutletStore((state) => state.setSelectedOutlet);
@@ -53,31 +50,31 @@ export const OutletSelectorModal = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: "100%" }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="bg-white w-full md:w-[90%] lg:max-w-[900px] xl:max-w-[1000px] h-[95vh] md:h-auto max-h-[85vh] rounded-t-[24px] md:rounded-[24px] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] z-10 flex flex-col relative"
+          className="bg-background w-full md:w-[90%] lg:max-w-[900px] xl:max-w-[1000px] h-[95vh] md:h-auto max-h-[85vh] rounded-t-[24px] md:rounded-[24px] overflow-hidden shadow-2xl z-10 flex flex-col relative"
         >
-          {/* Header */}
-          <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-white sticky top-0 z-20 shadow-sm">
+          {/* Fixed Header */}
+          <div className="px-6 py-5 flex items-center justify-between shrink-0 bg-card border-b border-border sticky top-0 z-20 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="flex flex-col justify-center">
-                <h2 className="text-[22px] font-black text-[#0F172A] tracking-tight leading-tight">
+                <h2 className="text-[22px] font-black text-foreground tracking-tight leading-tight">
                   Select Restaurant
                 </h2>
-                <p className="text-[14px] text-[#64748B] font-medium mt-0.5 leading-tight">
+                <p className="text-sm text-muted-foreground font-medium mt-1 leading-tight">
                   Choose an outlet near your location
                 </p>
               </div>
             </div>
             <button 
               onClick={closeModal}
-              className="h-10 w-10 bg-[#F8FAFC] hover:bg-[#F1F5F9] rounded-full flex items-center justify-center text-[#64748B] hover:text-[#0F172A] transition-all"
+              className="h-10 w-10 bg-muted hover:bg-muted/80 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-all"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-5 sm:p-6 bg-[#F8FAFC]">
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-muted/30">
             {outlets && outlets.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {outlets.map((outlet) => {
                   const isSelected = selectedOutlet?._id === outlet._id;
                   const distanceStr = outlet.distance ? `${outlet.distance.toFixed(1)} km` : 'Near you';
@@ -89,96 +86,96 @@ export const OutletSelectorModal = () => {
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleSelectOutlet(outlet)}
                       className={cn(
-                        "w-full text-left p-4 sm:p-5 rounded-[20px] transition-all flex gap-4 relative overflow-hidden group cursor-pointer border bg-white",
+                        "w-full text-left p-4 rounded-2xl transition-all flex flex-col relative overflow-hidden group cursor-pointer border bg-card h-[170px]",
                         isSelected 
-                          ? "bg-[#FFF7ED] border-[#FF6B00] shadow-[0_8px_24px_rgba(255,107,0,0.12)] scale-[1.01]" 
-                          : "border-[#E2E8F0] hover:border-[#FF6B00]/40 hover:shadow-lg",
+                          ? "border-primary shadow-md ring-1 ring-primary/20 bg-primary/5 scale-[1.01]" 
+                          : "border-border/60 hover:border-primary/40 hover:shadow-lg",
                         !outlet.storeStatus && "opacity-75 grayscale"
                       )}
                     >
-                      {/* Checkmark Top Right */}
-                      {isSelected && (
-                        <div className="absolute top-4 right-4 bg-[#FF6B00] rounded-full flex items-center justify-center shadow-sm w-6 h-6">
-                          <CheckCircle2 className="w-4 h-4 text-white" />
-                        </div>
-                      )}
-                      
-                      {/* Store Icon */}
-                      <div className={cn(
-                        "w-12 h-12 rounded-full flex items-center justify-center shrink-0",
-                        isSelected ? "bg-[#FF6B00]/10" : "bg-[#F1F5F9] group-hover:bg-[#FF6B00]/5 transition-colors"
-                      )}>
-                        <Store className={cn("w-6 h-6", isSelected ? "text-[#FF6B00]" : "text-[#64748B] group-hover:text-[#FF6B00]")} />
+                      {/* Top Right Distance Badge */}
+                      <div className="absolute top-4 right-4 font-bold text-xs text-muted-foreground bg-muted px-2.5 py-1 rounded-lg flex items-center gap-1.5 z-10">
+                        <Navigation className="w-3.5 h-3.5 text-muted-foreground" />
+                        {distanceStr}
                       </div>
-                      
-                      {/* Details */}
-                      <div className="flex-1 min-w-0 pr-6">
-                        {/* Row 1: Name & Status / Distance */}
-                        <div className="flex justify-between items-start mb-1 gap-2">
-                           <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                              <h3 className="text-[18px] sm:text-[22px] font-bold text-[#0F172A] leading-tight truncate">
-                                {outlet.outletName}
-                              </h3>
-                              <span className={cn(
-                                "font-bold text-[10px] tracking-widest px-2 py-0.5 rounded-full uppercase shrink-0",
-                                outlet.storeStatus ? "text-[#10B981] bg-[#10B981]/10" : "text-[#EF4444] bg-[#EF4444]/10"
-                              )}>
-                                {outlet.storeStatus ? 'Open' : 'Closed'}
-                              </span>
-                           </div>
-                           
-                           {/* Distance Badge */}
-                           <span className="font-bold text-[12px] text-[#475569] bg-[#F1F5F9] px-2.5 py-1 rounded-full flex items-center gap-1.5 shrink-0">
-                             <Navigation className="w-3.5 h-3.5 text-[#64748B]" />
-                             {distanceStr}
-                           </span>
+
+                      {/* Header Section */}
+                      <div className="flex items-start gap-4 mb-3 pr-20">
+                        <div className={cn(
+                          "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                          isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 transition-colors"
+                        )}>
+                          <Store className="w-6 h-6" />
                         </div>
                         
-                        {/* Row 2: Address */}
-                        <p className="text-[14px] text-[#64748B] font-medium leading-snug line-clamp-2 mb-4">
-                          {outlet.outletDetails?.address || outlet.outletDetails?.city || "Address not provided"}
-                        </p>
-                        
-                        {/* Row 3: ETA & Delivery Types */}
-                        <div className="flex items-center gap-2 flex-wrap mt-auto">
-                          {/* ETA Badge */}
-                          <div className="flex items-center gap-1.5 text-[13px] font-bold text-[#FF6B00] bg-[#FF6B00]/10 px-2.5 py-1 rounded-full">
-                            <Clock className="w-3.5 h-3.5" />
-                            <span>{outlet.eta || '30-45 mins'}</span>
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-[17px] font-bold text-foreground leading-tight truncate">
+                              {outlet.outletName}
+                            </h3>
+                            {isSelected && (
+                              <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                            )}
                           </div>
-                          
-                          {/* Order Types */}
-                          {outlet.orderType && outlet.orderType.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 ml-auto sm:ml-0 sm:border-l sm:border-[#E2E8F0] sm:pl-2">
-                              {outlet.orderType.map(type => (
-                                <span key={type} className="flex items-center gap-1.5 text-[12px] font-bold tracking-tight px-2.5 py-1 rounded-full bg-[#F1F5F9] text-[#475569]">
-                                  {getDeliveryIcon(type)}
-                                  {type}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                          <span className={cn(
+                            "font-bold text-[11px] tracking-widest px-2.5 py-0.5 rounded-lg uppercase w-fit mt-1.5",
+                            outlet.storeStatus ? "text-green-600 bg-green-500/10" : "text-destructive bg-destructive/10"
+                          )}>
+                            {outlet.storeStatus ? 'Open' : 'Closed'}
+                          </span>
                         </div>
                       </div>
+                      
+                      {/* Address Section */}
+                      <p className="text-[13px] text-muted-foreground font-medium leading-snug line-clamp-2">
+                        {outlet.outletDetails?.address || outlet.outletDetails?.city || "Address not provided"}
+                      </p>
+                      
+                      {/* Footer Section - Anchored to bottom */}
+                      <div className="flex items-center gap-4 mt-auto pt-3 border-t border-border/50 justify-between">
+                        {/* ETA */}
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-lg shrink-0">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>{outlet.eta || '30-45 mins'}</span>
+                        </div>
+                        
+                        {/* Service Chips */}
+                        {outlet.orderType && outlet.orderType.length > 0 && (
+                          <div className="flex items-center gap-2 overflow-hidden flex-nowrap shrink-0">
+                            {outlet.orderType.slice(0, 2).map((type, idx) => (
+                              <div key={idx} className="flex items-center gap-1.5 bg-muted/80 px-2.5 py-1 rounded-lg shrink-0">
+                                {getDeliveryIcon(type)}
+                                <span className="text-[11px] font-bold text-muted-foreground capitalize truncate">
+                                  {type.replace('_', ' ')}
+                                </span>
+                              </div>
+                            ))}
+                            {outlet.orderType.length > 2 && (
+                              <span className="text-[11px] font-bold text-muted-foreground bg-muted/80 px-2 py-1 rounded-lg shrink-0">
+                                +{outlet.orderType.length - 2}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
                     </motion.button>
                   );
                 })}
               </div>
             ) : (
-              <div className="text-center py-16 px-4 bg-white rounded-[24px] border border-[#E2E8F0] flex flex-col items-center shadow-sm">
-                <div className="w-20 h-20 bg-[#F8FAFC] rounded-full flex items-center justify-center mb-5">
-                  <MapPin className="w-10 h-10 text-[#94A3B8]" />
-                </div>
-                <h4 className="text-[18px] font-bold text-[#0F172A] mb-2 text-center">No nearby outlets found</h4>
-                <p className="text-[14px] text-[#64748B] font-medium mb-8 leading-relaxed text-center max-w-sm mx-auto">
-                  Try changing your location or selecting an address manually to see available restaurants.
+              <div className="flex flex-col items-center justify-center h-[300px] text-center px-4">
+                <Store className="w-16 h-16 text-muted-foreground mb-4 opacity-50" />
+                <h3 className="text-xl font-black text-foreground mb-2">No Restaurants Found</h3>
+                <p className="text-sm text-muted-foreground font-medium mb-6">
+                  We couldn't find any outlets delivering to your current location.
                 </p>
-                <Button 
+                <button 
                   onClick={handleRetryLocation}
-                  className="h-12 px-8 rounded-xl bg-[#FF6B00] hover:bg-[#E65C00] text-white font-bold shadow-[0_4px_16px_rgba(255,107,0,0.3)] transition-all"
+                  className="bg-primary text-primary-foreground font-bold px-6 py-3 rounded-xl hover:shadow-lg transition-all active:scale-95"
                 >
-                  Retry Location
-                </Button>
+                  Change Location
+                </button>
               </div>
             )}
           </div>

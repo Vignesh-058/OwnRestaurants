@@ -10,14 +10,14 @@ import { OrderSkeleton } from '@/components/orders/OrderSkeleton';
 import { EmptyOrders } from '@/components/orders/EmptyOrders';
 import { Pagination } from '@/components/orders/Pagination';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Package, AlertCircle } from 'lucide-react';
+import { RefreshCw, AlertCircle, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Order } from '@/types/order.types';
 
 export const OrdersPage = () => {
  const navigate = useNavigate();
  const { isAuthenticated } = useAuthStore();
- const { data, isLoading, isError, refetch } = useOrders();
+ const { isLoading, isError, refetch } = useOrders();
  const { orders, pagination, loading, error, selectedOrder, setSelectedOrder, filters, searchQuery } = useOrderStore();
  const [dialogOpen, setDialogOpen] = useState(false);
  const [sort, setSort] = useState('newest');
@@ -143,7 +143,7 @@ export const OrdersPage = () => {
  };
 
  return (
- <div className="bg-[#F8FAFC] min-h-screen py-8 pb-32">
+ <div className="bg-background min-h-screen py-8 pb-32">
  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
  {/* Main Content */}
@@ -154,19 +154,19 @@ export const OrdersPage = () => {
  className="flex-1 min-w-0 space-y-6"
  >
  {/* Page header */}
- <div className="flex items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-[16px] shadow-sm border border-[#E5E7EB] mb-6">
+ <div className="flex items-center justify-between gap-4 bg-card p-5 sm:p-6 rounded-[16px] shadow-sm border border-border mb-6">
  <div className="flex items-center gap-3">
- <div className="text-[28px] leading-none">📦</div>
+ <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0"><Package className="w-5 h-5" /></div>
  <div>
- <h1 className="text-[20px] sm:text-[22px] font-black text-[#111827] leading-none tracking-tight">Order History</h1>
- <p className="text-[#6B7280] text-[13px] sm:text-[14px] font-medium mt-1">
+ <h1 className="text-[20px] sm:text-[22px] font-black text-foreground leading-none tracking-tight">Order History</h1>
+ <p className="text-muted-foreground text-[13px] sm:text-[14px] font-medium mt-1">
  Review your recent orders
  </p>
  </div>
  </div>
  <Button
  variant="outline"
- className="w-10 h-10 rounded-full p-0 bg-white border-[#E5E7EB] text-[#4B5563] hover:bg-[#FFF7ED] hover:text-[#FF6B00] hover:border-[#FFD8B3] transition-all shadow-sm shrink-0"
+ className="w-10 h-10 rounded-full p-0 bg-card border-border text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all shadow-sm shrink-0"
  onClick={() => refetch()}
  disabled={isLoading}
  >

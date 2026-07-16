@@ -3,7 +3,7 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useSettings } from '@/hooks/queries/useSettings';
 import { useStoreStatus } from '@/hooks/queries/useStoreStatus';
 import { Button } from '@/components/ui/button';
-import { MapPin, Navigation, Store } from 'lucide-react';
+import { Store } from 'lucide-react';
 import {
  DropdownMenu,
  DropdownMenuContent,

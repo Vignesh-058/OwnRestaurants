@@ -17,7 +17,6 @@ import { ApiErrorState } from '@/components/common/ApiErrorState';
 import { useOutletStore } from '@/store/OutletStore';
 import { EmptyStoreState } from '@/components/common/EmptyStoreState';
 import { PageTransition } from '@/components/common/PageTransition';
-import { APP_CONFIG } from '@/constants';
 import { FloatingNav } from '@/components/layout/FloatingNav';
 
 export const MainLayout = () => {

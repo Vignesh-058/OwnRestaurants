@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Package, MapPin, Ticket, Wallet, CreditCard, 
-  HelpCircle, Info, LogOut, Bell, Globe, Moon
+  HelpCircle, Info, LogOut, Bell, Globe
 } from 'lucide-react';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
@@ -53,14 +52,14 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
               className={cn(
                 "flex items-center gap-4 w-full h-[60px] px-5 rounded-[16px] transition-all duration-200 text-left group",
                 isActive 
-                  ? "bg-gradient-to-r from-[#FF6B00] to-[#FF8A00] text-white shadow-[0_4px_16px_rgba(255,107,0,0.3)] hover:-translate-y-0.5" 
-                  : "bg-white text-[#101828] shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:bg-[#FFF7ED] hover:-translate-y-0.5"
+                  ? "bg-primary text-primary-foreground shadow-sm hover:-translate-y-0.5" 
+                  : "bg-card text-foreground shadow-sm hover:bg-primary/10 hover:-translate-y-0.5"
               )}
             >
               <item.icon 
                 className={cn(
                   "w-[22px] h-[22px] transition-colors", 
-                  isActive ? "text-white" : "text-[#667085] group-hover:text-[#FF6B00]"
+                  isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary"
                 )} 
               />
               <span className="font-bold text-[16px]">
@@ -72,13 +71,13 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
       </div>
 
       {/* Settings Card */}
-      <div className="bg-white rounded-[20px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#E4E7EC]">
-        <h4 className="font-bold text-[16px] text-[#101828] mb-4">Settings</h4>
+      <div className="bg-card rounded-[20px] p-5 shadow-sm border border-border">
+        <h4 className="font-bold text-[16px] text-foreground mb-4">Settings</h4>
         <div className="flex flex-col space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Bell className="w-[18px] h-[18px] text-[#667085]" />
-              <span className="font-medium text-[15px] text-[#101828]">Notifications</span>
+              <Bell className="w-[18px] h-[18px] text-muted-foreground" />
+              <span className="font-medium text-[15px] text-foreground">Notifications</span>
             </div>
             <Switch 
               checked={notificationsEnabled} 
@@ -87,10 +86,10 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Globe className="w-[18px] h-[18px] text-[#667085]" />
-              <span className="font-medium text-[15px] text-[#101828]">Language</span>
+              <Globe className="w-[18px] h-[18px] text-muted-foreground" />
+              <span className="font-medium text-[15px] text-foreground">Language</span>
             </div>
-            <button onClick={handleLanguageChange} className="text-[#FF6B00] font-bold text-[14px]">
+            <button onClick={handleLanguageChange} className="text-primary font-bold text-[14px]">
               {language}
             </button>
           </div>
@@ -101,7 +100,7 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
       <div className="mt-auto pt-4">
         <button 
           onClick={() => setIsLogoutOpen(true)}
-          className="flex items-center justify-center gap-3 w-full h-[60px] rounded-[16px] bg-white border border-red-100 text-red-500 font-bold text-[16px] transition-all duration-200 hover:bg-red-50 hover:-translate-y-0.5 shadow-sm"
+          className="flex items-center justify-center gap-3 w-full h-[60px] rounded-[16px] bg-card border border-destructive/20 text-destructive font-bold text-[16px] transition-all duration-200 hover:bg-destructive/10 hover:-translate-y-0.5 shadow-sm"
         >
           <LogOut className="w-[20px] h-[20px]" />
           Sign Out

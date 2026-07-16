@@ -39,7 +39,7 @@ import { useOrders } from '@/hooks/queries/useOrders';
 import { useAddresses } from '@/hooks/queries/useAddresses';
 
 export const ProfileStats = ({ profile, showTotalSpent = true, showTotalOrder = true }: ProfileStatsProps) => {
-  const { data: ordersData } = useOrders(1);
+  const { data: ordersData } = useOrders();
   const { data: addresses } = useAddresses();
   
   const liveOrdersCount = ordersData?.totalOrders || 0;
@@ -56,8 +56,8 @@ export const ProfileStats = ({ profile, showTotalSpent = true, showTotalOrder = 
   value: liveOrdersCount,
   prefix: '',
   icon: Package,
-  gradient: 'from-[#FF6B00]/10 to-[#E85D00]/10',
-  iconColor: 'text-[#FF6B00]',
+  gradient: 'from-primary/10 to-primary/10',
+  iconColor: 'text-primary',
   show: showTotalOrder,
   },
   {

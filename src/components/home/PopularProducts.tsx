@@ -23,14 +23,15 @@ export const PopularProducts = ({ products, onProductClick }: PopularProductsPro
   if (!products || products.length === 0) return null;
 
   return (
-    <section className="py-20 bg-white overflow-hidden relative">
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
+    <section className="py-20 bg-background overflow-hidden relative border-b border-border">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
-            <h2 className="text-3xl md:text-4xl font-black text-[#111827] tracking-tight mb-4">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight mb-4">
               Featured Products
             </h2>
-            <p className="text-[#64748B] text-lg font-medium max-w-xl">
+            <div className="w-20 h-1.5 bg-primary rounded-full mb-6" />
+            <p className="text-muted-foreground text-lg font-medium max-w-xl">
               Hand-picked by our chefs, these signature dishes are loved by our customers.
             </p>
           </div>
@@ -39,13 +40,13 @@ export const PopularProducts = ({ products, onProductClick }: PopularProductsPro
           <div className="hidden md:flex items-center gap-3">
             <button 
               onClick={() => scroll('left')}
-              className="w-12 h-12 rounded-full border-2 border-[#E5E7EB] flex items-center justify-center text-[#111827] hover:border-[#FF6B00] hover:text-[#FF6B00] transition-colors"
+              className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button 
               onClick={() => scroll('right')}
-              className="w-12 h-12 rounded-full border-2 border-[#E5E7EB] flex items-center justify-center text-[#111827] hover:border-[#FF6B00] hover:text-[#FF6B00] transition-colors"
+              className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300"
             >
               <ChevronRight className="w-6 h-6" />
             </button>

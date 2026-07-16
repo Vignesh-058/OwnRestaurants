@@ -20,8 +20,8 @@ export const DiscountList = () => {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <h3 className="font-bold text-[16px] text-[#111827] flex items-center gap-2 mb-4">
-          <Ticket className="w-5 h-5 text-[#FF6B00]" />
+        <h3 className="font-bold text-[16px] text-foreground flex items-center gap-2 mb-4">
+          <Ticket className="w-5 h-5 text-primary" />
           Available Offers
         </h3>
         <div className="space-y-3">
@@ -36,8 +36,8 @@ export const DiscountList = () => {
   if (isError) {
     return (
       <div className="space-y-4">
-        <h3 className="font-bold text-[16px] text-[#111827] flex items-center gap-2 mb-4">
-          <Ticket className="w-5 h-5 text-[#FF6B00]" />
+        <h3 className="font-bold text-[16px] text-foreground flex items-center gap-2 mb-4">
+          <Ticket className="w-5 h-5 text-primary" />
           Available Offers
         </h3>
         <div className="border border-red-200 bg-red-50 rounded-2xl p-4 text-center">
@@ -52,14 +52,14 @@ export const DiscountList = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-bold text-[16px] text-[#111827] flex items-center gap-2">
-        <Ticket className="w-5 h-5 text-[#FF6B00]" />
+      <h3 className="font-bold text-[16px] text-foreground flex items-center gap-2">
+        <Ticket className="w-5 h-5 text-primary" />
         Available Offers
       </h3>
 
       {!hasCoupons ? (
-        <div className="border border-[#E5E7EB] bg-[#F8FAFC] rounded-2xl p-6 text-center">
-          <p className="text-[#6B7280] font-medium text-[14px]">No offers available.</p>
+        <div className="border border-border bg-muted rounded-2xl p-6 text-center">
+          <p className="text-muted-foreground font-medium text-[14px]">No offers available.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin">
@@ -79,10 +79,10 @@ export const DiscountList = () => {
                 className={cn(
                   "border rounded-[16px] p-4 relative overflow-hidden transition-all flex items-center gap-4 shadow-sm",
                   isApplied 
-                    ? "border-[#10B981] bg-[#ECFDF5]" 
+                    ? "border-success bg-accent" 
                     : !isEligible 
-                      ? "border-[#E5E7EB] bg-[#F9FAFB] opacity-60" 
-                      : "border-[#FFD8B3] bg-[#FFF7ED]"
+                      ? "border-border bg-muted opacity-60" 
+                      : "border-accent bg-accent"
                 )}
               >
                 {/* Left Icon */}
@@ -92,12 +92,12 @@ export const DiscountList = () => {
 
                 {/* Center Content */}
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-black text-[#111827] text-[15px] truncate">{offerName}</h4>
-                  <p className="text-[#FF6B00] font-black text-[13px] tracking-tight">
+                  <h4 className="font-black text-foreground text-[15px] truncate">{offerName}</h4>
+                  <p className="text-primary font-black text-[13px] tracking-tight">
                     {isPercentage ? discountPercent + '% OFF' : currency + discountPercent + ' OFF'}
                   </p>
                   {formattedExpiry && (
-                    <p className="text-[#6B7280] text-[11px] font-bold mt-1 uppercase tracking-wider">
+                    <p className="text-muted-foreground text-[11px] font-bold mt-1 uppercase tracking-wider">
                       Valid till {formattedExpiry}
                     </p>
                   )}
@@ -116,7 +116,7 @@ export const DiscountList = () => {
                   ) : isApplied ? (
                     <Button 
                       variant="outline" 
-                      className="h-8 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#10B981] hover:bg-[#059669] border-transparent text-white px-3 gap-1.5"
+                      className="h-8 rounded-full text-[11px] font-bold uppercase tracking-wider bg-success hover:bg-success border-transparent text-white px-3 gap-1.5"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       Applied
@@ -125,7 +125,7 @@ export const DiscountList = () => {
                     <Button 
                       onClick={() => applyOffer(coupon._id)}
                       disabled={applying}
-                      className="h-8 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#FF6B00] hover:bg-[#EA580C] text-white px-4 shadow-[0_2px_8px_rgba(255,107,0,0.2)] disabled:opacity-50"
+                      className="h-8 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary hover:bg-primary text-white px-4 shadow-[0_2px_8px_rgba(255,107,0,0.2)] disabled:opacity-50"
                     >
                       Apply
                     </Button>

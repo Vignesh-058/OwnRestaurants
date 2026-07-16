@@ -6,9 +6,7 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useCartStore } from '@/store/CartStore';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useLocationStore } from '@/store/LocationStore';
-import { useLocationModalStore } from '@/store/LocationModalStore';
-import { getCartAddressPayload, hasValidDeliveryAddress } from '@/utils/cartPayload';
+import { getCartAddressPayload } from '@/utils/cartPayload';
 import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useCreateCart } from '@/hooks/cart/useCreateCart';
@@ -41,7 +39,6 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
   const detailConfig = organization?.theme?.config?.productDetail;
   const showVariants = detailConfig?.showVariants ?? true;
   const showAddons = detailConfig?.showAddons ?? true;
-  const showReviews = detailConfig?.showReviews ?? true;
   const isCartEnabled = organization?.isCartEnabled ?? true;
  const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -61,7 +58,7 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
 
  const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();
  const { mutate: createCart, isPending: isCreating } = useCreateCart();
- const { openDrawer, cartItems, orderId, orderType } = useCartStore();
+ const { cartItems, orderId, orderType } = useCartStore();
  const { user } = useAuthStore();
  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
  const { handleAddressAndProceed } = useAddressFlow();
@@ -169,10 +166,10 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  <div className="h-24 w-24 bg-red-100 rounded-full flex items-center justify-center mb-6">
  <Info className="w-12 h-12 text-red-500" />
  </div>
- <h3 className="text-2xl font-bold text-[#111827] mb-2">Product Not Found</h3>
- <p className="text-[#6B7280] mb-6">Unable to load product details at this time.</p>
+ <h3 className="text-2xl font-bold text-foreground mb-2">Product Not Found</h3>
+ <p className="text-muted-foreground mb-6">Unable to load product details at this time.</p>
  <Button 
- className="rounded-full px-8 bg-[#0C6CEA] hover:bg-[#0055CC] text-white font-bold" 
+ className="rounded-full px-8 bg-info hover:bg-info text-white font-bold" 
  onClick={() => onClose()}
  >
  Back to Shop

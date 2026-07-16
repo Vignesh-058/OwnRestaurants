@@ -35,15 +35,15 @@ export const ProductInfoTabs = ({ product }: ProductInfoTabsProps) => {
               className={cn(
                 "relative px-5 py-2.5 rounded-[14px] text-sm font-bold whitespace-nowrap transition-all duration-300 shadow-sm border",
                 isActive 
-                  ? "bg-[#FF6B00] text-white border-[#FF6B00]" 
-                  : "bg-white text-muted-foreground border-border/50 hover:border-[#FF6B00]/30 hover:text-foreground"
+                  ? "bg-primary text-white border-primary" 
+                  : "bg-white text-muted-foreground border-border/50 hover:border-primary/30 hover:text-foreground"
               )}
             >
               {tab.label}
               {isActive && (
                 <motion.div
                   layoutId="activeTabIndicator"
-                  className="absolute inset-0 rounded-[14px] bg-[#FF6B00] -z-10"
+                  className="absolute inset-0 rounded-[14px] bg-primary -z-10"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}

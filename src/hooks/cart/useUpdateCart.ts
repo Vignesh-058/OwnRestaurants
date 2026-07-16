@@ -6,8 +6,7 @@ import type { CartCreateRequest } from '@/types/cart.types';
 
 export const useUpdateCart = () => {
   const queryClient = useQueryClient();
-  const { setOrderId, setCart } = useCartStore();
-
+  const { setOrderId } = useCartStore();
   return useMutation({
     mutationFn: (payload: CartCreateRequest) => {
       console.log('[Cart] Update Payload:', JSON.stringify(payload, null, 2));

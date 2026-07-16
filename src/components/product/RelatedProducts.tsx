@@ -11,7 +11,7 @@ export const RelatedProducts = ({ products, onProductClick }: RelatedProductsPro
 
  return (
  <div className="w-full mt-10">
- <h3 className="text-xl font-bold text-[#111827] dark:text-white mb-6 px-4 md:px-8">
+ <h3 className="text-xl font-bold text-foreground dark:text-white mb-6 px-4 md:px-8">
  Recommended For You
  </h3>
  <div className="flex overflow-x-auto gap-4 hide-scrollbar snap-x snap-mandatory px-4 md:px-8 pb-8">

@@ -17,19 +17,19 @@ interface CartConfirmModalProps {
 
 const config = {
   remove: {
-    icon: <Trash2 className="w-6 h-6 text-[#B91C1C]" />,
+    icon: <Trash2 className="w-6 h-6 text-destructive" />,
     iconBg: 'bg-red-50',
     title: 'Remove Item',
     description: (name: string) => (
       <>
         Are you sure you want to remove{' '}
-        <span className="font-semibold text-[#111827]">"{name}"</span>{' '}
+        <span className="font-semibold text-foreground">"{name}"</span>{' '}
         from your cart?
       </>
     ),
     confirmLabel: 'Remove',
     confirmClass:
-      'bg-[#B91C1C] hover:bg-[#991B1B] text-white shadow-[0_4px_16px_rgba(185,28,28,0.25)] hover:shadow-[0_6px_20px_rgba(185,28,28,0.35)]',
+      'bg-destructive hover:bg-destructive text-white shadow-[0_4px_16px_rgba(185,28,28,0.25)] hover:shadow-[0_6px_20px_rgba(185,28,28,0.35)]',
   },
 } satisfies Record<ModalVariant, {
   icon: React.ReactNode;
@@ -136,7 +136,7 @@ export const CartConfirmModal = ({
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1">
-              <div className="w-10 h-1 rounded-full bg-[#E5E7EB]" />
+              <div className="w-10 h-1 rounded-full bg-border" />
             </div>
             <ModalContent
               cfg={cfg}
@@ -172,14 +172,14 @@ const ModalContent = ({ cfg, itemName, isLoading, cancelRef, onClose, onConfirm 
         <div className={`w-11 h-11 rounded-full ${cfg.iconBg} flex items-center justify-center shrink-0`}>
           {cfg.icon}
         </div>
-        <h2 id="confirm-modal-title" className="text-[18px] font-black text-[#111827] leading-tight">
+        <h2 id="confirm-modal-title" className="text-[18px] font-black text-foreground leading-tight">
           {cfg.title}
         </h2>
       </div>
       <button
         onClick={onClose}
         disabled={isLoading}
-        className="w-8 h-8 rounded-full flex items-center justify-center text-[#9CA3AF] hover:text-[#374151] hover:bg-[#F3F4F6] transition-colors disabled:opacity-40"
+        className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-muted-foreground hover:bg-muted transition-colors disabled:opacity-40"
         aria-label="Close"
       >
         <X className="w-4 h-4" />
@@ -187,19 +187,19 @@ const ModalContent = ({ cfg, itemName, isLoading, cancelRef, onClose, onConfirm 
     </div>
 
     {/* Description */}
-    <p className="text-[14px] text-[#6B7280] leading-relaxed mb-7">
+    <p className="text-[14px] text-muted-foreground leading-relaxed mb-7">
       {cfg.description(itemName)}
     </p>
 
     {/* Divider */}
-    <div className="border-t border-[#F3F4F6] mb-5" />
+    <div className="border-t border-muted mb-5" />
 
     {/* Buttons */}
     <div className="flex gap-3">
       <Button
         ref={cancelRef}
         variant="outline"
-        className="flex-1 h-[48px] rounded-full text-[15px] font-bold border-2 border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB] hover:border-[#D1D5DB] transition-all"
+        className="flex-1 h-[48px] rounded-full text-[15px] font-bold border-2 border-border text-muted-foreground hover:bg-muted hover:border-border transition-all"
         onClick={onClose}
         disabled={isLoading}
       >

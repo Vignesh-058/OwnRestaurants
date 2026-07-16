@@ -82,7 +82,7 @@ export const AddressPage = () => {
  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
  
  <div className="flex items-center gap-4 relative z-10">
- <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/10 to-[#FF6B00]/20 text-primary flex items-center justify-center shadow-inner">
+ <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/20 text-primary flex items-center justify-center shadow-inner">
  <MapPin className="h-7 w-7" />
  </div>
  <div>

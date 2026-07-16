@@ -50,15 +50,15 @@ export const CustomerReviews = () => {
   ];
 
   return (
-    <section className="py-20 md:py-28 bg-[#F8FAFC] border-b border-[#E5E7EB] overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-12">
+    <section className="py-20 md:py-28 bg-muted border-b border-border overflow-hidden">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
-            <h2 className="text-3xl md:text-5xl font-black text-[#111827] tracking-tight mb-4 capitalize">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-foreground tracking-tight mb-4 capitalize">
               What Our Customers Say
             </h2>
-            <div className="w-24 h-1.5 bg-[#FF6B00] rounded-full mb-6" />
-            <p className="text-[#64748B] text-lg font-medium max-w-2xl">
+            <div className="w-24 h-1.5 bg-primary rounded-full mb-6" />
+            <p className="text-muted-foreground text-lg font-medium max-w-2xl">
               Don't just take our word for it. Here's what our loyal customers have to say about their experience.
             </p>
           </div>
@@ -66,13 +66,13 @@ export const CustomerReviews = () => {
           <div className="hidden md:flex items-center gap-3">
             <button 
               onClick={() => scroll('left')}
-              className="w-14 h-14 bg-white rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#111827] hover:border-[#FF6B00] hover:text-[#FF6B00] hover:shadow-[0_8px_20px_rgba(255,107,0,0.15)] hover:-translate-y-1 transition-all duration-300"
+              className="w-14 h-14 bg-card rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button 
               onClick={() => scroll('right')}
-              className="w-14 h-14 bg-white rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#111827] hover:border-[#FF6B00] hover:text-[#FF6B00] hover:shadow-[0_8px_20px_rgba(255,107,0,0.15)] hover:-translate-y-1 transition-all duration-300"
+              className="w-14 h-14 bg-card rounded-full border border-border flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
               <ChevronRight className="w-6 h-6" />
             </button>
@@ -90,30 +90,30 @@ export const CustomerReviews = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="snap-center shrink-0 w-[300px] md:w-[400px] bg-white rounded-[32px] p-8 border border-[#E5E7EB] shadow-[0_4px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-300 relative group"
+              className="snap-center shrink-0 w-[300px] md:w-[400px] bg-card rounded-3xl p-8 border border-border shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300 relative group"
             >
-              <Quote className="absolute top-8 right-8 w-12 h-12 text-[#FF6B00]/10 group-hover:text-[#FF6B00]/20 transition-colors duration-300" />
+              <Quote className="absolute top-8 right-8 w-12 h-12 text-primary/10 group-hover:text-primary/20 transition-colors duration-300" />
               
               <div className="flex items-center gap-1 mb-6">
                 {[...Array(5)].map((_, i) => (
                   <Star 
                     key={i} 
-                    className={cn("w-5 h-5", i < review.rating ? "fill-[#FFB800] text-[#FFB800]" : "fill-[#E5E7EB] text-[#E5E7EB]")} 
+                    className={cn("w-5 h-5", i < review.rating ? "fill-primary text-primary" : "fill-muted text-muted")} 
                   />
                 ))}
               </div>
               
-              <p className="text-[#475569] text-lg leading-relaxed mb-8 italic">
+              <p className="text-muted-foreground text-lg leading-relaxed mb-8 italic">
                 "{review.text}"
               </p>
               
               <div className="flex items-center gap-4 mt-auto">
-                <div className="w-12 h-12 rounded-full bg-[#FFF7ED] text-[#FF6B00] flex items-center justify-center font-black text-lg">
+                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-extrabold text-lg">
                   {review.avatar}
                 </div>
                 <div>
-                  <h4 className="font-bold text-[#111827]">{review.name}</h4>
-                  <p className="text-[#94A3B8] text-sm font-medium">{review.role}</p>
+                  <h4 className="font-extrabold text-foreground">{review.name}</h4>
+                  <p className="text-muted-foreground text-sm font-medium">{review.role}</p>
                 </div>
               </div>
             </motion.div>

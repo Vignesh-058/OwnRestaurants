@@ -71,6 +71,8 @@ export const useAddressFlow = () => {
           latitude: lat,
           longitude: lng,
           type: 'home' as const,
+          belongsTo: organization._id,
+          customerPhoneNo: user.phone,
         };
 
         const newAddressRes = await customerService.createAddress(createPayload);

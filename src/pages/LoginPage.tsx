@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { useLogin } from '@/hooks/auth/useLogin';
 import { useVerifyOTP } from '@/hooks/auth/useVerifyOTP';
 import { ArrowLeft, ArrowRight, Loader2, ShoppingBag, Coffee, UtensilsCrossed } from 'lucide-react';
-import { useLocationStore } from '@/store/LocationStore';
-import { useLocationModalStore } from '@/store/LocationModalStore';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -76,7 +74,7 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-8 relative overflow-hidden bg-[#FAFAFA] dark:bg-slate-950 font-sans selection:bg-primary/20">
+    <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-8 relative overflow-hidden bg-muted dark:bg-slate-950 font-sans selection:bg-primary/20">
       
       {/* Premium Ambient Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -102,7 +100,7 @@ export const LoginPage = () => {
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, type: 'spring', bounce: 0.3 }}
-        className="w-full max-w-[460px] bg-[#111827] rounded-[24px] shadow-2xl border border-[rgba(255,255,255,0.08)] relative z-10"
+        className="w-full max-w-[460px] bg-foreground rounded-[24px] shadow-2xl border border-[rgba(255,255,255,0.08)] relative z-10"
       >
         
         <div className="p-10">
@@ -129,7 +127,7 @@ export const LoginPage = () => {
             <h1 className="text-[36px] font-bold text-white tracking-tight mb-4">
               {step === 1 ? 'Welcome Back' : 'Verify Your Phone'}
             </h1>
-            <div className="text-[18px] text-[#94A3B8] font-medium leading-relaxed max-w-sm">
+            <div className="text-[18px] text-muted-foreground font-medium leading-relaxed max-w-sm">
               {step === 1 ? (
                 <p>Sign in with your mobile number to continue.</p>
               ) : (

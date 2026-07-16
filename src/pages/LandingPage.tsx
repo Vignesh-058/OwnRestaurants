@@ -1,17 +1,13 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useProductFilter } from '@/hooks/useProductFilter';
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Sparkles, Ticket } from "lucide-react";
+import { motion } from "framer-motion";
 import { useOrganizationStore } from "@/store/OrganizationStore";
 import { useOutletStore } from "@/store/OutletStore";
-import { useLocationStore } from "@/store/LocationStore";
-import { useLocationModalStore } from "@/store/LocationModalStore";
-import { useAuthStore } from "@/store/AuthStore";
 import { useCategories } from "@/hooks/useCategories";
 import { useCoupons } from "@/hooks/queries/useCoupons";
 import { useGeoLocation } from "@/hooks/queries/useLocation";
 import { useStoreStatus } from "@/hooks/queries/useStoreStatus";
-import { CategoryList } from "@/components/product/CategoryList";
 import { ProductDrawer } from "@/components/product/ProductDrawer";
 import { StoreStatusLoader } from "@/components/common/StoreStatusLoader";
 import { StoreClosedPage } from "@/components/common/StoreClosedPage";
@@ -31,17 +27,13 @@ import { useSettings } from "@/hooks/queries/useSettings";
 import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
-  SheetHeader,
+  
+  
+  
+  
+  
 } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
-import type { CategoryItem } from "@/types/category.types";
-import { ProductGrid } from "@/components/product/ProductGrid";
 import type { FilterState } from "@/components/product/FilterSidebar";
-import { cn } from "@/lib/utils";
 
 export const LandingPage = () => {
   const navigate = useNavigate();
@@ -49,9 +41,6 @@ export const LandingPage = () => {
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   const belongsTo = organization?._id || "";
 
-  const { formattedAddress, street, city } = useLocationStore();
-  const openModal = useLocationModalStore((state) => state.openModal);
-  const { user } = useAuthStore();
 
   const { data: storeStatusData, isLoading: isStoreStatusLoading } =
     useStoreStatus(belongsTo, selectedOutlet?._id || "");
@@ -69,15 +58,13 @@ export const LandingPage = () => {
 
   const {
     data: allProducts = [],
-    isLoading: isProductsLoading,
-    isError: isProductsError,
   } = useProductsQuery();
 
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null,
   );
   const [activeCategoryId, setActiveCategoryId] = useState("all");
-  const [filters, setFilters] = useState<FilterState>({
+  const [filters] = useState<FilterState>({
     categories: [],
     foodType: "all",
     priceRange: [0, 5000],
@@ -87,7 +74,6 @@ export const LandingPage = () => {
     availability: [],
     sortBy: "recommended",
   });
-  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
   // Initialize active category on load
   useEffect(() => {
@@ -101,7 +87,7 @@ export const LandingPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const { data: coupons = [] } = useCoupons();
+  useCoupons();
   useGeoLocation();
 
   // Handle Hash Navigation (from Navbar Global Sidebar)
@@ -125,113 +111,15 @@ export const LandingPage = () => {
       }
     }
   }, [categories]);
-  const applyFiltersToItems = useCallback((items: any[]) => {
-    let filtered = items;
-
-    // Categories
-    if (filters.categories.length > 0) {
-      // Handled at the top level
-    }
-
-    // Food Type
-    if (filters.foodType === "veg") {
-      filtered = filtered.filter(
-        (item: any) =>
-          item.dietryType?.toLowerCase() === "veg" ||
-          item.dietryType?.toLowerCase() === "vegan" ||
-          item.type?.toLowerCase() === "veg",
-      );
-    } else if (filters.foodType === "non-veg") {
-      filtered = filtered.filter(
-        (item: any) =>
-          item.dietryType?.toLowerCase() === "non-veg" ||
-          item.dietryType?.toLowerCase() === "non veg" ||
-          item.type?.toLowerCase() === "non-veg",
-      );
-    }
-
-    // Price
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 5000) {
-      filtered = filtered.filter((item: any) => {
-        const price = item.sellingPrice || item.basePrice || 0;
-        return price >= filters.priceRange[0] && price <= filters.priceRange[1];
-      });
-    }
-
-    // Rating
-    if (filters.rating > 0) {
-      filtered = filtered.filter(
-        (item: any) => (item.rating || 0) >= filters.rating,
-      );
-    }
-
-    // Offers
-    if (filters.offers.length > 0) {
-      filtered = filtered.filter((item: any) => {
-        let hasOffer = false;
-        if (
-          filters.offers.includes("discount") &&
-          (item.discount?.value?.amount > 0 ||
-            item.discount?.value?.getDiscountPercent > 0)
-        )
-          hasOffer = true;
-        // Mocking other offers since the backend may not have explicit fields for combo, bogo, free-delivery
-        if (filters.offers.includes("free-delivery") && item.sellingPrice > 500)
-          hasOffer = true;
-        if (
-          filters.offers.includes("combo") &&
-          (item.name || "").toLowerCase().includes("combo")
-        )
-          hasOffer = true;
-        if (
-          filters.offers.includes("bogo") &&
-          (item.name || "").toLowerCase().includes("bogo")
-        )
-          hasOffer = true;
-        return hasOffer;
-      });
-    }
-
-    // Availability
-    if (filters.availability.length > 0) {
-      filtered = filtered.filter((item: any) => {
-        if (filters.availability.includes("out-of-stock")) return !item.inStock;
-        if (filters.availability.includes("available"))
-          return item.inStock !== false;
-        return true;
-      });
-    }
-
-    // Sort
-    filtered = [...filtered].sort((a: any, b: any) => {
-      const priceA = a.sellingPrice || a.basePrice || 0;
-      const priceB = b.sellingPrice || b.basePrice || 0;
-      switch (filters.sortBy) {
-        case "price-asc":
-          return priceA - priceB;
-        case "price-desc":
-          return priceB - priceA;
-        case "rating":
-          return (b.rating || 0) - (a.rating || 0);
-        case "best-selling":
-          return (b.bestseller ? 1 : 0) - (a.bestseller ? 1 : 0);
-        case "newest":
-          return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
-        default:
-          return 0;
-      }
-    });
-
-    return filtered;
-  }, [filters]);
 
 
-  const recommendedProducts = useMemo(() => {
-    const recs = allProducts.filter(
-      (p) => p.bestseller || (p.rating && p.rating >= 4.5),
-    );
-    return applyFiltersToItems(recs).slice(0, 8);
-  }, [allProducts, applyFiltersToItems]);
+
+    const recommendedProductsBase = useMemo(() => {
+    return allProducts.filter((p) => p.bestseller || (p.rating && p.rating >= 4.5));
+  }, [allProducts]);
+
+  const filteredRecommendedProducts = useProductFilter(recommendedProductsBase, filters);
+  const recommendedProducts = useMemo(() => filteredRecommendedProducts.slice(0, 8), [filteredRecommendedProducts]);
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-background pb-32">

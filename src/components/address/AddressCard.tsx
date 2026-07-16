@@ -48,7 +48,7 @@ export const AddressCard = ({ address, onUseForDelivery }: AddressCardProps) => 
  return (
  <Card className="rounded-3xl border shadow-sm hover:shadow-md transition-all duration-300 relative group overflow-hidden">
  {/* Subtle top border accent based on type */}
- <div className={`absolute top-0 left-0 w-full h-1 ${address.type?.toLowerCase() === 'home' ? 'bg-[#FF6B00]' : address.type?.toLowerCase() === 'work' ? 'bg-orange-500' : 'bg-gray-400'}`} />
+ <div className={`absolute top-0 left-0 w-full h-1 ${address.type?.toLowerCase() === 'home' ? 'bg-primary' : address.type?.toLowerCase() === 'work' ? 'bg-orange-500' : 'bg-gray-400'}`} />
  
  <CardContent className="p-6">
  <div className="flex justify-between items-start mb-4">

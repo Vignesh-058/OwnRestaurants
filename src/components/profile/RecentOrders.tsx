@@ -18,7 +18,7 @@ export const RecentOrders = () => {
     if (!status) return 'bg-secondary text-secondary-foreground border-border';
     switch (status.toLowerCase()) {
       case 'delivered': return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
-      case 'processing': return 'bg-[#FF6B00]/10 text-[#FF6B00] border-[#FF6B00]/20';
+      case 'processing': return 'bg-primary/10 text-primary border-primary/20';
       case 'cancelled': return 'bg-destructive/10 text-destructive border-destructive/20';
       default: return 'bg-secondary text-secondary-foreground border-border';
     }

@@ -25,10 +25,10 @@ export const SearchBar = ({
  <div className={cn(
  "relative flex items-center w-full bg-white rounded-full border transition-all duration-300",
  isFocused 
- ? "border-[#0C6CEA] shadow-lg ring-4 ring-[#0C6CEA]/10" 
- : "border-[#E5E7EB] dark:border-white/10 hover:border-[#0C6CEA]/50"
+ ? "border-info shadow-lg ring-4 ring-info/10" 
+ : "border-border dark:border-white/10 hover:border-info/50"
  )}>
- <Search className={cn("absolute left-4 h-5 w-5 transition-colors", isFocused ? "text-[#0C6CEA]" : "text-[#6B7280]")} />
+ <Search className={cn("absolute left-4 h-5 w-5 transition-colors", isFocused ? "text-info" : "text-muted-foreground")} />
  <Input 
  type="text" 
  value={value}
@@ -36,12 +36,12 @@ export const SearchBar = ({
  onFocus={() => setIsFocused(true)}
  onBlur={() => setIsFocused(false)}
  placeholder={placeholder} 
- className="w-full bg-transparent h-14 pl-12 pr-12 border-none focus-visible:ring-0 text-base shadow-none text-[#111827] dark:text-white rounded-full"
+ className="w-full bg-transparent h-14 pl-12 pr-12 border-none focus-visible:ring-0 text-base shadow-none text-foreground dark:text-white rounded-full"
  />
  {value && (
  <button 
  onClick={onClear}
- className="absolute right-4 p-1.5 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 text-[#6B7280] transition-colors"
+ className="absolute right-4 p-1.5 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/10 text-muted-foreground transition-colors"
  >
  <X className="h-4 w-4" />
  </button>

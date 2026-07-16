@@ -28,7 +28,7 @@ export const ProductInfo = ({ name, dietryType, rating, inStock }: ProductInfoPr
         )}
         
         {rating !== undefined && rating > 0 && (
-          <div className="flex items-center gap-1.5 bg-[#16A34A] text-white px-2.5 py-1 rounded-[6px] text-[13px] font-bold shadow-lg leading-none">
+          <div className="flex items-center gap-1.5 bg-success text-white px-2.5 py-1 rounded-[6px] text-[13px] font-bold shadow-lg leading-none">
             <Star className="w-3.5 h-3.5 fill-white" />
             {rating}
           </div>

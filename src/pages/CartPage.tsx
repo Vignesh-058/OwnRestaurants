@@ -9,7 +9,7 @@ import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useDeleteCart } from '@/hooks/cart/useDeleteCart';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ShoppingCart } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { CartList } from '@/components/cart/CartList';
 import { CartSummary } from '@/components/cart/CartSummary';
 import { EmptyCart } from '@/components/cart/EmptyCart';
@@ -25,14 +25,14 @@ const MobileCheckoutFooter = () => {
   const currency = organization?.currency || '₹';
   if (cartItemCount === 0) return null;
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#E5E7EB] shadow-[0_-4px_24px_rgba(0,0,0,0.10)] px-4 py-3">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border shadow-[0_-4px_24px_rgba(0,0,0,0.10)] px-4 py-3">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-[11px] text-[#6B7280] font-medium uppercase tracking-wide">Grand Total</p>
-          <p className="text-[20px] font-black text-[#FF6B00] leading-none tabular-nums">{currency}{grandTotal.toLocaleString()}</p>
+          <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Grand Total</p>
+          <p className="text-[20px] font-black text-primary leading-none tabular-nums">{currency}{grandTotal.toLocaleString()}</p>
         </div>
         <Button
-          className="flex-1 h-[48px] rounded-full text-[15px] font-bold bg-[#FF6B00] hover:bg-[#E65C00] text-white shadow-[0_4px_16px_rgba(255,107,0,0.3)] transition-all"
+          className="flex-1 h-[48px] rounded-full text-[15px] font-bold bg-primary hover:bg-primary text-white shadow-[0_4px_16px_rgba(255,107,0,0.3)] transition-all"
           disabled={!checkoutEnable}
           onClick={() => navigate('/checkout')}
         >
@@ -40,7 +40,7 @@ const MobileCheckoutFooter = () => {
         </Button>
       </div>
       {!checkoutEnable && checkOutMessage && (
-        <p className="text-[11px] text-[#EF4444] font-semibold text-center mt-1.5">{checkOutMessage}</p>
+        <p className="text-[11px] text-destructive font-semibold text-center mt-1.5">{checkOutMessage}</p>
       )}
     </div>
   );
@@ -55,16 +55,14 @@ export const CartPage = () => {
  const { user } = useAuthStore();
 
  // Hardcoded for now per requirements (Guest flow without Auth if null)
- const [customerName, setCustomerName] = useState(user?.name || "Guest");
- const [customerPhoneNo, setCustomerPhoneNo] = useState(user?.phone || "0000000000");
+ const [customerName] = useState(user?.name || "Guest");
+ const [customerPhoneNo] = useState(user?.phone || "0000000000");
 
  const { handleAddressAndProceed } = useAddressFlow();
 
- const [itemToRemove, setItemToRemove] = useState<CartItem | null>(null);
- const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
 
  const [localDeliveryType, setLocalDeliveryType] = useState(orderType || 'Door Delivery');
- const [localInstruction, setLocalInstruction] = useState('');
+ const [localInstruction] = useState('');
 
  const { isLoading, isError } = useCartDetails({
  customerPhoneNo,
@@ -161,23 +159,16 @@ export const CartPage = () => {
  };
 
  const handleInitiateRemove = (item: CartItem) => {
- setItemToRemove(item);
- setIsRemoveDialogOpen(true);
- };
-
- const handleConfirmRemove = () => {
-  if (!selectedOutlet || !orderId || !itemToRemove) return;
+  if (!selectedOutlet || !orderId) return;
 
   // Optimistic: remove from store immediately so UI updates instantly
-  if (import.meta.env.DEV) console.log('[Cart] Update Payload (remove):', itemToRemove.product_retailer_id);
-  optimisticSetQuantity({ _id: itemToRemove.product_retailer_id } as any, 0);
-  setIsRemoveDialogOpen(false);
-  setItemToRemove(null);
+  if (import.meta.env.DEV) console.log('[Cart] Update Payload (remove):', item.product_retailer_id);
+  optimisticSetQuantity({ _id: item.product_retailer_id } as any, 0);
 
   removeItem({
    outletId: selectedOutlet._id,
    orderId,
-   itemid: itemToRemove.product_retailer_id,
+   itemid: item.product_retailer_id,
    customerPhoneNo,
    customerName
   }, {
@@ -208,7 +199,7 @@ export const CartPage = () => {
  const isEmpty = !cartItems || cartItems.length === 0;
 
    return (
-    <div className="w-full min-h-screen bg-[#F8FAFC]">
+    <div className="w-full min-h-screen bg-muted">
       <div className="w-full max-w-[1800px] mx-auto px-6 lg:px-8 py-6">
 
          
@@ -221,16 +212,16 @@ export const CartPage = () => {
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="w-11 h-11 rounded-full hover:bg-[#E5E7EB] bg-white shadow-sm border border-[#E5E7EB] shrink-0"
+            className="w-11 h-11 rounded-full hover:bg-border bg-white shadow-sm border border-border shrink-0"
           >
-            <ArrowLeft className="w-5 h-5 text-[#111827]" />
+            <ArrowLeft className="w-5 h-5 text-foreground" />
           </Button>
           <div>
-            <h1 className="text-[32px] md:text-[38px] font-black text-[#111827] leading-none">
+            <h1 className="text-[32px] md:text-[38px] font-black text-foreground leading-none">
               Shopping Cart
             </h1>
             {!isEmpty && (
-              <p className="text-[15px] text-[#6B7280] font-medium mt-1">
+              <p className="text-[15px] text-muted-foreground font-medium mt-1">
                 {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
               </p>
             )}
@@ -251,16 +242,16 @@ export const CartPage = () => {
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="w-11 h-11 rounded-full hover:bg-[#E5E7EB] bg-white shadow-sm border border-[#E5E7EB] shrink-0"
+            className="w-11 h-11 rounded-full hover:bg-border bg-white shadow-sm border border-border shrink-0"
           >
-            <ArrowLeft className="w-5 h-5 text-[#111827]" />
+            <ArrowLeft className="w-5 h-5 text-foreground" />
           </Button>
           <div>
-            <h1 className="text-[32px] md:text-[38px] font-black text-[#111827] leading-none">
+            <h1 className="text-[32px] md:text-[38px] font-black text-foreground leading-none">
               Shopping Cart
             </h1>
             {!isEmpty && (
-              <p className="text-[15px] text-[#6B7280] font-medium mt-1">
+              <p className="text-[15px] text-muted-foreground font-medium mt-1">
                 {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
               </p>
             )}

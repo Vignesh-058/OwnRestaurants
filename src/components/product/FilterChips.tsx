@@ -77,12 +77,12 @@ export const FilterChips = ({ filters, onRemoveFilter, onClearAll }: FilterChips
       {chips.map((chip, index) => (
         <div 
           key={`${chip.key}-${index}`} 
-          className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#E5E7EB] rounded-full shadow-sm text-sm text-[#111827] group"
+          className="flex items-center gap-2 px-3 py-1.5 bg-white border border-border rounded-full shadow-sm text-sm text-foreground group"
         >
           <span>{chip.label}</span>
           <button 
             onClick={() => onRemoveFilter(chip.key, chip.value)}
-            className="text-[#64748B] group-hover:text-[#FF6B00] transition-colors"
+            className="text-muted-foreground group-hover:text-primary transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -90,7 +90,7 @@ export const FilterChips = ({ filters, onRemoveFilter, onClearAll }: FilterChips
       ))}
       <button 
         onClick={onClearAll}
-        className="text-sm font-medium text-[#FF6B00] hover:underline px-2"
+        className="text-sm font-medium text-primary hover:underline px-2"
       >
         Clear All
       </button>

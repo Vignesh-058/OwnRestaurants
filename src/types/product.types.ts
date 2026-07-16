@@ -17,6 +17,8 @@ export interface Variation {
  variationid: string;
  variation_name: string;
  price: number;
+ sellingPrice?: number;
+ basePrice?: number;
 }
 
 export interface ItemDetail {
@@ -33,4 +35,6 @@ export interface ItemDetail {
  stockStatus: boolean;
  trackInventory: boolean;
  stockCount?: number;
+ rating?: number;
+ inStock?: boolean;
 }

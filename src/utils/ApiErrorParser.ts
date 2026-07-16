@@ -6,7 +6,7 @@ export interface ApiError {
  code?: string;
 }
 
-export const ApiErrorParser = (error: unknown): ApiError => {
+export const ApiErrorParser = (error: any): ApiError => {
  if (axios.isAxiosError(error)) {
  const axiosError = error as AxiosError<{ message?: string; error?: string }>;
  return {

@@ -33,14 +33,14 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
   return (
     <section id="product-menu" className="w-full flex flex-col lg:flex-row relative z-10">
       {/* LEFT: Sidebar (Categories + Desktop Filters) */}
-      <aside className="w-full lg:w-[360px] shrink-0 bg-white border-r border-[#E2E8F0] z-30 relative">
-        <div className="flex flex-col lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-[#E2E8F0] scrollbar-track-transparent">
+      <aside className="w-full lg:w-[360px] shrink-0 bg-background border-r border-border z-30 relative">
+        <div className="flex flex-col lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           
-          <div className="flex-shrink-0 sticky top-[64px] lg:top-0 bg-white z-40 px-6 pt-6 pb-2">
+          <div className="flex-shrink-0 sticky top-[64px] lg:top-0 bg-background z-40 px-6 pt-6 pb-2">
             <div className="mb-2 flex items-start justify-between">
               <div>
-                <h2 className="text-[26px] font-bold text-[#0F172A] tracking-tight leading-none mb-1.5">Categories</h2>
-                <p className="text-[13px] text-[#64748B] font-medium">Browse Menu</p>
+                <h2 className="text-[26px] font-extrabold text-foreground tracking-tight leading-none mb-1.5">Categories</h2>
+                <p className="text-[13px] text-muted-foreground font-medium">Browse Menu</p>
               </div>
               
               {/* Desktop Filter Toggle (hidden on mobile) */}
@@ -49,13 +49,13 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
                 size="icon"
                 onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
                 className={cn(
-                  "hidden lg:flex w-10 h-10 rounded-full border-[#E2E8F0] hover:bg-[#F8FAFC] transition-colors relative",
-                  isDesktopFilterOpen && "bg-[#FFF7ED] border-[#FF6B00]/30 text-[#FF6B00] hover:bg-[#FFF7ED]"
+                  "hidden lg:flex w-10 h-10 rounded-full border-border hover:bg-muted transition-colors relative",
+                  isDesktopFilterOpen && "bg-primary/10 border-primary/30 text-primary hover:bg-primary/10"
                 )}
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
-                  <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-[#FF6B00] border-2 border-white" />
+                  <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-primary border-2 border-background" />
                 )}
               </Button>
 
@@ -65,11 +65,11 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
                   <Button 
                     variant="outline" 
                     size="icon"
-                    className="lg:hidden flex w-10 h-10 rounded-full border-[#E2E8F0] hover:bg-[#F8FAFC] transition-colors relative"
+                    className="lg:hidden flex w-10 h-10 rounded-full border-border hover:bg-muted transition-colors relative"
                   >
                     <SlidersHorizontal className="w-4 h-4" />
                     {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
-                      <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-[#FF6B00] border-2 border-white" />
+                      <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-primary border-2 border-background" />
                     )}
                   </Button>
                 </SheetTrigger>
@@ -83,13 +83,13 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
 
             <div className="mb-4 mt-4">
               <div className="relative w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] w-5 h-5" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <input 
                   type="text" 
                   placeholder="Search products..." 
                   value={filters.searchQuery}
                   onChange={(e) => filters.setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 h-[48px] bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[15px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#FF6B00]/30 focus:ring-2 focus:ring-[#FF6B00]/10 transition-all"
+                  className="w-full pl-12 pr-4 h-[48px] bg-background border border-border rounded-xl text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/30 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -105,7 +105,7 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
                 transition={{ duration: 0.2 }}
                 className="hidden lg:block absolute left-6 right-6 top-[132px] z-[60]"
               >
-                <div className="h-[450px] bg-white rounded-[16px] border border-[#E2E8F0] shadow-[0_12px_40px_rgba(0,0,0,0.12)] overflow-hidden">
+                <div className="h-[450px] bg-card rounded-[16px] border border-border shadow-floating overflow-hidden">
                   <ProductFilterPanel {...filters} onApplyMobile={() => setIsDesktopFilterOpen(false)} />
                 </div>
               </motion.div>
@@ -128,32 +128,32 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
                   className={cn(
                     "flex items-center justify-between w-full h-[60px] px-3 rounded-[16px] transition-all duration-300 text-left group",
                     isActive 
-                      ? "bg-[#FFF7ED] text-[#FF6B00] shadow-[0_4px_12px_rgba(255,107,0,0.1)]" 
-                      : "bg-transparent text-[#0F172A] hover:bg-[#F8FAFC]"
+                      ? "bg-primary/10 text-primary shadow-sm" 
+                      : "bg-transparent text-foreground hover:bg-muted"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
                       "w-[38px] h-[38px] rounded-[10px] overflow-hidden flex items-center justify-center shrink-0 transition-all",
-                      "bg-[#F0FDF4] border border-[#DCFCE7] shadow-sm",
-                      isActive && "ring-2 ring-white/50 bg-white" 
+                      "bg-muted border border-border shadow-sm",
+                      isActive && "ring-2 ring-primary/20 bg-background" 
                     )}>
                       {category.imageUrl ? (
                         <img src={category.imageUrl} alt={catName} className="w-[60%] h-[60%] object-contain drop-shadow-sm" />
                       ) : (
-                        <span className="text-xs font-bold uppercase text-[#16A34A]">{catName.charAt(0)}</span>
+                        <span className="text-xs font-extrabold uppercase text-primary">{catName.charAt(0)}</span>
                       )}
                     </div>
                     <span className={cn(
-                      "font-semibold text-[15px]",
-                      isActive ? "text-[#FF6B00]" : "text-[#0F172A]"
+                      "font-extrabold text-[15px]",
+                      isActive ? "text-primary" : "text-foreground"
                     )}>{catName}</span>
                   </div>
                   <span className={cn(
-                    "text-[13px] font-bold px-2.5 py-1 rounded-[8px] transition-colors",
+                    "text-[13px] font-extrabold px-2.5 py-1 rounded-[8px] transition-colors",
                     isActive 
-                      ? "text-[#FF6B00] bg-white shadow-sm" 
-                      : "text-[#64748B] group-hover:text-[#475569] bg-transparent"
+                      ? "text-primary bg-background shadow-sm" 
+                      : "text-muted-foreground group-hover:text-foreground bg-transparent"
                   )}>
                     {productCount}
                   </span>
@@ -178,9 +178,9 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
           >
             {/* Header for right side */}
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-0 pb-2">
-              <h3 className="text-[32px] md:text-[48px] font-bold text-[#0F172A] flex items-center gap-4 tracking-tight">
+              <h3 className="text-[32px] md:text-[48px] font-extrabold text-foreground flex items-center gap-4 tracking-tight">
                 {categoryName}
-                <span className="text-[14px] md:text-[15px] font-bold text-[#64748B] bg-[#F1F5F9] px-3 h-9 flex items-center justify-center rounded-full">
+                <span className="text-[14px] md:text-[15px] font-extrabold text-muted-foreground bg-muted px-3 h-9 flex items-center justify-center rounded-full">
                   {filters.filteredItems.length} items
                 </span>
               </h3>
@@ -195,11 +195,11 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
                 />
               </div>
             ) : (
-              <div className="py-24 text-center flex flex-col items-center justify-center bg-white rounded-[24px] border border-dashed border-[#CBD5E1] shadow-sm">
+              <div className="py-24 text-center flex flex-col items-center justify-center bg-card rounded-[24px] border border-dashed border-border shadow-sm">
                 <span className="text-5xl mb-4">🔍</span>
-                <h4 className="text-2xl font-black text-[#0F172A] mb-2">No items found</h4>
-                <p className="text-[#64748B] text-[15px] font-medium">Try adjusting your filters or search query.</p>
-                <Button onClick={filters.resetFilters} className="mt-6 bg-[#FF6B00] hover:bg-[#E65C00] text-white rounded-full px-6">
+                <h4 className="text-2xl font-extrabold text-foreground mb-2">No items found</h4>
+                <p className="text-muted-foreground text-[15px] font-medium">Try adjusting your filters or search query.</p>
+                <Button onClick={filters.resetFilters} className="mt-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
                   Clear Filters
                 </Button>
               </div>

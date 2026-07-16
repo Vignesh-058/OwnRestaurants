@@ -29,39 +29,39 @@ export const Footer = () => {
   const AnimatedLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
     <Link 
       to={to} 
-      className="group relative text-[#94A3B8] hover:text-[#FF6B00] transition-colors duration-300 w-fit inline-block"
+      className="group relative text-muted-foreground hover:text-primary transition-colors duration-300 w-fit inline-block font-medium"
     >
       {children}
-      <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#FF6B00] transition-all duration-300 group-hover:w-full rounded-full" />
+      <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full rounded-full" />
     </Link>
   );
 
   return (
-    <footer className="w-full bg-[#111827] pt-12 pb-8 mt-auto border-t border-white/5">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10">
+    <footer className="w-full bg-card pt-24 pb-12 mt-auto border-t border-border shadow-[0_-4px_24px_rgba(0,0,0,0.02)]">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
         
         {/* Main Grid: 1 col on mobile, 3 on desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 mb-10 text-center md:text-left">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-20 mb-16 text-center md:text-left">
           
           {/* Section 1: Brand & Description */}
-          <div className="flex flex-col space-y-4 items-center md:items-start">
+          <div className="flex flex-col space-y-5 items-center md:items-start">
             <div className="flex items-center gap-3">
-              <img src={organization.logoImage || defaultLogo} alt={organization.brandName || organization.name} className="h-10 w-10 object-contain drop-shadow-lg rounded-xl bg-white" />
-              <span className="font-black text-xl tracking-tight text-white">
+              <img src={organization.logoImage || defaultLogo} alt={organization.brandName || organization.name} className="h-12 w-12 object-contain drop-shadow-sm rounded-xl bg-background border border-border p-1" />
+              <span className="font-extrabold text-2xl tracking-tight text-foreground">
                 {organization.brandName || organization.name || 'IEYAL Solutions'}
               </span>
             </div>
             {organization?.theme?.config?.footer?.config?.description && (
-              <p className="text-[#94A3B8] leading-relaxed max-w-sm text-[14px] font-medium">
+              <p className="text-muted-foreground leading-relaxed max-w-sm text-[15px] font-medium">
                 {organization.theme.config.footer.config.description}
               </p>
             )}
           </div>
 
           {/* Section 2: Quick Links */}
-          <div className="flex flex-col space-y-3">
-            <h4 className="font-bold text-[16px] text-white mb-1">Quick Links</h4>
-            <div className="grid grid-cols-2 gap-y-3 text-[14px]">
+          <div className="flex flex-col space-y-4">
+            <h4 className="font-bold text-[18px] text-foreground mb-2">Quick Links</h4>
+            <div className="grid grid-cols-2 gap-y-4 text-[15px]">
               <div className="flex flex-col space-y-3 items-center md:items-start">
                 <AnimatedLink to="/">Home</AnimatedLink>
                 <AnimatedLink to="/products">Products</AnimatedLink>
@@ -76,31 +76,31 @@ export const Footer = () => {
           </div>
 
           {/* Section 3: Contact Info */}
-          <div className="flex flex-col space-y-3">
-            <h4 className="font-bold text-[16px] text-white mb-1">Contact Us</h4>
-            <div className="flex flex-col space-y-3 text-[#94A3B8] text-[14px] items-center md:items-start">
+          <div className="flex flex-col space-y-4">
+            <h4 className="font-bold text-[18px] text-foreground mb-2">Contact Us</h4>
+            <div className="flex flex-col space-y-4 text-muted-foreground text-[15px] items-center md:items-start font-medium">
               {address && (
-                <div className="flex items-start gap-2 group">
-                  <MapPin className="w-4 h-4 text-[#FF6B00] shrink-0 mt-0.5" />
-                  <span className="text-left leading-tight group-hover:text-white transition-colors">{address}</span>
+                <div className="flex items-start gap-3 group">
+                  <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-left leading-tight group-hover:text-foreground transition-colors">{address}</span>
                 </div>
               )}
               {phone && (
-                <div className="flex items-center gap-2 group">
-                  <Phone className="w-4 h-4 text-[#FF6B00] shrink-0" />
-                  <span className="group-hover:text-white transition-colors">{phone}</span>
+                <div className="flex items-center gap-3 group">
+                  <Phone className="w-5 h-5 text-primary shrink-0" />
+                  <span className="group-hover:text-foreground transition-colors">{phone}</span>
                 </div>
               )}
               {email && (
-                <div className="flex items-center gap-2 group">
-                  <Mail className="w-4 h-4 text-[#FF6B00] shrink-0" />
-                  <span className="group-hover:text-white transition-colors break-all">{email}</span>
+                <div className="flex items-center gap-3 group">
+                  <Mail className="w-5 h-5 text-primary shrink-0" />
+                  <span className="group-hover:text-foreground transition-colors break-all">{email}</span>
                 </div>
               )}
               {workingHours && (
-                <div className="flex items-start gap-2 group">
-                  <Clock className="w-4 h-4 text-[#FF6B00] shrink-0 mt-0.5" />
-                  <span className="text-left leading-tight group-hover:text-white transition-colors">{workingHours}</span>
+                <div className="flex items-start gap-3 group">
+                  <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-left leading-tight group-hover:text-foreground transition-colors">{workingHours}</span>
                 </div>
               )}
             </div>
@@ -109,16 +109,16 @@ export const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="w-full h-[1px] bg-white/5 mb-6" />
+        <div className="w-full h-[1px] bg-border mb-8" />
 
         {/* Bottom Bar with Socials & Copyright */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left mt-8">
           <div className="flex flex-col items-center md:items-start gap-1">
-            <p className="text-[#94A3B8] text-[13px] font-medium">
+            <p className="text-muted-foreground text-[14px] font-medium">
               &copy; {currentYear} {organization.brandName || organization.name || ""}. All Rights Reserved.
             </p>
-            <p className="text-[#64748B] text-[12px]">
-              Powered by <span className="font-bold text-white">IEYAL</span>
+            <p className="text-muted-foreground/70 text-[13px]">
+              Powered by <span className="font-bold text-foreground">IEYAL</span>
             </p>
           </div>
           
@@ -134,7 +134,7 @@ export const Footer = () => {
                 key={idx} 
                 href={social.url || "#"} target="_blank" rel="noopener noreferrer" 
                 title={social.name}
-                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-[#94A3B8] hover:bg-[#FF6B00] hover:text-white transition-all duration-300 shadow-sm [&>svg]:w-3.5 [&>svg]:h-3.5"
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-sm [&>svg]:w-4 [&>svg]:h-4"
               >
                 {social.svg}
               </a>

@@ -1,0 +1,493 @@
+{
+  "src/components/providers/AppProvider.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.",
+      "file": "src/components/providers/AppProvider.tsx",
+      "line": 11
+    }
+  ],
+  "src/components/product/ProductFilterPanel.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'RefreshCw' is imported but never used.",
+      "file": "src/components/product/ProductFilterPanel.tsx",
+      "line": 6
+    }
+  ],
+  "src/services/product.service.ts": [
+    {
+      "message": "! eslint(no-unused-vars): Type 'CategoryItem' is imported but never used.",
+      "file": "src/services/product.service.ts",
+      "line": 4
+    }
+  ],
+  "src/components/location/OutletSelectorModal.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.",
+      "file": "src/components/location/OutletSelectorModal.tsx",
+      "line": 5
+    }
+  ],
+  "src/pages/ProfilePage.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Variable 'organization' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/ProfilePage.tsx",
+      "line": 46
+    }
+  ],
+  "src/components/home/StoreConfig.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'MapPin' is imported but never used.",
+      "file": "src/components/home/StoreConfig.tsx",
+      "line": 6
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Navigation' is imported but never used.",
+      "file": "src/components/home/StoreConfig.tsx",
+      "line": 6
+    }
+  ],
+  "src/components/product/ProductDrawer.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.",
+      "file": "src/components/product/ProductDrawer.tsx",
+      "line": 9
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.",
+      "file": "src/components/product/ProductDrawer.tsx",
+      "line": 10
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'hasValidDeliveryAddress' is imported but never used.",
+      "file": "src/components/product/ProductDrawer.tsx",
+      "line": 11
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'showReviews' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/components/product/ProductDrawer.tsx",
+      "line": 44
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'openDrawer' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/components/product/ProductDrawer.tsx",
+      "line": 64
+    }
+  ],
+  "src/components/location/LocationSelectorModal.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Variable 'setSelectedOutlet' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/components/location/LocationSelectorModal.tsx",
+      "line": 46
+    }
+  ],
+  "src/pages/ProductsPage.tsx": [
+    {
+      "message": "! react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'activeCategoryId'",
+      "file": "src/pages/ProductsPage.tsx",
+      "line": 43
+    }
+  ],
+  "src/hooks/queries/useOrders.ts": [
+    {
+      "message": "! react-hooks(exhaustive-deps): React Hook useEffect has missing dependencies: 'currentPage', and 'pageSize'",
+      "file": "src/hooks/queries/useOrders.ts",
+      "line": 45
+    }
+  ],
+  "src/components/cart/CartDrawer.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Heart' is imported but never used.",
+      "file": "src/components/cart/CartDrawer.tsx",
+      "line": 3
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'isClearing' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/components/cart/CartDrawer.tsx",
+      "line": 61
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'setIsClearing' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/components/cart/CartDrawer.tsx",
+      "line": 61
+    }
+  ],
+  "src/components/product/ProductCard.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useEffect' is imported but never used.",
+      "file": "src/components/product/ProductCard.tsx",
+      "line": 1
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.",
+      "file": "src/components/product/ProductCard.tsx",
+      "line": 16
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.",
+      "file": "src/components/product/ProductCard.tsx",
+      "line": 17
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'hasValidDeliveryAddress' is imported but never used.",
+      "file": "src/components/product/ProductCard.tsx",
+      "line": 18
+    },
+    {
+      "message": "! eslint(no-unused-vars): Parameter 'onClick' is declared but never used. Unused parameters should start with a '_'.",
+      "file": "src/components/product/ProductCard.tsx",
+      "line": 27
+    }
+  ],
+  "src/components/layout/Navbar.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useNavigate' is imported but never used.",
+      "file": "src/components/layout/Navbar.tsx",
+      "line": 2
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'userLocationAddress' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/components/layout/Navbar.tsx",
+      "line": 33
+    },
+    {
+      "message": "! oxc(const-comparisons): Unexpected constant comparison",
+      "file": "src/components/layout/Navbar.tsx",
+      "line": 134
+    }
+  ],
+  "src/pages/ProductPage.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.",
+      "file": "src/pages/ProductPage.tsx",
+      "line": 10
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.",
+      "file": "src/pages/ProductPage.tsx",
+      "line": 11
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'hasValidDeliveryAddress' is imported but never used.",
+      "file": "src/pages/ProductPage.tsx",
+      "line": 12
+    },
+    {
+      "message": "! eslint(no-unused-vars): Type 'Variation' is imported but never used.",
+      "file": "src/pages/ProductPage.tsx",
+      "line": 14
+    },
+    {
+      "message": "! eslint(no-unused-vars): Type 'AddonGroup' is imported but never used.",
+      "file": "src/pages/ProductPage.tsx",
+      "line": 14
+    },
+    {
+      "message": "! eslint(no-unused-vars): Type 'ItemDetail' is imported but never used.",
+      "file": "src/pages/ProductPage.tsx",
+      "line": 14
+    }
+  ],
+  "src/components/home/HeroBanner.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'AnimatePresence' is imported but never used.",
+      "file": "src/components/home/HeroBanner.tsx",
+      "line": 3
+    }
+  ],
+  "src/layouts/MainLayout.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'APP_CONFIG' is imported but never used.",
+      "file": "src/layouts/MainLayout.tsx",
+      "line": 20
+    }
+  ],
+  "src/hooks/cart/useUpdateCart.ts": [
+    {
+      "message": "! eslint(no-unused-vars): Variable 'setCart' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/hooks/cart/useUpdateCart.ts",
+      "line": 9
+    }
+  ],
+  "src/pages/LoginPage.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationStore' is imported but never used.",
+      "file": "src/pages/LoginPage.tsx",
+      "line": 10
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'useLocationModalStore' is imported but never used.",
+      "file": "src/pages/LoginPage.tsx",
+      "line": 11
+    }
+  ],
+  "src/components/orders/OrderDetailsDialog.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Truck' is imported but never used.",
+      "file": "src/components/orders/OrderDetailsDialog.tsx",
+      "line": 11
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'toast' is imported but never used.",
+      "file": "src/components/orders/OrderDetailsDialog.tsx",
+      "line": 15
+    }
+  ],
+  "src/pages/OrdersPage.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Package' is imported but never used.",
+      "file": "src/pages/OrdersPage.tsx",
+      "line": 13
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'data' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/OrdersPage.tsx",
+      "line": 20
+    }
+  ],
+  "src/hooks/queries/useSettings.ts": [
+    {
+      "message": "! eslint(no-unused-vars): Variable 'storeStatus' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/hooks/queries/useSettings.ts",
+      "line": 8
+    }
+  ],
+  "src/hooks/queries/useCategories.ts": [
+    {
+      "message": "! eslint(no-unused-vars): Variable 'storeStatus' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/hooks/queries/useCategories.ts",
+      "line": 8
+    }
+  ],
+  "src/components/home/PromotionalBanner.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Variable 'isLoading' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/components/home/PromotionalBanner.tsx",
+      "line": 18
+    }
+  ],
+  "src/components/profile/ProfileHeader.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Card' is imported but never used.",
+      "file": "src/components/profile/ProfileHeader.tsx",
+      "line": 2
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'CardContent' is imported but never used.",
+      "file": "src/components/profile/ProfileHeader.tsx",
+      "line": 2
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'currency' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/components/profile/ProfileHeader.tsx",
+      "line": 23
+    }
+  ],
+  "src/components/cart/CartSummary.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'AppliedCoupon' is imported but never used.",
+      "file": "src/components/cart/CartSummary.tsx",
+      "line": 6
+    }
+  ],
+  "src/pages/CartPage.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'ShoppingCart' is imported but never used.",
+      "file": "src/pages/CartPage.tsx",
+      "line": 12
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'setCustomerName' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/CartPage.tsx",
+      "line": 58
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'setCustomerPhoneNo' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/CartPage.tsx",
+      "line": 59
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'isRemoveDialogOpen' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/CartPage.tsx",
+      "line": 64
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'setLocalInstruction' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/CartPage.tsx",
+      "line": 67
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'handleConfirmRemove' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/CartPage.tsx",
+      "line": 168
+    }
+  ],
+  "src/pages/CheckoutPage.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'motion' is imported but never used.",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 3
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'AnimatePresence' is imported but never used.",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 3
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'CheckCircle2' is imported but never used.",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 4
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Lock' is imported but never used.",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 4
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Gift' is imported but never used.",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 4
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Ticket' is imported but never used.",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 4
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Wallet' is imported but never used.",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 5
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'response' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 128
+    }
+  ],
+  "src/pages/LandingPage.tsx": [
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'AnimatePresence' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 3
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'MapPin' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 4
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Sparkles' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 4
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Ticket' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 4
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'CategoryList' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 14
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Sheet' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 34
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'SheetContent' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 35
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'SheetTrigger' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 36
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'SheetTitle' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 37
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'SheetHeader' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 38
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'Menu' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 40
+    },
+    {
+      "message": "! eslint(no-unused-vars): Type 'CategoryItem' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 41
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'ProductGrid' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 42
+    },
+    {
+      "message": "! eslint(no-unused-vars): Identifier 'cn' is imported but never used.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 44
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'formattedAddress' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 52
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'street' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 52
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'city' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 52
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'openModal' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 53
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'user' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 54
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'isProductsLoading' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 72
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'isProductsError' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 73
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'setFilters' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 80
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'isFilterDrawerOpen' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 90
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'setIsFilterDrawerOpen' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 90
+    },
+    {
+      "message": "! eslint(no-unused-vars): Variable 'coupons' is declared but never used. Unused variables should start with a '_'.",
+      "file": "src/pages/LandingPage.tsx",
+      "line": 104
+    }
+  ]
+}
