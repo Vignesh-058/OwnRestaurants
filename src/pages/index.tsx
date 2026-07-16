@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 
-// Placeholders (can remain normal or we can just leave them as is, but let's make them lazy-compatible by providing default exports if we actually use them, or just export them as named exports without lazy if they are just placeholders)
-export const IndexPage = () => <div>Index Page Placeholder</div>;
+
 
 export const ProductPage = lazy(() => import('./ProductPage').then(m => ({ default: m.ProductPage })));
 export const CheckoutPage = lazy(() => import('./CheckoutPage').then(m => ({ default: m.CheckoutPage })));

@@ -143,6 +143,8 @@ export const HeroBanner = () => {
                             src={imgUrl} 
                             alt={banner.title || "Promotional Banner"} 
                             className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                            fetchPriority={index === 0 ? "high" : "auto"}
+                            loading={index === 0 ? "eager" : "lazy"}
                           />
                         </div>
                       </div>
@@ -157,12 +159,14 @@ export const HeroBanner = () => {
                   <button 
                     onClick={scrollPrev}
                     className="absolute -left-5 top-1/2 -translate-y-1/2 w-12 h-12 bg-card rounded-full shadow-lg border border-border flex items-center justify-center text-foreground hover:text-primary hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
+                    aria-label="Previous banner"
                   >
                     <ChevronLeft className="w-6 h-6" />
                   </button>
                   <button 
                     onClick={scrollNext}
                     className="absolute -right-5 top-1/2 -translate-y-1/2 w-12 h-12 bg-card rounded-full shadow-lg border border-border flex items-center justify-center text-foreground hover:text-primary hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
+                    aria-label="Next banner"
                   >
                     <ChevronRight className="w-6 h-6" />
                   </button>

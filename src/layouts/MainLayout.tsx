@@ -63,17 +63,6 @@ export const MainLayout = () => {
     belongsTo, outletId, outletsQuery.isSuccess, bannersQuery.isSuccess, orgQuery.isSuccess, orgQuery.data
   ]);
 
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-
-
-
-
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    belongsTo, outletId, outletsQuery.isSuccess, bannersQuery.isSuccess
-  ]);
 
   if (orgQuery.isLoading || (belongsTo && outletsQuery.isLoading)) {
     return <LoadingState message="Initializing application..." />;

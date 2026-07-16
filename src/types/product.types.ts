@@ -38,3 +38,14 @@ export interface ItemDetail {
  rating?: number;
  inStock?: boolean;
 }
+
+export interface FilterState {
+  categories: string[];
+  foodType: string;
+  priceRange: [number, number];
+  rating: number;
+  offers: string[];
+  deliveryTime: number;
+  availability: string[];
+  sortBy: string;
+}

@@ -14,7 +14,7 @@ interface ProductCollectionProps {
   hideBorderBottom?: boolean;
 }
 
-export const ProductCollection = ({ title, subtitle, products, onProductClick, hideBorderBottom }: ProductCollectionProps) => {
+export const ProductCollection = React.memo(({ title, subtitle, products, onProductClick, hideBorderBottom }: ProductCollectionProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -49,12 +49,14 @@ export const ProductCollection = ({ title, subtitle, products, onProductClick, h
               <button 
                 onClick={() => scroll('left')}
                 className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300"
+                aria-label={`Scroll ${title} left`}
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button 
                 onClick={() => scroll('right')}
                 className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300"
+                aria-label={`Scroll ${title} right`}
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
@@ -86,4 +88,6 @@ export const ProductCollection = ({ title, subtitle, products, onProductClick, h
       </div>
     </section>
   );
-};
+});
+
+ProductCollection.displayName = 'ProductCollection';

@@ -1,5 +1,5 @@
 import { useProductFilter } from '@/hooks/useProductFilter';
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useOrganizationStore } from "@/store/OrganizationStore";
@@ -22,7 +22,7 @@ import { TodaysOffers } from "@/components/home/TodaysOffers";
 import { useSettings } from "@/hooks/queries/useSettings";
 import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
-import type { FilterState } from "@/components/product/FilterSidebar";
+import type { FilterState } from "@/types/product.types";
 
 export const LandingPage = () => {
   const navigate = useNavigate();
@@ -70,10 +70,10 @@ export const LandingPage = () => {
     }
   }, [categories, activeCategoryId]);
 
-  const handleCategorySelect = (id: string) => {
+  const handleCategorySelect = useCallback((id: string) => {
     navigate(`/products?category=${id}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [navigate]);
 
   useCoupons();
   useGeoLocation();
@@ -119,13 +119,13 @@ export const LandingPage = () => {
   const filteredRecommendedProducts = useProductFilter(recommendedProductsBase, filters);
   const recommendedProducts = useMemo(() => filteredRecommendedProducts.slice(0, 8), [filteredRecommendedProducts]);
 
-  const handleProductClick = (p: any) => {
+  const handleProductClick = useCallback((p: any) => {
     if (p.variations && p.variations.length > 0) {
       setSelectedProductId(p._id);
     } else {
       // Typically add to cart, handled directly in ProductCard
     }
-  };
+  }, []);
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-background">

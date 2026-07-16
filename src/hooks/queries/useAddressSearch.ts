@@ -4,7 +4,7 @@ import { locationService } from '@/services/location.service';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 
 // Custom hook for debouncing input values
-export const useDebounce = <T>(value: T, delay: number): T => {
+const useDebounce = <T>(value: T, delay: number): T => {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {

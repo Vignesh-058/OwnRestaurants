@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/CartStore';
@@ -21,7 +22,7 @@ interface ProductCardProps {
   onClick?: (product: CategoryItem) => void;
 }
 
-export const ProductCard = ({ product, className, onClick: _onClick }: ProductCardProps) => {
+export const ProductCard = React.memo(({ product, className, onClick: _onClick }: ProductCardProps) => {
   const navigate = useNavigate();
   const cartItems = useCartStore((state) => state.cartItems) || [];
   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
@@ -412,4 +413,6 @@ export const ProductCard = ({ product, className, onClick: _onClick }: ProductCa
       </div>
     </div>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';
