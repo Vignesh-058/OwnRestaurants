@@ -13,7 +13,7 @@ export const useGeoLocation = () => {
  queryKey: ['geoLocation', latitude, longitude, belongsTo],
  queryFn: async () => {
  if (!latitude || !longitude || !belongsTo) return null;
- const data = await locationService.getCustomerGeoLocation({ lat: latitude, lng: longitude });
+ const data = await locationService.getCustomerGeoLocation({ belongsTo, latitude, longitude });
  console.log('[LOCATION] customer-geo-location response', data);
  return data;
  },

@@ -4,8 +4,9 @@ import type { ApiResponse } from '@/types/api.types';
 import type { GeoLocationResponse, AddressSearchRequest } from '@/types/location.types';
 
 export interface GeoLocationPayload {
-  lat: number;
-  lng: number;
+  belongsTo: string;
+  latitude: number;
+  longitude: number;
 }
 
 export const locationService = {

@@ -1,0 +1,26 @@
+[33m6b7228d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m update
+[33m016338f[m update
+[33m5253fec[m update
+[33m64fdedf[m update
+[33m6bc856c[m update
+[33mf27fc20[m update
+[33md5611d7[m update
+[33m9c94f7b[m update
+[33mccf5839[m update
+[33m364273a[m update
+[33mc627e56[m update
+[33m46b7fc9[m update
+[33m23be13f[m update
+[33m26248c3[m update
+[33m3c60f8a[m update
+[33mea62f66[m fix: production deployment fallbacks for environment variables and audit logging
+[33mc1df023[m fix: add logging for login response and verification otp value
+[33m8d4d232[m fix: sync login and OTP verify phone format, add logging
+[33mb1dd6c5[m fix: complete place-order payload with address details and item details
+[33maa7eba5[m fix: resolve build errors for deployment
+[33m9b38e3e[m fix: resolve cart, checkout, and API data sync issues
+[33md3eaec7[m update
+[33m67dea8e[m update
+[33mdbad0e3[m feat: redesign product page, fix cart bugs, add filter panel
+[33m5b368d2[m Fix TypeScript build errors for Vercel
+[33mbe22155[m Initial commit with Redesigned Menu and Vercel Config

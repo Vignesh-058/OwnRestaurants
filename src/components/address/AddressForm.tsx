@@ -72,7 +72,8 @@ export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
     setIsGeocoding(true);
     try {
       // Use getCustomerGeoLocation per requirements to reverse geocode
-      const response = await locationService.getCustomerGeoLocation({ lat, lng });
+      const belongsTo = useOrganizationStore.getState().organization?._id || "";
+      const response = await locationService.getCustomerGeoLocation({ belongsTo, latitude: lat, longitude: lng });
       
       if (response) {
         if (response.formattedAddress) {
