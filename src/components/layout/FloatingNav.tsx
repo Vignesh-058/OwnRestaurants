@@ -17,8 +17,8 @@ export const FloatingNav = () => {
 
     const updateHeight = () => {
       if (navRef.current) {
-        // If we're on md or larger screens, the nav is hidden
-        if (window.innerWidth >= 768) {
+        // If we're on lg or larger screens, the nav is hidden
+        if (window.innerWidth >= 1025) {
           document.documentElement.style.setProperty('--floating-nav-height', '0px');
           return;
         }
@@ -60,7 +60,7 @@ export const FloatingNav = () => {
   };
 
   return (
-    <div ref={navRef} className="fixed bottom-0 left-0 right-0 z-[45] w-full pointer-events-none md:hidden transition-all duration-300">
+    <div ref={navRef} className="fixed bottom-0 left-0 right-0 z-[45] w-full pointer-events-none lg:hidden transition-all duration-300">
       <nav 
         className="pointer-events-auto bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-t border-border px-3 pt-2 flex items-center justify-between shadow-[0_-8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.4)] w-full rounded-t-[20px]"
         style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}

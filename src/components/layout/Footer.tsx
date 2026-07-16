@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { 
@@ -7,6 +8,8 @@ import {
 import defaultLogo from '@/assets/Ieyal Logo.jpeg';
 
 export const Footer = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   const organization = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   
@@ -37,7 +40,10 @@ export const Footer = () => {
   );
 
   return (
-    <footer className="w-full bg-card pt-24 pb-12 mt-auto border-t border-border shadow-[0_-4px_24px_rgba(0,0,0,0.02)]">
+    <footer className={cn(
+      "w-full bg-card pb-12 mt-auto shadow-[0_-4px_24px_rgba(0,0,0,0.02)]",
+      isHomePage ? "pt-12" : "pt-24 border-t border-border"
+    )}>
       <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
         
         {/* Main Grid: 1 col on mobile, 3 on desktop */}

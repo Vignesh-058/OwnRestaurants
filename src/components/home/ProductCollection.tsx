@@ -4,14 +4,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
 import type { CategoryItem } from '@/types/category.types';
 
+import { cn } from '@/lib/utils';
+
 interface ProductCollectionProps {
   title: string;
   subtitle?: string;
   products: CategoryItem[];
   onProductClick: (product: CategoryItem) => void;
+  hideBorderBottom?: boolean;
 }
 
-export const ProductCollection = ({ title, subtitle, products, onProductClick }: ProductCollectionProps) => {
+export const ProductCollection = ({ title, subtitle, products, onProductClick, hideBorderBottom }: ProductCollectionProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -25,7 +28,7 @@ export const ProductCollection = ({ title, subtitle, products, onProductClick }:
   if (!products || products.length === 0) return null;
 
   return (
-    <section className="py-20 bg-background overflow-hidden relative border-b border-border">
+    <section className={cn("py-20 bg-background overflow-hidden relative", !hideBorderBottom && "border-b border-border")}>
       <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>

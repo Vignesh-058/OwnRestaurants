@@ -18,7 +18,7 @@ import { DeliveryInfoBar } from "@/components/home/DeliveryInfoBar";
 import { CategoriesCarousel } from "@/components/home/CategoriesCarousel";
 import { ProductCollection } from "@/components/home/ProductCollection";
 import { TodaysOffers } from "@/components/home/TodaysOffers";
-import { RestaurantInfo } from "@/components/home/RestaurantInfo";
+
 import { useSettings } from "@/hooks/queries/useSettings";
 import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
@@ -128,7 +128,7 @@ export const LandingPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-background pb-32">
+    <div className="flex flex-col w-full min-h-screen bg-background">
       <motion.div
         key="menu"
         initial={{ opacity: 0, y: 15 }}
@@ -208,9 +208,9 @@ export const LandingPage = () => {
                   subtitle="Highly rated meals you must try."
                   products={topRated} 
                   onProductClick={handleProductClick} 
+                  hideBorderBottom
                 />
 
-                <RestaurantInfo />
               </>
             </div>
           </>

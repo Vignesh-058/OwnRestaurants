@@ -4,6 +4,10 @@
 @import "./typography.css";
 @import "./animations.css";
 
+@theme {
+  --breakpoint-lg: 1025px;
+}
+
 @layer base {
   * {
     @apply border-border;
