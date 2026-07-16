@@ -36,12 +36,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     // Update browser title dynamically
-    const brandName = organization?.brandName || organization?.name || 'OwnCart';
-    if (isAuthenticated && user?.name) {
-      document.title = `${user.name} | ${brandName}`;
-    } else {
-      document.title = brandName;
-    }
+    document.title = 'OwnCart';
 
     // Update browser favicon
     const faviconUrl = organization?.logoImage || defaultLogo;

@@ -33,10 +33,10 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
   return (
     <section id="product-menu" className="w-full flex flex-col lg:flex-row relative z-10">
       {/* LEFT: Sidebar (Categories + Desktop Filters) */}
-      <aside className="w-full lg:w-[360px] shrink-0 bg-background border-r border-border z-30 relative">
+      <aside className="w-full lg:w-[360px] shrink-0 bg-background border-b lg:border-b-0 lg:border-r border-border z-40 sticky top-[80px] lg:static shadow-sm lg:shadow-none">
         <div className="flex flex-col lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           
-          <div className="flex-shrink-0 sticky top-[64px] lg:top-0 bg-background z-40 pt-4 lg:pt-6 pb-2 border-b border-border/50 lg:border-none shadow-sm lg:shadow-none">
+          <div className="flex-shrink-0 lg:sticky lg:top-0 bg-background z-40 pt-4 lg:pt-6 pb-2 lg:border-none lg:shadow-none">
             
             {/* Mobile: Compact Search & Filter Row */}
             <div className="px-4 lg:hidden flex items-center gap-2 mb-3">

@@ -1,7 +1,7 @@
 @layer base {
   :root {
     /* Premium SaaS Light Theme (Apple/Stripe inspired) */
-    --background: #FFFFFF; /* Pure white background for a clean look */
+    --background: #FFF8F3; /* Subtle warm tint matching primary orange */
     --foreground: #09090B; /* Almost black text for maximum contrast */
 
     --card: #FFFFFF;

@@ -48,7 +48,6 @@ export const MainLayout = () => {
         root.style.setProperty('--primary', theme.primaryColor);
         root.style.setProperty('--ring', theme.primaryColor);
       }
-      if (theme.backgroundColor) root.style.setProperty('--background', theme.backgroundColor);
       if (theme.textColor) root.style.setProperty('--foreground', theme.textColor);
       if (theme.borderColor) root.style.setProperty('--border', theme.borderColor);
       if (theme.secondaryColor) root.style.setProperty('--secondary', theme.secondaryColor);
