@@ -13,7 +13,7 @@ interface SearchBarProps {
 
 export const SearchBar = ({ autoFocus, className }: SearchBarProps) => {
  const { query, handleChange, clear } = useSearchQuery();
- const { suggestions } = useSearch();
+ const { suggestions, allProducts } = useSearch();
  const { setDebouncedQuery, addToHistory } = useSearchStore();
  const [showSuggestions, setShowSuggestions] = useState(false);
  const [isFocused, setIsFocused] = useState(false);
@@ -103,7 +103,7 @@ export const SearchBar = ({ autoFocus, className }: SearchBarProps) => {
 
  {/* Dropdown suggestions */}
  {showSuggestions && (
- <SearchSuggestions suggestions={suggestions} onSelect={handleSelect} />
+ <SearchSuggestions suggestions={suggestions} allProducts={allProducts} onSelect={handleSelect} />
  )}
  </div>
  );

@@ -2,19 +2,31 @@ import { Clock, TrendingUp, X } from 'lucide-react';
 import { useSearchHistory } from '@/hooks/useSearchHistory';
 import { useSearchStore } from '@/store/SearchStore';
 import { Button } from '@/components/ui/button';
-
-const POPULAR = ['Biryani', 'Pizza', 'Burger', 'Coffee', 'Sushi', 'Pasta', 'Salad', 'Ice Cream'];
+import { useMemo } from 'react';
+import type { CategoryItem } from '@/types/category.types';
 
 interface SearchSuggestionsProps {
  suggestions: string[];
+ allProducts?: CategoryItem[];
  onSelect: (query: string) => void;
 }
 
-export const SearchSuggestions = ({ suggestions, onSelect }: SearchSuggestionsProps) => {
+export const SearchSuggestions = ({ suggestions, allProducts = [], onSelect }: SearchSuggestionsProps) => {
  const { searchHistory, removeFromHistory, clearHistory } = useSearchHistory();
  const { debouncedQuery } = useSearchStore();
 
  const isTyping = debouncedQuery.trim().length > 0;
+
+ const popularSuggestions = useMemo(() => {
+   const tags = new Set<string>();
+   allProducts.forEach(p => {
+     if (p.category) tags.add(p.category);
+     p.tag?.forEach(t => tags.add(t));
+   });
+   const arrayTags = Array.from(tags).filter(Boolean);
+   if (arrayTags.length === 0) return ['Meals', 'Specials', 'Drinks', 'Desserts', 'Snacks'];
+   return arrayTags.slice(0, 8);
+ }, [allProducts]);
 
  if (isTyping && suggestions.length > 0) {
  return (
@@ -78,12 +90,12 @@ export const SearchSuggestions = ({ suggestions, onSelect }: SearchSuggestionsPr
  <TrendingUp className="h-3.5 w-3.5" /> Popular Searches
  </p>
  <div className="flex flex-wrap gap-2">
- {POPULAR.map((p) => (
+ {popularSuggestions.map((p) => (
  <Button
  key={p}
  variant="outline"
  size="sm"
- className="rounded-full h-8 text-xs font-medium"
+ className="rounded-full h-8 text-xs font-medium capitalize"
  onClick={() => onSelect(p)}
  >
  {p}

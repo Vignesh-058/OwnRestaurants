@@ -1,7 +1,6 @@
-import { MapPin } from 'lucide-react';
+import { MapPin, ShoppingCart } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/CartStore";
@@ -16,7 +15,6 @@ import defaultLogo from "@/assets/Ieyal Logo.jpeg";
 export const Navbar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
   const { grandTotal, cartItemCount } = useCartStore();
@@ -93,8 +91,6 @@ export const Navbar = () => {
   }, [isAuthenticated, activeSection]);
 
   const scrollToSection = (sectionId: string) => {
-    setIsMobileMenuOpen(false);
-    
     if (sectionId === "home") {
       window.scrollTo({ top: 0, behavior: "smooth" });
       setActiveSection("home");
@@ -127,17 +123,6 @@ export const Navbar = () => {
       <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-4 relative">
         {/* LEFT SECTION: Logo & Delivery */}
         <div className="flex items-center gap-3 md:gap-4 shrink-0">
-          <AnimatePresence mode="wait">
-              <motion.button
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                className="lg:hidden p-1.5 text-foreground hover:bg-muted rounded-md transition-colors -ml-1 overflow-hidden"
-                onClick={() => setIsMobileMenuOpen(true)}
-              >
-                <Menu className="w-6 h-6 shrink-0" />
-              </motion.button>
-          </AnimatePresence>
 
           <Link
             to={isAuthenticated ? "/" : "/"}
@@ -174,6 +159,7 @@ export const Navbar = () => {
           <AnimatePresence mode="wait">
             {isAuthenticated && showLocation && (
               <motion.div 
+                key="location-card"
                 variants={fadeVariants}
                 initial="hidden" animate="visible" exit="exit"
                 className="flex items-center gap-3 lg:gap-4 shrink-0 min-w-0"
@@ -219,11 +205,11 @@ export const Navbar = () => {
                 {/* Mobile Compact Location Button */}
                 <button
                   onClick={openOutletModal}
-                  className="md:hidden flex items-center gap-1.5 bg-card border border-border rounded-xl px-2.5 py-2 hover:shadow-sm transition-all max-w-[150px]"
+                  className="md:hidden flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1.5 hover:shadow-sm transition-all max-w-[100px] sm:max-w-[150px]"
                 >
-                  <span className="text-sm leading-none">📍</span>
-                  <span className="text-xs font-bold text-foreground truncate">
-                    {selectedOutlet?.outletName || "Select Outlet"}
+                  <MapPin className="w-3.5 h-3.5 shrink-0 text-primary" />
+                  <span className="text-[11px] font-bold text-foreground truncate">
+                    {selectedOutlet?.outletName || "Select"}
                   </span>
                 </button>
               </motion.div>
@@ -305,10 +291,12 @@ export const Navbar = () => {
                 {showCart && (
                   <Link 
                     to="/cart"
-                    className="flex items-center gap-2 h-[40px] md:h-[48px] px-4 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 shrink-0 group"
+                    className="flex items-center gap-1.5 md:gap-2 h-[36px] md:h-[48px] px-3 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 shrink-0 group"
                   >
-                    <ShoppingCart className="h-5 w-5 stroke-[2.5] group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-bold tracking-wide flex items-center gap-1.5">
+                    <ShoppingCart className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5] group-hover:scale-110 transition-transform" />
+                    
+                    {/* Desktop/Tablet text */}
+                    <span className="hidden sm:flex text-[13px] md:text-sm font-bold tracking-wide items-center gap-1.5">
                       {totalCartQuantity > 0 ? (
                         <>
                           <span>{totalCartQuantity} items</span>
@@ -321,6 +309,11 @@ export const Navbar = () => {
                       ) : (
                         "Cart"
                       )}
+                    </span>
+                    
+                    {/* Mobile minimal text */}
+                    <span className="sm:hidden text-[12px] font-bold flex items-center">
+                      {totalCartQuantity > 0 ? totalCartQuantity : "Cart"}
                     </span>
                   </Link>
                 )}
@@ -354,84 +347,9 @@ export const Navbar = () => {
               </motion.div>
             )}
           </AnimatePresence>
+
         </div>
       </div>
-      
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="fixed inset-0 bg-black/60 z-[110] lg:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-            <motion.div 
-              initial={{ x: "-100%" }} 
-              animate={{ x: 0 }} 
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[120] lg:hidden flex flex-col"
-            >
-              <div className="p-4 border-b border-border flex items-center justify-between bg-card">
-                <img src={organization?.logoImage || defaultLogo} alt="Logo" className="w-[40px] h-[40px] rounded-xl shadow-sm" />
-                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-muted-foreground hover:text-foreground transition-colors">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
-                {isAuthenticated ? (
-                  navLinks.map(link => (
-                    <Link 
-                      key={link.id} 
-                      to={link.path}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={cn(
-                        "p-3 rounded-xl text-[15px] font-bold transition-colors",
-                        activeTabId === link.id ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  ))
-                ) : (
-                  <>
-                    <button 
-                      onClick={() => scrollToSection('home')} 
-                      className={cn(
-                        "p-3 rounded-xl text-[15px] font-bold transition-colors text-left",
-                        activeSection === 'home' ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted"
-                      )}
-                    >
-                      Home
-                    </button>
-                    <button 
-                      onClick={() => scrollToSection('how-it-works')} 
-                      className={cn(
-                        "p-3 rounded-xl text-[15px] font-bold transition-colors text-left",
-                        activeSection === 'how-it-works' ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted"
-                      )}
-                    >
-                      How it Works
-                    </button>
-                    <button 
-                      onClick={() => scrollToSection('features')} 
-                      className={cn(
-                        "p-3 rounded-xl text-[15px] font-bold transition-colors text-left",
-                        activeSection === 'features' ? "bg-accent text-primary" : "text-muted-foreground hover:bg-muted"
-                      )}
-                    >
-                      Features
-                    </button>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </motion.header>
   );
 };

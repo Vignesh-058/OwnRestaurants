@@ -4,12 +4,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
 import type { CategoryItem } from '@/types/category.types';
 
-interface PopularProductsProps {
+interface ProductCollectionProps {
+  title: string;
+  subtitle?: string;
   products: CategoryItem[];
   onProductClick: (product: CategoryItem) => void;
 }
 
-export const PopularProducts = ({ products, onProductClick }: PopularProductsProps) => {
+export const ProductCollection = ({ title, subtitle, products, onProductClick }: ProductCollectionProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -28,29 +30,33 @@ export const PopularProducts = ({ products, onProductClick }: PopularProductsPro
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight mb-4">
-              Featured Products
+              {title}
             </h2>
             <div className="w-20 h-1.5 bg-primary rounded-full mb-6" />
-            <p className="text-muted-foreground text-lg font-medium max-w-xl">
-              Hand-picked by our chefs, these signature dishes are loved by our customers.
-            </p>
+            {subtitle && (
+              <p className="text-muted-foreground text-lg font-medium max-w-xl">
+                {subtitle}
+              </p>
+            )}
           </div>
           
           {/* Navigation Controls */}
-          <div className="hidden md:flex items-center gap-3">
-            <button 
-              onClick={() => scroll('left')}
-              className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button 
-              onClick={() => scroll('right')}
-              className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
+          {products.length > 3 && (
+            <div className="hidden md:flex items-center gap-3">
+              <button 
+                onClick={() => scroll('left')}
+                className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button 
+                onClick={() => scroll('right')}
+                className="w-12 h-12 rounded-full border border-border bg-card flex items-center justify-center text-foreground hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Carousel */}
@@ -65,7 +71,7 @@ export const PopularProducts = ({ products, onProductClick }: PopularProductsPro
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               key={product._id}
-              className="snap-start shrink-0 w-[280px] md:w-[320px]"
+              className="snap-start shrink-0 w-[80vw] sm:w-[280px] md:w-[320px]"
             >
               <ProductCard 
                 product={product}

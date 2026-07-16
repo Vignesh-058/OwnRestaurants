@@ -25,7 +25,7 @@ const MobileCheckoutFooter = () => {
   const currency = organization?.currency || '₹';
   if (cartItemCount === 0) return null;
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border shadow-[0_-4px_24px_rgba(0,0,0,0.10)] px-4 py-3">
+    <div className="lg:hidden fixed left-0 right-0 z-50 bg-white border-t border-border shadow-[0_-4px_24px_rgba(0,0,0,0.10)] px-4 py-3 transition-all duration-300" style={{ bottom: 'var(--floating-nav-height, 0px)' }}>
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Grand Total</p>

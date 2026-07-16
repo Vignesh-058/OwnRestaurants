@@ -436,8 +436,10 @@ export const CartDrawer = () => {
                       <span className="text-[12px] font-semibold opacity-90 mb-1">{cartItems.length} ITEM{cartItems.length > 1 ? 'S' : ''}</span>
                       <span className="text-[16px] font-black">{currency}{grandTotal.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      Proceed to Checkout <ChevronRight className="w-5 h-5" />
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className="hidden sm:inline">Proceed to Checkout</span>
+                      <span className="sm:hidden">Checkout</span>
+                      <ChevronRight className="w-5 h-5" />
                     </div>
                   </Button>
                   <Button 

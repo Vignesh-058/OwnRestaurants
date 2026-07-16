@@ -86,14 +86,13 @@ export const HeroBanner = () => {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
             <h1 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold text-foreground leading-[1.15] tracking-tight mb-6">
-              Delicious Food Delivered <span className="text-primary relative inline-block">
-                Fresh
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 10 Q 50 20 100 10" fill="transparent" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg>
-              </span> to Your Doorstep
+              {organization?.theme?.config?.home?.hero?.title || (
+                <>Delicious Food Delivered <span className="text-primary relative inline-block">Fresh<svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 10 Q 50 20 100 10" fill="transparent" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg></span> to Your Doorstep</>
+              )}
             </h1>
             
             <p className="text-muted-foreground text-lg md:text-xl font-medium max-w-lg mb-10 leading-relaxed">
-              Order from your favorite restaurants with fast delivery, secure payments, and exclusive offers.
+              {organization?.theme?.config?.home?.hero?.description || "Order from your favorite restaurants with fast delivery, secure payments, and exclusive offers."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -124,7 +123,7 @@ export const HeroBanner = () => {
           </motion.div>
         </div>
 
-        <div className="relative w-full h-[400px] lg:h-[600px] flex items-center justify-center lg:justify-end">
+        <div className="relative w-full h-[280px] sm:h-[400px] lg:h-[600px] flex items-center justify-center lg:justify-end">
           {isLoading ? (
              <Skeleton className="w-full max-w-[550px] h-full rounded-[32px] opacity-50 bg-muted" />
           ) : hasBanners ? (
@@ -136,7 +135,7 @@ export const HeroBanner = () => {
                     return (
                       <div 
                         key={banner._id || index} 
-                        className="flex-[0_0_100%] min-w-0 relative h-[400px] lg:h-[600px] cursor-pointer"
+                        className="flex-[0_0_100%] min-w-0 relative h-[280px] sm:h-[400px] lg:h-[600px] cursor-pointer"
                         onClick={() => handleBannerClick(banner)}
                       >
                         <div className="absolute inset-0 bg-muted rounded-[32px] overflow-hidden">

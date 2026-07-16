@@ -40,6 +40,7 @@ const AccordionSection = ({ title, defaultOpen = true, children }: { title: stri
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
+            key="filter-panel-content"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}

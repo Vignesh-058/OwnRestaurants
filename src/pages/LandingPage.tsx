@@ -16,23 +16,12 @@ import { StoreConfig } from "@/components/home/StoreConfig";
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { DeliveryInfoBar } from "@/components/home/DeliveryInfoBar";
 import { CategoriesCarousel } from "@/components/home/CategoriesCarousel";
-import { WhyChooseUs } from "@/components/home/WhyChooseUs";
-import { PopularProducts } from "@/components/home/PopularProducts";
-import { HowItWorks } from "@/components/home/HowItWorks";
+import { ProductCollection } from "@/components/home/ProductCollection";
 import { TodaysOffers } from "@/components/home/TodaysOffers";
-import { CustomerReviews } from "@/components/home/CustomerReviews";
-import { DownloadApp } from "@/components/home/DownloadApp";
-import { Newsletter } from "@/components/home/Newsletter";
+import { RestaurantInfo } from "@/components/home/RestaurantInfo";
 import { useSettings } from "@/hooks/queries/useSettings";
 import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
-import {
-  
-  
-  
-  
-  
-} from "@/components/ui/sheet";
 import type { FilterState } from "@/components/product/FilterSidebar";
 
 export const LandingPage = () => {
@@ -40,7 +29,6 @@ export const LandingPage = () => {
   const organization = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   const belongsTo = organization?._id || "";
-
 
   const { data: storeStatusData, isLoading: isStoreStatusLoading } =
     useStoreStatus(belongsTo, selectedOutlet?._id || "");
@@ -112,14 +100,32 @@ export const LandingPage = () => {
     }
   }, [categories]);
 
+  // Dynamic Product Collections
+  const bestSellers = useMemo(() => allProducts.filter(p => p.bestseller), [allProducts]);
+  
+  const newArrivals = useMemo(() => allProducts.filter(p => p.isNew), [allProducts]);
+  
+  const topRated = useMemo(() => {
+    return allProducts.filter(p => p.rating && p.rating >= 4.0).sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  }, [allProducts]);
 
-
-    const recommendedProductsBase = useMemo(() => {
-    return allProducts.filter((p) => p.bestseller || (p.rating && p.rating >= 4.5));
+  const recommendedProductsBase = useMemo(() => {
+    // If we have recommended, return them. Otherwise just a curated slice of products that aren't new/bestsellers.
+    const curated = allProducts.filter((p) => p.bestseller || (p.rating && p.rating >= 4.5));
+    if (curated.length > 0) return curated;
+    return allProducts.slice(0, 8);
   }, [allProducts]);
 
   const filteredRecommendedProducts = useProductFilter(recommendedProductsBase, filters);
   const recommendedProducts = useMemo(() => filteredRecommendedProducts.slice(0, 8), [filteredRecommendedProducts]);
+
+  const handleProductClick = (p: any) => {
+    if (p.variations && p.variations.length > 0) {
+      setSelectedProductId(p._id);
+    } else {
+      // Typically add to cart, handled directly in ProductCard
+    }
+  };
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-background pb-32">
@@ -165,6 +171,7 @@ export const LandingPage = () => {
               <>
                 <HeroBanner />
                 <DeliveryInfoBar />
+                
                 {!isCategoriesLoading && !isCategoriesError && (
                   <CategoriesCarousel
                     categories={categories}
@@ -172,25 +179,39 @@ export const LandingPage = () => {
                     onSelectCategory={handleCategorySelect}
                   />
                 )}
-                {!isCategoriesLoading && !isCategoriesError && (
-                  <PopularProducts
-                    products={recommendedProducts}
-                    onProductClick={(p) => {
-                      if (p.variations && p.variations.length > 0) {
-                        setSelectedProductId(p._id);
-                      }
-                    }}
-                  />
-                )}
-                <TodaysOffers />
-                <WhyChooseUs />
-                <HowItWorks />
-                <CustomerReviews />
-                <DownloadApp />
-                <Newsletter />
-              </>
+                
+                <ProductCollection 
+                  title="Best Sellers" 
+                  subtitle="Most loved by our customers."
+                  products={bestSellers} 
+                  onProductClick={handleProductClick} 
+                />
 
-              {/* Main Product Collection Grid removed as requested */}
+                <TodaysOffers />
+
+                <ProductCollection 
+                  title="Recommended For You" 
+                  subtitle="Hand-picked dishes tailored to your taste."
+                  products={recommendedProducts} 
+                  onProductClick={handleProductClick} 
+                />
+
+                <ProductCollection 
+                  title="New Arrivals" 
+                  subtitle="Discover our latest culinary creations."
+                  products={newArrivals} 
+                  onProductClick={handleProductClick} 
+                />
+
+                <ProductCollection 
+                  title="Top Rated" 
+                  subtitle="Highly rated meals you must try."
+                  products={topRated} 
+                  onProductClick={handleProductClick} 
+                />
+
+                <RestaurantInfo />
+              </>
             </div>
           </>
         )}

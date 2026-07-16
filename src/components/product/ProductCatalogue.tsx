@@ -36,36 +36,26 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
       <aside className="w-full lg:w-[360px] shrink-0 bg-background border-r border-border z-30 relative">
         <div className="flex flex-col lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           
-          <div className="flex-shrink-0 sticky top-[64px] lg:top-0 bg-background z-40 px-6 pt-6 pb-2">
-            <div className="mb-2 flex items-start justify-between">
-              <div>
-                <h2 className="text-[26px] font-extrabold text-foreground tracking-tight leading-none mb-1.5">Categories</h2>
-                <p className="text-[13px] text-muted-foreground font-medium">Browse Menu</p>
+          <div className="flex-shrink-0 sticky top-[64px] lg:top-0 bg-background z-40 pt-4 lg:pt-6 pb-2 border-b border-border/50 lg:border-none shadow-sm lg:shadow-none">
+            
+            {/* Mobile: Compact Search & Filter Row */}
+            <div className="px-4 lg:hidden flex items-center gap-2 mb-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <input 
+                  type="text" 
+                  placeholder="Search products..." 
+                  value={filters.searchQuery}
+                  onChange={(e) => filters.setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 h-10 bg-muted border border-border/50 rounded-full text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+                />
               </div>
-              
-              {/* Desktop Filter Toggle (hidden on mobile) */}
-              <Button 
-                variant="outline" 
-                size="icon"
-                onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
-                className={cn(
-                  "hidden lg:flex w-10 h-10 rounded-full border-border hover:bg-muted transition-colors relative",
-                  isDesktopFilterOpen && "bg-primary/10 border-primary/30 text-primary hover:bg-primary/10"
-                )}
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
-                  <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-primary border-2 border-background" />
-                )}
-              </Button>
-
-              {/* Mobile Filter Toggle (hidden on desktop) */}
               <Sheet open={isMobileFilterOpen} onOpenChange={setIsMobileFilterOpen}>
                 <SheetTrigger asChild>
                   <Button 
                     variant="outline" 
                     size="icon"
-                    className="lg:hidden flex w-10 h-10 rounded-full border-border hover:bg-muted transition-colors relative"
+                    className="flex shrink-0 w-10 h-10 rounded-full border-border bg-background hover:bg-muted transition-colors relative"
                   >
                     <SlidersHorizontal className="w-4 h-4" />
                     {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
@@ -81,7 +71,31 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
               </Sheet>
             </div>
 
-            <div className="mb-4 mt-4">
+            {/* Desktop: Header Row */}
+            <div className="hidden lg:flex px-6 mb-2 items-start justify-between">
+              <div>
+                <h2 className="text-[26px] font-extrabold text-foreground tracking-tight leading-none mb-1.5">Categories</h2>
+                <p className="text-[13px] text-muted-foreground font-medium">Browse Menu</p>
+              </div>
+              
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
+                className={cn(
+                  "hidden lg:flex w-10 h-10 rounded-full border-border hover:bg-muted transition-colors relative",
+                  isDesktopFilterOpen && "bg-primary/10 border-primary/30 text-primary hover:bg-primary/10"
+                )}
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
+                  <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-primary border-2 border-background" />
+                )}
+              </Button>
+            </div>
+
+            {/* Desktop: Search Bar */}
+            <div className="hidden lg:block mb-4 mt-4 px-6">
               <div className="relative w-full">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <input 
@@ -93,80 +107,79 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
                 />
               </div>
             </div>
-          </div>
-          
-          {/* Desktop Filter Panel Animated */}
-          <AnimatePresence>
-            {isDesktopFilterOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                transition={{ duration: 0.2 }}
-                className="hidden lg:block absolute left-6 right-6 top-[132px] z-[60]"
-              >
-                <div className="h-[450px] bg-card rounded-[16px] border border-border shadow-floating overflow-hidden">
-                  <ProductFilterPanel {...filters} onApplyMobile={() => setIsDesktopFilterOpen(false)} />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          {/* Categories List */}
-          <div className="flex flex-col gap-1.5 mb-8 px-6 pt-2">
-            {categories.map((category) => {
-              const isActive = activeCategory._id === category._id;
-              
-              // Count products for this category using allProducts
-              const productCount = allProducts ? allProducts.filter(p => p.category === category._id || p.categoryId === category._id).length : 0;
-              const catName = (category as any).categoryName || category.name || (category as any).displayName || "Unknown";
 
-              return (
-                <button
-                  key={category._id}
-                  onClick={() => onSelectCategory(category._id)}
-                  className={cn(
-                    "flex items-center justify-between w-full h-[60px] px-3 rounded-[16px] transition-all duration-300 text-left group",
-                    isActive 
-                      ? "bg-primary/10 text-primary shadow-sm" 
-                      : "bg-transparent text-foreground hover:bg-muted"
-                  )}
+            {/* Desktop Filter Panel Animated */}
+            <AnimatePresence>
+              {isDesktopFilterOpen && (
+                <motion.div
+                  key="desktop-filter-panel"
+                  initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                  className="hidden lg:block absolute left-6 right-6 top-[132px] z-[60]"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-[38px] h-[38px] rounded-[10px] overflow-hidden flex items-center justify-center shrink-0 transition-all",
-                      "bg-muted border border-border shadow-sm",
-                      isActive && "ring-2 ring-primary/20 bg-background" 
-                    )}>
-                      {category.imageUrl ? (
-                        <img src={category.imageUrl} alt={catName} className="w-[60%] h-[60%] object-contain drop-shadow-sm" />
-                      ) : (
-                        <span className="text-xs font-extrabold uppercase text-primary">{catName.charAt(0)}</span>
-                      )}
+                  <div className="h-[450px] bg-card rounded-[16px] border border-border shadow-floating overflow-hidden">
+                    <ProductFilterPanel {...filters} onApplyMobile={() => setIsDesktopFilterOpen(false)} />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {/* Categories List */}
+            <div className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 lg:gap-1.5 px-4 lg:px-6 pb-2 lg:pb-0 scrollbar-hide snap-x pt-1 lg:pt-2">
+              {categories.map((category) => {
+                const isActive = activeCategory._id === category._id;
+                const productCount = allProducts ? allProducts.filter(p => p.category === category._id || p.categoryId === category._id).length : 0;
+                const catName = (category as any).categoryName || category.name || (category as any).displayName || "Unknown";
+
+                return (
+                  <button
+                    key={category._id}
+                    onClick={() => onSelectCategory(category._id)}
+                    className={cn(
+                      "flex items-center justify-center lg:justify-between w-auto lg:w-full h-10 lg:h-[60px] px-4 lg:px-3 rounded-full lg:rounded-[16px] transition-all duration-300 text-left group shrink-0 snap-start border lg:border-none",
+                      isActive 
+                        ? "bg-primary text-primary-foreground lg:bg-primary/10 lg:text-primary border-primary lg:shadow-sm" 
+                        : "bg-background lg:bg-transparent text-foreground border-border hover:bg-muted"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 lg:gap-3">
+                      <div className={cn(
+                        "hidden lg:flex w-[38px] h-[38px] rounded-[10px] overflow-hidden items-center justify-center shrink-0 transition-all",
+                        "bg-muted border border-border shadow-sm",
+                        isActive && "ring-2 ring-primary/20 bg-background" 
+                      )}>
+                        {category.imageUrl ? (
+                          <img src={category.imageUrl} alt={catName} className="w-[60%] h-[60%] object-contain drop-shadow-sm" />
+                        ) : (
+                          <span className="text-xs font-extrabold uppercase text-primary">{catName.charAt(0)}</span>
+                        )}
+                      </div>
+                      <span className={cn(
+                        "font-bold lg:font-extrabold text-[13px] lg:text-[15px]",
+                        isActive ? "text-primary-foreground lg:text-primary" : "text-foreground"
+                      )}>{catName}</span>
                     </div>
                     <span className={cn(
-                      "font-extrabold text-[15px]",
-                      isActive ? "text-primary" : "text-foreground"
-                    )}>{catName}</span>
-                  </div>
-                  <span className={cn(
-                    "text-[13px] font-extrabold px-2.5 py-1 rounded-[8px] transition-colors",
-                    isActive 
-                      ? "text-primary bg-background shadow-sm" 
-                      : "text-muted-foreground group-hover:text-foreground bg-transparent"
-                  )}>
-                    {productCount}
-                  </span>
-                </button>
-              );
-            })}
+                      "hidden lg:inline-block text-[13px] font-extrabold px-2.5 py-1 rounded-[8px] transition-colors",
+                      isActive 
+                        ? "text-primary bg-background shadow-sm" 
+                        : "text-muted-foreground group-hover:text-foreground bg-transparent"
+                    )}>
+                      {productCount}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
         </div>
       </aside>
 
       {/* RIGHT: Product Listing */}
-      <div className="flex-1 w-full p-4 md:p-8 lg:p-[40px] pb-16 lg:pb-[64px]">
+      <div className="flex-1 w-full p-2 md:p-8 lg:p-[40px] pb-16 lg:pb-[64px]">
         <AnimatePresence mode="wait">
           <motion.div 
             key={activeCategoryId}
@@ -177,7 +190,7 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
             className="w-full flex flex-col max-w-[1400px] mx-auto"
           >
             {/* Header for right side */}
-            <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-0 pb-2">
+            <div className="mb-4 lg:mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-0 px-2 lg:px-0">
               <h3 className="text-[32px] md:text-[48px] font-extrabold text-foreground flex items-center gap-4 tracking-tight">
                 {categoryName}
                 <span className="text-[14px] md:text-[15px] font-extrabold text-muted-foreground bg-muted px-3 h-9 flex items-center justify-center rounded-full">

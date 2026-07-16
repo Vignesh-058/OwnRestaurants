@@ -266,7 +266,10 @@ export const ProductPage = () => {
   );
 
   return (
-    <div className="pb-[100px] lg:pb-12 w-full min-h-screen bg-background">
+    <div 
+      className="lg:pb-12 w-full min-h-screen bg-background transition-all duration-300"
+      style={{ paddingBottom: 'calc(6.5rem + var(--floating-nav-height, 0px))' }}
+    >
       
       {/* 1. HERO SECTION */}
       <div className="relative w-full lg:h-[500px] bg-black">
@@ -517,7 +520,7 @@ export const ProductPage = () => {
       </div>
 
       {/* Bottom Bar Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-xl border-t border-black/5 shadow-[0_-20px_40px_rgba(0,0,0,0.08)] z-50 lg:hidden pb-safe">
+      <div className="fixed left-0 right-0 p-4 bg-white/95 backdrop-blur-xl border-t border-black/5 shadow-[0_-20px_40px_rgba(0,0,0,0.08)] z-50 lg:hidden pb-safe transition-all duration-300" style={{ bottom: 'var(--floating-nav-height, 0px)' }}>
         {renderAddToCartBar()}
       </div>
     </div>

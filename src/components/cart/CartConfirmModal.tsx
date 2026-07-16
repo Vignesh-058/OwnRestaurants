@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Trash2, X } from 'lucide-react';
@@ -78,6 +78,26 @@ export const CartConfirmModal = ({
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  // Safely manage an isolated portal container to prevent React 'removeChild' errors on document.body
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    // Create an isolated div for this modal only
+    const el = document.createElement('div');
+    el.setAttribute('data-portal', 'cart-confirm-modal');
+    document.body.appendChild(el);
+    setPortalContainer(el);
+
+    return () => {
+      // Safely cleanup the isolated container during unmount
+      if (el && el.parentNode === document.body) {
+        document.body.removeChild(el);
+      }
+    };
+  }, []);
+
+  if (!portalContainer) return null;
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -150,7 +170,7 @@ export const CartConfirmModal = ({
         </>
       )}
     </AnimatePresence>,
-    document.body,
+    portalContainer,
   );
 };
 

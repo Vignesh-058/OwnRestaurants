@@ -170,7 +170,10 @@ export const CheckoutPage = () => {
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-10">
-        <div className="flex flex-col lg:grid lg:grid-cols-[65fr_35fr] md:grid-cols-[70fr_30fr] gap-5 xl:gap-6 pb-32 lg:pb-0 items-start">
+        <div 
+          className="flex flex-col lg:grid lg:grid-cols-[65fr_35fr] md:grid-cols-[70fr_30fr] gap-5 xl:gap-6 lg:pb-0 items-start transition-all duration-300"
+          style={{ paddingBottom: 'calc(8rem + var(--floating-nav-height, 0px))' }}
+        >
           
           {/* LEFT COLUMN: Addresses, Pre-Booking, Payment */}
           <div className="flex-1 space-y-6 md:space-y-8 w-full">
@@ -437,7 +440,7 @@ export const CheckoutPage = () => {
               </div>
 
               {/* Desktop / Sticky Footer Button */}
-              <div className="fixed bottom-0 left-0 right-0 p-4 md:p-0 bg-card md:bg-transparent border-t md:border-t-0 border-border z-50 md:static">
+              <div className="fixed left-0 right-0 p-4 md:p-0 bg-card md:bg-transparent border-t md:border-t-0 border-border z-50 md:static transition-all duration-300" style={{ bottom: 'var(--floating-nav-height, 0px)' }}>
                 <Button 
                   className={`w-full h-[56px] rounded-[16px] px-6 shadow-sm hover:shadow-md transition-all duration-300 border-0 ${
                     selectedPaymentMode === 'Online Payment' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-primary hover:bg-primary/90 text-primary-foreground'
