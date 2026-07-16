@@ -305,7 +305,7 @@ export const Navbar = () => {
                 {showCart && (
                   <Link 
                     to="/cart"
-                    className="flex items-center gap-2 h-[40px] md:h-[48px] px-4 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 shrink-0 group"
+                    className="flex items-center gap-2 h-[40px] md:h-[48px] px-4 md:px-6 bg-primary hover:bg-primary-hover text-primary-foreground rounded-full transition-all duration-300 shadow-[var(--shadow-primary)] hover:shadow-lg hover:-translate-y-0.5 shrink-0 group"
                   >
                     <ShoppingCart className="h-5 w-5 stroke-[2.5] group-hover:scale-110 transition-transform" />
                     <span className="text-sm font-bold tracking-wide flex items-center gap-1.5">
@@ -373,7 +373,7 @@ export const Navbar = () => {
               animate={{ x: 0 }} 
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-[120] lg:hidden flex flex-col"
+              className="fixed top-0 left-0 bottom-0 w-[280px] bg-card z-[120] lg:hidden flex flex-col"
             >
               <div className="p-4 border-b border-border flex items-center justify-between bg-card">
                 <img src={organization?.logoImage || defaultLogo} alt="Logo" className="w-[40px] h-[40px] rounded-xl shadow-sm" />

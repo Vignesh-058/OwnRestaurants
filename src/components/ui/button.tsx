@@ -5,22 +5,22 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
- "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-[15px] font-semibold transition-all duration-300 active:scale-[0.97] hover:shadow-md focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+ "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-[15px] font-semibold transition-all duration-300 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
  {
  variants: {
  variant: {
  default:
- "bg-primary text-primary-foreground shadow-sm hover:brightness-90",
+ "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover hover:shadow-md",
  destructive:
- "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+ "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 hover:shadow-md",
  outline:
- "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+ "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground hover:border-primary/30",
  secondary:
- "bg-background text-primary border border-primary shadow-sm hover:bg-primary/5",
- ghost: "hover:bg-primary/10 hover:text-primary transition-colors",
+ "bg-background text-primary border border-primary/60 shadow-sm hover:bg-accent hover:border-primary",
+ ghost: "hover:bg-accent hover:text-accent-foreground transition-colors",
  link: "text-primary underline-offset-4 hover:underline",
- success: "bg-success text-success-foreground shadow-sm hover:bg-success/90",
- danger: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+ success: "bg-success text-success-foreground shadow-sm hover:bg-success/90 hover:shadow-md",
+ danger: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 hover:shadow-md",
  },
  size: {
  default: "h-12 px-6 py-3",
