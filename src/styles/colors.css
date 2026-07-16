@@ -1,85 +1,89 @@
 @layer base {
   :root {
-    /* Premium SaaS Light Theme (Apple/Stripe inspired) */
-    --background: #FFFFFF; /* Pure white background for a clean look */
-    --foreground: #09090B; /* Almost black text for maximum contrast */
+    /* Refined warm light theme — orange-forward, premium food-delivery */
+    --background: #FFFDFB; /* Barely-warm white so orange feels at home */
+    --foreground: #1C1917; /* Warm near-black (stone) for softer contrast */
 
     --card: #FFFFFF;
-    --card-foreground: #09090B;
+    --card-foreground: #1C1917;
 
     --popover: #FFFFFF;
-    --popover-foreground: #09090B;
+    --popover-foreground: #1C1917;
 
     /* ✅ PRIMARY = ORANGE — NEVER BLUE */
-    --primary: #FF6B00; /* Swiggy / Zomato vibe */
+    --primary: #F5610B; /* Slightly richer, more premium orange */
+    /* Derived from --primary so it tracks each org's brand color */
+    --primary-hover: color-mix(in srgb, var(--primary) 87%, #000000);
     --primary-foreground: #FFFFFF;
 
-    --secondary: #F4F4F5; /* Soft gray for secondary buttons */
-    --secondary-foreground: #18181B;
+    --secondary: #F5F3F0; /* Warm soft gray for secondary buttons */
+    --secondary-foreground: #292524;
 
-    --muted: #FAFAFA; /* Very light gray for subtle backgrounds */
-    --muted-foreground: #71717A; /* Medium gray for secondary text */
+    --muted: #F7F5F2; /* Warm very-light gray for subtle backgrounds */
+    --muted-foreground: #78716C; /* Warm stone gray for secondary text */
 
-    --accent: #FFF4ED; /* Light orange tint for hover states */
-    --accent-foreground: #FF6B00;
+    --accent: #FFF3EA; /* Light orange tint for hover / highlight states */
+    --accent-foreground: #C24E06;
 
-    --destructive: #EF4444; /* Standard alert red */
+    --destructive: #E11D48; /* Refined rose-red alert */
     --destructive-foreground: #FFFFFF;
 
-    --success: #10B981; /* Premium emerald green */
+    --success: #059669; /* Emerald green */
     --success-foreground: #FFFFFF;
 
     --warning: #F59E0B;
-    --warning-foreground: #FFFFFF;
+    --warning-foreground: #422006;
 
-    --info: #0C6CEA; /* Standard info blue */
+    --info: #2563EB; /* Info blue */
     --info-foreground: #FFFFFF;
 
-    --border: #E4E4E7; /* Soft subtle borders */
-    --input: #E4E4E7;
-    --ring: #FF6B00;
+    --border: #ECE8E3; /* Warm soft borders */
+    --input: #ECE8E3;
+    --ring: #F5610B;
 
-    --radius: 1rem; /* Slightly larger base radius (Apple style) */
+    --radius: 1rem; /* Rounded, modern base radius */
   }
 
   .dark {
-    /* Premium SaaS Dark Theme (Linear inspired) */
-    --background: #09090B; /* Deep dark background */
-    --foreground: #FAFAFA; /* Off-white text */
+    /* Refined warm dark theme — deep charcoal with orange accents */
+    --background: #0C0A09; /* Warm near-black (stone-950) */
+    --foreground: #FAFAF9; /* Warm off-white text */
 
-    --card: #121214; /* Slightly lighter card background */
-    --card-foreground: #FAFAFA;
+    --card: #1A1613; /* Warm charcoal card */
+    --card-foreground: #FAFAF9;
 
-    --popover: #18181B;
-    --popover-foreground: #FAFAFA;
+    --popover: #221C18;
+    --popover-foreground: #FAFAF9;
 
     /* ✅ PRIMARY = ORANGE — NEVER BLUE */
-    --primary: #FF6B00;
+    --primary: #FB6B1A; /* Brighter orange for dark surfaces */
+    /* Lighten on hover so it tracks each org's brand color in dark mode */
+    --primary-hover: color-mix(in srgb, var(--primary) 85%, #FFFFFF);
     --primary-foreground: #FFFFFF;
 
-    --secondary: #27272A; /* Dark gray for secondary */
-    --secondary-foreground: #FAFAFA;
+    --secondary: #292420; /* Warm dark gray for secondary */
+    --secondary-foreground: #FAFAF9;
 
-    --muted: #18181B;
-    --muted-foreground: #A1A1AA; /* Muted text */
+    --muted: #1C1815;
+    --muted-foreground: #A8A29E; /* Warm muted text */
 
-    --accent: #2A1A0A; /* Dark orange tint */
-    --accent-foreground: #FF8A3D;
+    --accent: #2E1D10; /* Deep warm orange tint */
+    --accent-foreground: #FF9A52;
 
-    --destructive: #7F1D1D;
-    --destructive-foreground: #FAFAFA;
+    --destructive: #E11D48;
+    --destructive-foreground: #FFF1F2;
 
-    --success: #065F46;
-    --success-foreground: #FAFAFA;
+    --success: #10B981;
+    --success-foreground: #052E23;
 
-    --warning: #78350F;
-    --warning-foreground: #FAFAFA;
+    --warning: #F59E0B;
+    --warning-foreground: #422006;
 
-    --info: #1D4ED8;
-    --info-foreground: #FAFAFA;
+    --info: #3B82F6;
+    --info-foreground: #EFF6FF;
 
-    --border: #27272A; /* Subtle dark borders */
-    --input: #27272A;
-    --ring: #FF6B00;
+    --border: #2A2420; /* Subtle warm dark borders */
+    --input: #2A2420;
+    --ring: #FB6B1A;
   }
 }

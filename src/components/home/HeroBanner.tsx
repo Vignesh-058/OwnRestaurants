@@ -98,7 +98,7 @@ export const HeroBanner = () => {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-7 rounded-full text-[17px] font-bold shadow-[0_8px_20px_rgba(255,107,0,0.25)] hover:shadow-[0_12px_24px_rgba(255,107,0,0.35)] hover:-translate-y-1 transition-all duration-300"
+                className="bg-primary hover:bg-primary-hover text-primary-foreground px-8 py-7 rounded-full text-[17px] font-bold shadow-[var(--shadow-primary)] hover:shadow-[0_12px_28px_-6px_rgba(245,97,11,0.4)] hover:-translate-y-1 transition-all duration-300"
                 onClick={() => {
                   navigate('/products');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
