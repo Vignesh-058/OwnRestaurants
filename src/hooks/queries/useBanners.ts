@@ -4,7 +4,7 @@ import { useSettings } from './useSettings';
 
 export const useBanners = (belongsTo: string, outletId: string) => {
   const { data: settings, isSuccess: isSettingsLoaded } = useSettings(belongsTo, outletId);
-  const isBannerEnabled = settings?.banner?.enable === true;
+  const isBannerEnabled = settings?.banner ? settings.banner.enable : true;
 
   return useQuery({
     queryKey: ['active-banners', outletId],

@@ -59,11 +59,12 @@ export const HeroBanner = () => {
   };
 
   const handleBannerClick = (banner: Banner) => {
-    if (banner.buttonLink) {
-      if (banner.buttonLink.startsWith('http')) {
-        window.open(banner.buttonLink, '_blank');
+    const targetLink = banner.link || banner.buttonLink;
+    if (targetLink) {
+      if (targetLink.startsWith('http')) {
+        window.open(targetLink, '_blank');
       } else {
-        navigate(banner.buttonLink);
+        navigate(targetLink);
       }
     } else if (banner.type === 'category' && banner.category?.length > 0) {
       navigate(`/products?category=${banner.category[0]}`);

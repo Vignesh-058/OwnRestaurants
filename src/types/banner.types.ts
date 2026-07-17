@@ -18,4 +18,5 @@ export interface Banner {
  description?: string;
  buttonText?: string;
  buttonLink?: string;
+ link?: string;
 }
