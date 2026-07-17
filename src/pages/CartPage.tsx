@@ -133,7 +133,7 @@ export const CartPage = () => {
    removeItem({
     outletId: selectedOutlet._id,
     orderId,
-    itemid: item.product_retailer_id,
+    itemid: item._id || item.product_retailer_id,
     customerPhoneNo,
     customerName
    }, {
@@ -168,7 +168,7 @@ export const CartPage = () => {
   removeItem({
    outletId: selectedOutlet._id,
    orderId,
-   itemid: item.product_retailer_id,
+   itemid: item._id || item.product_retailer_id,
    customerPhoneNo,
    customerName
   }, {

@@ -14,16 +14,17 @@ export const useDeleteCart = () => {
       return cartService.removeFromCart(payload);
     },
     onSuccess: async (data, variables) => {
-      console.log('[Cart] API Success (deleteCart):', data);
-
-      // Immediately remove item from Zustand so UI updates without waiting for refetch
-      removeCartItem(variables.itemid);
-      console.log('[Cart] Store Updated — item removed:', variables.itemid);
-
-      // Broad invalidation catches the query regardless of phone format used as key
-      console.log('[Cart] Query Invalidated');
-      await queryClient.invalidateQueries({ queryKey: ['cart'] });
-      console.log('[Cart] Refetch Success');
+      if (data?.message === 'All Items Deleted, Cart Removed' || data?.message?.includes('Cart Removed')) {
+        const { clearCart } = useCartStore.getState();
+        clearCart();
+        queryClient.setQueriesData({ queryKey: ['cart'] }, null);
+      } else {
+        // Immediately remove item from Zustand so UI updates without waiting for refetch
+        const { removeCartItem } = useCartStore.getState();
+        removeCartItem(variables.itemid);
+        // Broad invalidation catches the query regardless of phone format used as key
+        await queryClient.invalidateQueries({ queryKey: ['cart'] });
+      }
     },
     onError: (error: any) => {
       console.error('[Cart] API Error (deleteCart):', error);

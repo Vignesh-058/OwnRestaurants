@@ -186,9 +186,9 @@ export const useCartStore = create<CartState>()(
  )
  })),
 
- removeCartItem: (productRetailerId) => set((state) => {
+  removeCartItem: (idToRemove) => set((state) => {
    const newItems = state.cartItems.filter(
-    item => item.product_retailer_id !== productRetailerId
+    item => item.product_retailer_id !== idToRemove && item._id !== idToRemove
    );
    const newCount = newItems.reduce((acc, item) => acc + item.quantity, 0);
    const newTotal = newItems.reduce((acc, item) => acc + ((item.item_price || 0) * item.quantity), 0);
