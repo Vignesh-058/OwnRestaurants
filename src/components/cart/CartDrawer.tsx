@@ -143,7 +143,7 @@ export const CartDrawer = () => {
     removeItem({
       outletId: selectedOutlet._id,
       orderId,
-      itemid: item.product_retailer_id,
+      itemid: item._id || item.product_retailer_id,
       customerPhoneNo,
       customerName
     });

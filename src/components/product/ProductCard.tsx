@@ -159,7 +159,7 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
       removeItem({
         outletId: selectedOutlet._id,
         orderId: orderId || '',
-        itemid: lastItem.product_retailer_id,
+        itemid: lastItem._id || lastItem.product_retailer_id,
         customerPhoneNo: user?.phone || '0000000000',
         customerName: user?.name || 'Guest'
       }, {
