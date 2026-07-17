@@ -5,10 +5,10 @@ import type { ApiResponse } from '@/types/api.types';
 
 export const customerService = {
   login: async (phone: string, belongsTo: string): Promise<{ status: string; message: string }> => {
-    // Backend bug workaround: /login crashes with 502 if 91 is included
-    let formattedPhone = phone.startsWith('+') ? phone.slice(1) : phone;
-    if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
-      formattedPhone = formattedPhone.slice(2);
+    // Format phone number to strictly be 12 digits starting with 91
+    let formattedPhone = phone.replace(/^\+/, '');
+    if (formattedPhone.length === 10) {
+      formattedPhone = '91' + formattedPhone;
     }
 
     const endpoint = `${ENV.AUTH_API}/login`;
@@ -41,9 +41,10 @@ export const customerService = {
   },
 
   verifyOtp: async (phone: string, otp: string, belongsTo: string): Promise<AuthResponse> => {
-    let formattedPhone = phone.startsWith('+') ? phone.slice(1) : phone;
-    if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
-      formattedPhone = formattedPhone.slice(2);
+    // Format phone number to strictly be 12 digits starting with 91
+    let formattedPhone = phone.replace(/^\+/, '');
+    if (formattedPhone.length === 10) {
+      formattedPhone = '91' + formattedPhone;
     }
 
     if (import.meta.env.DEV) {
