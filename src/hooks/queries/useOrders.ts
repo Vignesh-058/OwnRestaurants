@@ -21,8 +21,8 @@ export const useOrders = () => {
     return response;
   },
   enabled: isAuthenticated,
-  staleTime: 0,
-  gcTime: 0,
+  staleTime: 1000 * 30, // 30 seconds
+  gcTime: 1000 * 60 * 5, // 5 minutes
   refetchOnMount: true,
   refetchOnWindowFocus: true,
   refetchOnReconnect: true,

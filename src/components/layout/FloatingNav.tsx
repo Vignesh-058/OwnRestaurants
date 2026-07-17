@@ -74,36 +74,25 @@ export const FloatingNav = () => {
               <Link
                 key={tab.id}
                 to={tab.path}
-                className="relative flex items-center justify-center transition-all duration-300 focus:outline-none"
+                className="relative flex flex-col items-center justify-center transition-all duration-300 focus:outline-none flex-1 py-1"
                 style={{ WebkitTapHighlightColor: 'transparent' }}
               >
-                {active && (
-                  <motion.div
-                    layoutId="active-nav-pill-mobile"
-                    className="absolute inset-0 bg-primary/10 dark:bg-white/10 rounded-full"
-                    transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                  />
-                )}
-
                 <div
                   className={cn(
-                    "relative z-10 flex items-center justify-center h-[44px] transition-all duration-300 rounded-full",
-                    active ? "text-primary dark:text-white px-4" : "text-muted-foreground hover:text-foreground px-3"
+                    "relative z-10 flex flex-col items-center justify-center transition-all duration-300",
+                    active ? "text-primary dark:text-white" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <Icon className={cn("h-[22px] w-[22px] shrink-0 transition-all duration-300", active ? "stroke-[2.5] scale-110" : "stroke-[2]")} />
+                  <Icon className={cn("h-[22px] w-[22px] shrink-0 mb-1 transition-all duration-300", active ? "stroke-[2.5] scale-110" : "stroke-[2]")} />
                   
-                  {active && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0, marginLeft: 0 }}
-                      animate={{ opacity: 1, width: "auto", marginLeft: 6 }}
-                      exit={{ opacity: 0, width: 0, marginLeft: 0 }}
-                      transition={{ duration: 0.2, ease: "easeInOut" }}
-                      className="text-[13px] font-bold tracking-wide overflow-hidden whitespace-nowrap"
-                    >
-                      {tab.label}
-                    </motion.span>
-                  )}
+                  <span
+                    className={cn(
+                      "text-[10px] font-bold tracking-wide text-center transition-all duration-300",
+                      active ? "opacity-100" : "opacity-80"
+                    )}
+                  >
+                    {tab.label}
+                  </span>
                 </div>
               </Link>
             );

@@ -14,7 +14,8 @@ export const applyOrganizationTheme = (themeConfig?: ThemeColors) => {
   }
 
   if (themeConfig.backgroundColor) {
-    root.style.setProperty('--background', themeConfig.backgroundColor);
+    // We ignore the backend background color to enforce the preferred #FFF8F3 background.
+    // root.style.setProperty('--background', themeConfig.backgroundColor);
   }
   
   if (themeConfig.textColor) {

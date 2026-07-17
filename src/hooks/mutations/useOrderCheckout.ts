@@ -27,7 +27,9 @@ export const useOrderCheckout = () => {
     },
     onSuccess: () => {
       console.log('Checkout Success');
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      // Set cart data to null to prevent refetching the old cart from backend
+      queryClient.setQueriesData({ queryKey: ['cart'] }, null);
+      // Invalidate orders and discounts to reflect the new order status
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       queryClient.invalidateQueries({ queryKey: ['discounts'] });
     },

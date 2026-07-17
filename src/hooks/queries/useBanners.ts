@@ -20,8 +20,8 @@ export const useBanners = (belongsTo: string, outletId: string) => {
       return data;
     },
     enabled: Boolean(belongsTo) && Boolean(outletId) && isSettingsLoaded && isBannerEnabled,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
