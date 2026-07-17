@@ -80,7 +80,7 @@ export const FloatingNav = () => {
                 {active && (
                   <motion.div
                     layoutId="active-nav-pill-mobile"
-                    className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-full"
+                    className="absolute inset-0 bg-primary/10 dark:bg-white/10 rounded-full"
                     transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                   />
                 )}
@@ -88,7 +88,7 @@ export const FloatingNav = () => {
                 <div
                   className={cn(
                     "relative z-10 flex items-center justify-center h-[44px] transition-all duration-300 rounded-full",
-                    active ? "text-primary px-4" : "text-muted-foreground hover:text-foreground px-3"
+                    active ? "text-primary dark:text-white px-4" : "text-muted-foreground hover:text-foreground px-3"
                   )}
                 >
                   <Icon className={cn("h-[22px] w-[22px] shrink-0 transition-all duration-300", active ? "stroke-[2.5] scale-110" : "stroke-[2]")} />

@@ -279,12 +279,12 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
   return (
     <div
       className={cn(
-        "group relative flex flex-col w-full h-full min-h-[340px] premium-card overflow-hidden cursor-default",
+        "group relative flex flex-col w-full h-full min-h-[280px] sm:min-h-[300px] lg:min-h-[340px] premium-card overflow-hidden cursor-default",
         className,
       )}
     >
-      {/* 1. Large Product Image (Compact Height 200px) */}
-      <div className="relative w-full h-[200px] shrink-0 bg-muted overflow-hidden">
+      {/* 1. Large Product Image (Responsive Height) */}
+      <div className="relative w-full h-[150px] sm:h-[170px] lg:h-[200px] shrink-0 bg-muted overflow-hidden">
         <img
           src={product.imageUrl?.[0] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
           alt={product.name}
@@ -318,7 +318,7 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
       </div>
 
       {/* 2. Product Information & Actions */}
-      <div className="flex flex-col flex-1 p-4 md:p-5">
+      <div className="flex flex-col flex-1 p-3.5 sm:p-4 lg:p-5">
         {/* Title */}
         <h3 className="font-extrabold text-[17px] text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
           {product.name}
