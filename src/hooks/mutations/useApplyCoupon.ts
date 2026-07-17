@@ -13,7 +13,7 @@ export const useApplyCoupon = () => {
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
 
  return useMutation({
- mutationFn: async (code: string) => {
+ mutationFn: async ({ code, discountId }: { code?: string; discountId?: string }) => {
  if (!orderId || !selectedOutlet?._id) {
  throw new Error('Cart or outlet not available.');
  }
@@ -21,14 +21,15 @@ export const useApplyCoupon = () => {
  const payload: ApplyCouponPayload = {
  outletId: selectedOutlet._id,
  orderId,
- code: code.trim(),
+ code: code?.trim() || "",
+ discountId: discountId,
  };
 
- return { result: await couponService.applyToCart(payload), code };
+ return { result: await couponService.applyToCart(payload), code: code || discountId || "" };
  },
  onSuccess: ({ result, code }) => {
  const discount = result.discountAmount ?? result.discount ?? result.savings ?? 0;
- const total = result.grandTotal ?? result.total ?? null;
+ const total = result.grandTotal ?? result.finalTotal ?? result.total ?? null;
  
  // We don't have the full coupon object here, so we simulate it with code for state compatibility
  const pseudoCoupon = { _id: code, code, discountType: 'Fixed', discountValue: discount } as any;

@@ -24,7 +24,8 @@ export interface Coupon {
 export interface ApplyCouponPayload {
  outletId: string;
  orderId: string;
- code: string;
+ code?: string;
+ discountId?: string;
 }
 
 export interface ApplyCouponResponse {

@@ -3,11 +3,13 @@ import { getUserDiscounts, applyDiscountToCart } from '@/services/discount.servi
 import { useOutletStore } from '@/store/OutletStore';
 import { useAuthStore } from '@/store/AuthStore';
 import { toast } from 'sonner';
+import { useCartStore } from '@/store/CartStore';
 
 export const useDiscounts = () => {
   const queryClient = useQueryClient();
   const outletId = useOutletStore((state) => state.selectedOutlet?._id);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const orderId = useCartStore((state) => state.orderId);
 
   // ---- Fetch Available Offers (React Query v5 syntax) ----
   const {
@@ -44,14 +46,18 @@ export const useDiscounts = () => {
   });
 
   const applyOffer = (offerId: string) => {
-    if (!outletId) return;
+    if (!outletId || !orderId) {
+      toast.error('Cart not found. Please add items to cart first.');
+      return;
+    }
 
     const offer = offers?.find((o: any) => o._id === offerId);
 
     const payload = {
       outletId,
-      offerId,
-      code: offer?.code, // Include code in case backend requires it
+      orderId,
+      discountId: offerId,
+      code: offer?.code || '',
     };
 
     console.log('[Discount] Selected Discount', offerId);

@@ -45,7 +45,7 @@ export const CouponList = ({ coupons }: CouponListProps) => {
  <CouponCard
  key={coupon._id ?? coupon.code}
  coupon={coupon}
- onApply={(c) => applyCoupon(c.code)}
+ onApply={(c) => applyCoupon({ code: c.code, discountId: c._id })}
  isApplying={isPending}
  />
  ))}
