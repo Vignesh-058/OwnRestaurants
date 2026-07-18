@@ -205,9 +205,17 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
 
         optimisticSetQuantity(product, newQty);
         if (orderId) {
-          updateCart(payload);
+          updateCart(payload, {
+            onSuccess: () => {
+              toast.success("Cart updated.");
+            }
+          });
         } else {
-          createCart(payload);
+          createCart(payload, {
+            onSuccess: () => {
+              toast.success("Cart updated.");
+            }
+          });
         }
       };
 
@@ -263,9 +271,17 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
 
       optimisticSetQuantity(product, newQty);
       if (orderId) {
-        updateCart(payload);
+        updateCart(payload, {
+          onSuccess: () => {
+            toast.success("Cart updated.");
+          }
+        });
       } else {
-        createCart(payload);
+        createCart(payload, {
+          onSuccess: () => {
+            toast.success("Cart updated.");
+          }
+        });
       }
     };
 
