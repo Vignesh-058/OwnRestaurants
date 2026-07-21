@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Trash2, ShoppingBag, Clock, Percent, Info, ChevronRight, Tag } from "lucide-react";
+import { X, Trash2, ShoppingBag, Clock, Percent, Info, ChevronRight, Tag, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/CartStore";
 import { useOrganizationStore } from "@/store/OrganizationStore";
@@ -54,7 +54,7 @@ const AnimatedQuantity = ({ quantity, onIncrease, onDecrease, disabled }: any) =
 
 export const CartDrawer = () => {
   const navigate = useNavigate();
-  const { isDrawerOpen, closeDrawer, cartItems, orderTotal, deliveryCharge, totalTax, grandTotal, savedAmount, orderId, orderType, updateItemQuantity } = useCartStore();
+  const { isDrawerOpen, closeDrawer, cartItems, orderTotal, deliveryCharge, totalTax, grandTotal, savedAmount, orderId, orderType, updateItemQuantity, preOrderDate, preOrderTime } = useCartStore();
   const currency = useOrganizationStore((state) => state.organization?.currency || "₹");
   const { user } = useAuthStore();
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
@@ -214,6 +214,21 @@ export const CartDrawer = () => {
                 </button>
               </div>
 
+              {/* Pre-Booking Banner */}
+              {preOrderDate && preOrderTime && (
+                <div className="bg-primary/10 rounded-[12px] p-3 border border-primary/20 mb-4 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-[13px] text-primary">Pre-order Scheduled</h4>
+                    <p className="text-[12px] text-primary/80 font-medium mt-0.5">
+                      For {new Date(preOrderDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at {preOrderTime}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Progress Bar */}
               {cartItems.length > 0 && (
                 <div className="bg-accent rounded-[12px] p-3 border border-accent">
@@ -330,7 +345,7 @@ export const CartDrawer = () => {
 
                               <div className="flex items-center gap-2 mt-1.5">
                                 <div className="flex items-center gap-1 text-[11px] text-foreground font-bold bg-muted px-1.5 py-0.5 rounded-[4px]">
-                                  <span>⭐ 4.8</span>
+                                  <span className="flex items-center"><Star className="w-3 h-3 mr-1 fill-yellow-500 text-yellow-500" /> 4.8</span>
                                 </div>
                                 <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium bg-muted px-1.5 py-0.5 rounded-[4px]">
                                   <Clock className="w-3 h-3" />

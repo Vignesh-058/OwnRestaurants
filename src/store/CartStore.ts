@@ -19,7 +19,11 @@ interface CartState {
  addressId: string | null;
  paymentMode: PaymentMode | null;
  orderType: OrderType | null;
+ tableInfo: { tableId: string; tableName: string } | null;
  eta: string;
+ preBookingId: string | null;
+ preOrderDate: string | null;
+ preOrderTime: string | null;
  checkoutEnable: boolean;
  checkOutMessage: string;
  hasDiscount: boolean;
@@ -44,7 +48,10 @@ interface CartState {
  setOrderId: (orderId: string | null) => void;
  openDrawer: () => void;
  closeDrawer: () => void;
+ setTableInfo: (info: { tableId: string; tableName: string } | null) => void;
+ setOrderType: (type: OrderType | null) => void;
  setAppliedDiscount: (discount: any | null) => void;
+ setPreBooking: (payload: { preBookingId: string | null; preOrderDate: string | null; preOrderTime: string | null }) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -63,7 +70,11 @@ export const useCartStore = create<CartState>()(
  addressId: null,
  paymentMode: null,
  orderType: null,
+ tableInfo: null,
  eta: '',
+ preBookingId: null,
+ preOrderDate: null,
+ preOrderTime: null,
  checkoutEnable: false,
  checkOutMessage: '',
  hasDiscount: false,
@@ -72,6 +83,10 @@ export const useCartStore = create<CartState>()(
  lastUpdatedAt: null,
  isDrawerOpen: false,
  appliedDiscount: null,
+
+ setTableInfo: (info) => set({ tableInfo: info }),
+ setOrderType: (type) => set({ orderType: type }),
+ setPreBooking: (payload) => set(payload),
 
  setCart: (payload) => {
   if (!payload) {
@@ -90,6 +105,9 @@ export const useCartStore = create<CartState>()(
   paymentMode: null,
   orderType: null,
   eta: '',
+  preBookingId: null,
+  preOrderDate: null,
+  preOrderTime: null,
   checkoutEnable: false,
   checkOutMessage: '',
   hasDiscount: false,
@@ -140,6 +158,9 @@ export const useCartStore = create<CartState>()(
    addressId: payload.addressId || null,
    paymentMode: payload.paymentMode || null,
    orderType: payload.orderType || null,
+   preBookingId: (payload as any).preBookingId || null,
+   preOrderDate: (payload as any).preOrderDate || null,
+   preOrderTime: (payload as any).preOrderTime || null,
    checkoutEnable: payload.checkoutEnable ?? true,
    checkOutMessage: payload.checkOutMessage || '',
    
@@ -170,6 +191,9 @@ export const useCartStore = create<CartState>()(
  addressId: null,
  paymentMode: null,
  orderType: null,
+ preBookingId: null,
+ preOrderDate: null,
+ preOrderTime: null,
  checkoutEnable: false,
  checkOutMessage: '',
  appliedDiscount: null,

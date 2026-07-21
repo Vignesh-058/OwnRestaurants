@@ -37,4 +37,19 @@ export const locationService = {
     );
     return response.data.data ?? response.data;
   },
+
+  checkDeliveryAvailability: async (payload: {
+    belongsTo: string;
+    outletId: string;
+    addressId?: string;
+    latitude?: number;
+    longitude?: number;
+  }): Promise<any> => {
+    if (import.meta.env.DEV) console.log('[Location] API Request - Delivery Check', payload);
+    const response = await axiosInstance.post<ApiResponse<any>>(
+      `/delivery/check`,
+      payload
+    );
+    return response.data.data ?? response.data;
+  },
 };

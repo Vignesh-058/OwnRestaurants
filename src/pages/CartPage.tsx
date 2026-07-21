@@ -52,7 +52,7 @@ export const CartPage = () => {
  const navigate = useNavigate();
  const currency = useOrganizationStore(state => state.organization?.currency || '₹');
  const selectedOutlet = useOutletStore(state => state.selectedOutlet);
- const { orderId, orderType, cartItems, updateItemQuantity, optimisticSetQuantity } = useCartStore();
+ const { orderId, orderType, tableInfo, cartItems, updateItemQuantity, optimisticSetQuantity } = useCartStore();
  const { user } = useAuthStore();
 
  // Hardcoded for now per requirements (Guest flow without Auth if null)
@@ -62,8 +62,7 @@ export const CartPage = () => {
  const { handleAddressAndProceed } = useAddressFlow();
 
 
- const [localDeliveryType, setLocalDeliveryType] = useState(orderType || 'Door Delivery');
- const [localInstruction] = useState('');
+ const [localInstruction] = useState(orderType === 'Dine In' && tableInfo ? `Table: ${tableInfo.tableName}` : '');
 
  const { isLoading, isError } = useCartDetails({
  customerPhoneNo,
@@ -75,7 +74,7 @@ export const CartPage = () => {
 
  const updateTimeoutRef = useRef<any>(null);
 
- const triggerCartUpdate = (updatedDeliveryType = localDeliveryType, updatedInstruction = localInstruction) => {
+ const triggerCartUpdate = (updatedDeliveryType = orderType || 'Door Delivery', updatedInstruction = localInstruction) => {
  if (!selectedOutlet || !orderId) return;
 
  if (updateTimeoutRef.current) {
@@ -156,7 +155,7 @@ export const CartPage = () => {
   if (import.meta.env.DEV) console.log('[Cart] Store Updated — quantity:', newQuantity);
 
   // Debounced network sync
-  triggerCartUpdate(localDeliveryType, localInstruction);
+  triggerCartUpdate(orderType || 'Door Delivery', localInstruction);
  };
 
  const handleInitiateRemove = (item: CartItem) => {
@@ -263,11 +262,6 @@ export const CartPage = () => {
               <div className="w-full flex-shrink-0">
                 <CartSummary
                   currency={currency}
-                  deliveryType={localDeliveryType}
-                  onDeliveryTypeChange={val => {
-                    setLocalDeliveryType(val);
-                    triggerCartUpdate(val, localInstruction);
-                  }}
                   isUpdating={isUpdating}
                 />
               </div>
@@ -277,11 +271,6 @@ export const CartPage = () => {
             <div className="lg:hidden w-full flex flex-col gap-6 pb-24">
               <CartSummary
                 currency={currency}
-                deliveryType={localDeliveryType}
-                onDeliveryTypeChange={val => {
-                  setLocalDeliveryType(val);
-                  triggerCartUpdate(val, localInstruction);
-                }}
                 isUpdating={isUpdating}
                 hideMobileActions
               />

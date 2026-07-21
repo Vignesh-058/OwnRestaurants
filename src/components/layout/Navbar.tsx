@@ -36,9 +36,14 @@ export const Navbar = () => {
   const showMenu = headerConfig?.showMenu ?? true;
   const showProfile = headerConfig?.showProfile ?? true;
 
+  const isDineInSupported = selectedOutlet?.orderType?.some(
+    (type: string) => type.toLowerCase() === 'dine in' || type.toLowerCase() === 'dinein' || type.toLowerCase() === 'dine-in'
+  );
+
   const navLinks = [
     { id: "home", label: "Home", path: "/" },
     { id: "products", label: "Products", path: "/products" },
+    ...(isDineInSupported ? [{ id: "dine-in", label: "Dine-In", path: "/dine-in" }] : []),
     { id: "offers", label: "Offers", path: "/offers" },
     { id: "orders", label: "Orders", path: "/profile/orders" },
   ];
@@ -46,6 +51,7 @@ export const Navbar = () => {
   const activeTabId = (() => {
     if (currentPath.startsWith("/cart")) return "cart";
     if (currentPath.startsWith("/products")) return "products";
+    if (currentPath.startsWith("/dine-in")) return "dine-in";
     if (currentPath === "/") return "home";
     if (currentPath.startsWith("/offers")) return "offers";
     if (

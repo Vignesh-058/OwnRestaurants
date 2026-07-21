@@ -71,6 +71,20 @@ export const OrderDeliveryInfo = ({ order }: OrderDeliveryInfoProps) => {
             )}
           </>
         )}
+
+        {/* Scheduled Delivery Info (Pre-Booking) */}
+        {orderAny.scheduleDate && (
+          <div className="flex items-start gap-3 mt-4 pt-4 border-t border-gray-100">
+            <Clock className="w-4 h-4 text-orange-400 mt-1 shrink-0" />
+            <div>
+              <p className="text-xs font-semibold text-orange-600/80 uppercase tracking-wider mb-1">Scheduled For</p>
+              <p className="text-sm font-bold text-orange-900">{orderAny.scheduleDate}</p>
+              {orderAny.scheduleTime && (
+                <p className="text-xs font-semibold text-orange-700 mt-0.5">{orderAny.scheduleTime}</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   );

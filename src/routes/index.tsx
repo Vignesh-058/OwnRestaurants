@@ -12,10 +12,14 @@ import {
  OrdersPage,
  ProfilePage,
  CouponsPage,
+ RewardsPage,
+ SettingsPage,
+ DineInPage,
  SearchPage,
  ProductsPage,
  OrderSuccessPage,
  OrderDetailsPage,
+ PreBookPage,
 } from '@/pages';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -31,7 +35,9 @@ const router = createBrowserRouter([
        element: <ProtectedRoute />,
        children: [
          { path: 'products', element: <ProductsPage /> },
+         { path: 'pre-book-page', element: <PreBookPage /> },
          { path: 'search', element: <SearchPage /> },
+         { path: 'dine-in', element: <DineInPage /> },
          { path: 'product/:id', element: <ProductPage /> },
          { path: 'cart', element: <CartPage /> },
          { path: 'address', element: <AddressPage /> },
@@ -42,8 +48,9 @@ const router = createBrowserRouter([
          { path: 'profile', element: <ProfilePage /> },
          { path: 'profile/orders', element: <OrdersPage /> },
          { path: 'profile/addresses', element: <AddressPage /> },
-         { path: 'profile/settings', element: <ProfilePage /> },
+         { path: 'profile/settings', element: <SettingsPage /> },
          { path: 'profile/favorites', element: <ProfilePage /> },
+         { path: 'profile/rewards', element: <RewardsPage /> },
          { path: 'coupons', element: <CouponsPage /> },
          { path: 'offers', element: <CouponsPage /> },
          { path: 'profile/coupons', element: <CouponsPage /> },

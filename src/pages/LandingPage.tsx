@@ -18,6 +18,8 @@ import { OrganizationAndOutletInfo } from "@/components/home/OrganizationAndOutl
 import { HotDealsBanner } from "@/components/home/HotDealsBanner";
 import { ProductCollection } from "@/components/home/ProductCollection";
 import { TodaysOffers } from "@/components/home/TodaysOffers";
+import { PreBookingCampaigns } from "@/components/prebooking/PreBookingCampaigns";
+import { PreBookingPopup } from "@/components/prebooking/PreBookingPopup";
 
 import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
@@ -144,7 +146,7 @@ export const LandingPage = () => {
               <>
                 <HeroBanner />
                 <OrganizationAndOutletInfo />
-                
+                <PreBookingCampaigns />
                 <HotDealsBanner />
                 
                 <ProductCollection 
@@ -182,6 +184,8 @@ export const LandingPage = () => {
             </div>
           </>
         )}
+        {/* Pre-Booking Promotional Popup */}
+        <PreBookingPopup />
       </motion.div>
 
       {/* Product Drawer */}

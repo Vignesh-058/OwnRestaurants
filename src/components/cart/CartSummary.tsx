@@ -4,12 +4,9 @@ import { useCartStore } from '@/store/CartStore';
 import { useNavigate } from 'react-router-dom';
 import { DiscountList } from '@/components/discount/DiscountList';
 import { useOrganizationStore } from '@/store/OrganizationStore';
-import { DeliveryTypeSelector } from '@/components/cart/DeliveryTypeSelector';
 
 interface CartSummaryProps {
   currency: string;
-  deliveryType?: string;
-  onDeliveryTypeChange?: (val: string) => void;
   isUpdating?: boolean;
   hideMobileActions?: boolean;
 }
@@ -44,8 +41,6 @@ const PriceRow = ({
 
 export const CartSummary = ({
   currency,
-  deliveryType,
-  onDeliveryTypeChange,
   isUpdating,
   hideMobileActions,
 }: CartSummaryProps) => {
@@ -99,16 +94,6 @@ export const CartSummary = ({
       </div>
 
       <div className="px-5 py-4 space-y-4">
-
-        {/* ── Order Type ── */}
-        {deliveryType && onDeliveryTypeChange && (
-          <DeliveryTypeSelector
-            value={deliveryType}
-            onChange={onDeliveryTypeChange}
-            disabled={isUpdating}
-            compact
-          />
-        )}
 
         {/* ── Price Breakdown ── */}
         {showBillDetails && (

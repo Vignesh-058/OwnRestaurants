@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { PaymentBadge } from './PaymentBadge';
-import { Eye, RotateCcw, Download, Calendar, MapPinned } from 'lucide-react';
+import { Eye, RotateCcw, Download, Calendar, MapPinned, Clock } from 'lucide-react';
 import { useRepeatOrder } from '@/hooks/orders/useRepeatOrder';
 import {
   AlertDialog,
@@ -63,8 +63,14 @@ export const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
               <MapPinned className="w-4 h-4 shrink-0" />
               <span className="truncate max-w-[150px]">{branchName}</span>
             </div>
-            <div className="mt-1">
+            <div className="mt-1 flex flex-col gap-2 items-start">
               {orderStatus && <OrderStatusBadge status={orderStatus} />}
+              {(order as any).scheduleDate && (
+                <div className="flex items-center gap-1.5 bg-orange-50 text-orange-600 px-2 py-0.5 rounded-md text-[11px] font-bold border border-orange-100">
+                  <Clock className="w-3 h-3" />
+                  Scheduled
+                </div>
+              )}
             </div>
           </div>
 

@@ -19,6 +19,7 @@ export interface Coupon {
  belongsTo?: string;
  outletId?: string;
  status?: CouponStatus;
+ termsAndConditions?: string[];
 }
 
 export interface ApplyCouponPayload {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/CartStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
@@ -21,9 +21,10 @@ interface ProductCardProps {
   product: CategoryItem;
   className?: string;
   onClick?: (product: CategoryItem) => void;
+  layout?: 'vertical' | 'horizontal';
 }
 
-export const ProductCard = React.memo(({ product, className, onClick: _onClick }: ProductCardProps) => {
+export const ProductCard = React.memo(({ product, className, onClick: _onClick, layout = 'vertical' }: ProductCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
@@ -33,10 +34,11 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
   const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();
   const { mutate: createCart, isPending: isCreating } = useCreateCart();
   const { mutate: removeItem, isPending: isRemoving } = useDeleteCart();
-  const { orderId, orderType, optimisticSetQuantity } = useCartStore();
+  const { orderId, orderType, tableInfo, optimisticSetQuantity, openDrawer, preBookingId: storePreBookingId, preOrderDate: storePreOrderDate, preOrderTime: storePreOrderTime, clearCart } = useCartStore();
   const { user, isAuthenticated } = useAuthStore();
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   const { handleAddressAndProceed } = useAddressFlow();
+  const [searchParams] = useSearchParams();
 
   const isAdding = isUpdating || isCreating;
 
@@ -81,7 +83,8 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
     const cartCurrency = currency === '₹' ? 'INR' : currency;
 
     // Build existing items payload
-    const existingItems = cartItems.map(c => ({
+    let finalOrderId = orderId;
+    let finalExistingItems = cartItems.map(c => ({
       itemId: c.product_retailer_id,
       quantity: c.quantity,
       variationId: c.variationId || "",
@@ -89,14 +92,27 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
       currency: cartCurrency
     }));
 
-    const matchingIndex = existingItems.findIndex(i => 
+    const urlPreBookingId = searchParams.get('preBookingId');
+    const urlPreOrderDate = searchParams.get('preOrderDate');
+    const urlPreOrderTime = searchParams.get('preOrderTime');
+
+    if (urlPreBookingId) {
+      const isDifferentPreBooking = storePreBookingId !== urlPreBookingId || storePreOrderDate !== urlPreOrderDate || storePreOrderTime !== urlPreOrderTime;
+      if (cartItems.length > 0 && (!storePreBookingId || isDifferentPreBooking)) {
+        clearCart();
+        finalOrderId = null;
+        finalExistingItems = [];
+      }
+    }
+
+    const matchingIndex = finalExistingItems.findIndex(i => 
       i.itemId === product._id && (i.variationId === "" || !i.variationId)
     );
 
     if (matchingIndex !== -1) {
-      existingItems[matchingIndex].quantity += 1;
+      finalExistingItems[matchingIndex].quantity += 1;
     } else {
-      existingItems.push({
+      finalExistingItems.push({
         itemId: product._id,
         quantity: 1,
         variationId: "",
@@ -111,16 +127,22 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
       const addressPayload = getCartAddressPayload();
 
       const payload: any = {
-        items: existingItems,
+        items: finalExistingItems,
         deliveryType: currentOrderType,
         orderType: currentOrderType,
         customerName: user?.name || 'Guest',
         customerPhoneNo: user?.phone || '0000000000',
-        instruction: '',
+        instruction: currentOrderType === 'Dine In' && tableInfo ? `Table: ${tableInfo.tableName}` : '',
         outletId: selectedOutlet._id,
         ...addressPayload,
       };
-      if (orderId) payload.orderId = orderId;
+      if (finalOrderId) payload.orderId = finalOrderId;
+
+      if (urlPreBookingId) {
+        payload.preBookingId = urlPreBookingId;
+        payload.preOrderDate = urlPreOrderDate;
+        payload.preOrderTime = urlPreOrderTime;
+      }
 
       console.log("=== CART UPDATE: ProductCard handleQuickAdd ===");
       console.log("addressPayload:", addressPayload);
@@ -128,16 +150,18 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
 
       optimisticSetQuantity(product, 1);
 
-      if (orderId) {
+      if (finalOrderId) {
         updateCart(payload, {
           onSuccess: () => {
             toast.success("Product added to cart.");
+            if (urlPreBookingId) openDrawer();
           }
         });
       } else {
         createCart(payload, {
           onSuccess: () => {
             toast.success("Product added to cart.");
+            if (urlPreBookingId) openDrawer();
           }
         });
       }
@@ -298,13 +322,21 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
   return (
     <div
       className={cn(
-        "group relative flex flex-col w-full h-full bg-white rounded-2xl shadow-sm hover:shadow-md border border-transparent hover:border-primary overflow-hidden transition-all duration-300 cursor-pointer",
+        "group relative bg-card shadow hover:shadow-lg hover:-translate-y-1 border border-border hover:border-primary overflow-hidden transition-all duration-200 cursor-pointer",
+        layout === 'vertical' 
+          ? "flex flex-col w-full h-full rounded-2xl" 
+          : "flex flex-row w-full h-[130px] sm:h-[150px] rounded-xl items-center",
         className,
       )}
       onClick={() => _onClick && _onClick(product)}
     >
       {/* 1. Large Product Image */}
-      <div className="relative w-full aspect-[4/3] shrink-0 bg-muted overflow-hidden rounded-t-2xl">
+      <div className={cn(
+        "relative shrink-0 bg-muted overflow-hidden",
+        layout === 'vertical' 
+          ? "w-full aspect-[4/3] rounded-t-2xl" 
+          : "w-[130px] sm:w-[150px] h-full rounded-l-xl"
+      )}>
         {!imageLoaded && !imageError && (
           <Skeleton className="absolute inset-0 w-full h-full" />
         )}
@@ -359,10 +391,16 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
       </div>
 
       {/* 2. Product Information & Actions */}
-      <div className="flex flex-col flex-1 p-4">
+      <div className={cn(
+        "flex flex-col flex-1 h-full",
+        layout === 'vertical' ? "p-4" : "p-3 sm:p-4 justify-between"
+      )}>
         
         {/* Title */}
-        <h3 className="font-extrabold text-[16px] text-foreground line-clamp-1 leading-tight group-hover:text-primary transition-colors mb-1.5">
+        <h3 className={cn(
+          "font-extrabold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors mb-1.5",
+          layout === 'vertical' ? "text-[16px]" : "text-[15px] sm:text-[17px]"
+        )}>
           {product.name}
         </h3>
         
@@ -384,7 +422,10 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
         <div className="flex-1" />
 
         {/* Bottom Row: Price & Add to Cart */}
-        <div className="flex items-center justify-between mt-3">
+        <div className={cn(
+          "flex items-center justify-between mt-auto pt-2",
+          layout === 'vertical' ? "" : ""
+        )}>
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1.5">
               <span className="text-[18px] font-extrabold text-foreground leading-none">

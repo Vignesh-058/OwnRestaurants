@@ -1,5 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Info } from 'lucide-react';
 import { useOrganizationStore } from '@/store/OrganizationStore';
@@ -57,9 +58,10 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  } = useProductDetail(itemId, isOpen);
 
  const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();
- const { mutate: createCart, isPending: isCreating } = useCreateCart();
- const { cartItems, orderId, orderType } = useCartStore();
- const { user } = useAuthStore();
+  const { mutate: createCart, isPending: isCreating } = useCreateCart();
+  const { cartItems, orderId, orderType, tableInfo, preBookingId: storePreBookingId, preOrderDate: storePreOrderDate, preOrderTime: storePreOrderTime, openDrawer, clearCart } = useCartStore();
+  const { user } = useAuthStore();
+  const [searchParams] = useSearchParams();
  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
  const { handleAddressAndProceed } = useAddressFlow();
 
@@ -68,15 +70,29 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
  const handleAddToCart = () => {
    if (!isValid || !item || !selectedOutlet) return;
    
-   // Check if the item already exists in the cart with the exact same variation & addons
-   // For simplicity, we just trigger the cart update merging with existing items
-   const existingItems = cartItems.map(c => ({
-     itemId: c.product_retailer_id,
-     quantity: c.quantity,
-     variationId: c.variationId || "",
-     addOnDetails: c.addons || [],
-     currency: currency === '₹' ? 'INR' : currency
-   }));
+    const urlPreBookingId = searchParams.get('preBookingId');
+    const urlPreOrderDate = searchParams.get('preOrderDate');
+    const urlPreOrderTime = searchParams.get('preOrderTime');
+    
+    // Check if the item already exists in the cart with the exact same variation & addons
+    // For simplicity, we just trigger the cart update merging with existing items
+    let finalOrderId = orderId;
+    let finalExistingItems = cartItems.map(c => ({
+      itemId: c.product_retailer_id,
+      quantity: c.quantity,
+      variationId: c.variationId || "",
+      addOnDetails: c.addons || [],
+      currency: currency === '₹' ? 'INR' : currency
+    }));
+
+    if (urlPreBookingId) {
+      const isDifferentPreBooking = storePreBookingId !== urlPreBookingId || storePreOrderDate !== urlPreOrderDate || storePreOrderTime !== urlPreOrderTime;
+      if (cartItems.length > 0 && (!storePreBookingId || isDifferentPreBooking)) {
+        clearCart();
+        finalOrderId = null;
+        finalExistingItems = [];
+      }
+    }
 
    // Find if the exact item exists, if so increment, otherwise add new
    const currentAddonGroups = Object.entries(selectedAddons).map(([group_id, addOnIds]) => ({
@@ -87,23 +103,23 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
    console.log('[Selected Variation]', selectedVariation);
    console.log('[Selected Addons]', currentAddonGroups);
 
-   const matchingIndex = existingItems.findIndex(i => 
-     i.itemId === item.itemid && 
-     i.variationId === (selectedVariation || "") && 
-     JSON.stringify(i.addOnDetails) === JSON.stringify(currentAddonGroups)
-   );
+    const matchingIndex = finalExistingItems.findIndex(i => 
+      i.itemId === item.itemid && 
+      i.variationId === (selectedVariation || "") && 
+      JSON.stringify(i.addOnDetails) === JSON.stringify(currentAddonGroups)
+    );
 
-   if (matchingIndex !== -1) {
-     existingItems[matchingIndex].quantity += quantity;
-   } else {
-     existingItems.push({
-       itemId: item.itemid,
-       quantity,
-       variationId: selectedVariation || "",
-       addOnDetails: currentAddonGroups,
-       currency: currency === '₹' ? 'INR' : currency
-     });
-   }
+    if (matchingIndex !== -1) {
+      finalExistingItems[matchingIndex].quantity += quantity;
+    } else {
+      finalExistingItems.push({
+        itemId: item.itemid,
+        quantity,
+        variationId: selectedVariation || "",
+        addOnDetails: currentAddonGroups,
+        currency: currency === '₹' ? 'INR' : currency
+      });
+    }
 
     const currentOrderType = orderType || 'Door Delivery';
 
@@ -111,26 +127,34 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
       const addressPayload = getCartAddressPayload();
 
       const payload: any = {
-        items: existingItems,
+        items: finalExistingItems,
         deliveryType: currentOrderType,
         orderType: currentOrderType,
         customerName: user?.name || 'Guest',
         customerPhoneNo: user?.phone || '0000000000',
-        instruction: '',
+        instruction: currentOrderType === 'Dine In' && tableInfo ? `Table: ${tableInfo.tableName}` : '',
         outletId: selectedOutlet._id,
-        orderId: orderId || undefined,
         ...addressPayload,
       };
+      
+      if (finalOrderId) payload.orderId = finalOrderId;
+      
+      if (urlPreBookingId) {
+        payload.preBookingId = urlPreBookingId;
+        payload.preOrderDate = urlPreOrderDate;
+        payload.preOrderTime = urlPreOrderTime;
+      }
 
       console.log("=== CART UPDATE: ProductDrawer handleAddToCart ===");
       console.log("addressPayload:", addressPayload);
       console.log("[Final Cart Payload]", JSON.stringify(payload, null, 2));
 
-      if (orderId) {
+      if (finalOrderId) {
         updateCart(payload, {
           onSuccess: () => {
             toast.success("Product added to cart.");
             onClose();
+            if (urlPreBookingId) openDrawer();
           }
         });
       } else {
@@ -138,6 +162,7 @@ export const ProductDrawer = ({ itemId, isOpen, onClose }: ProductDrawerProps) =
           onSuccess: () => {
             toast.success("Product added to cart.");
             onClose();
+            if (urlPreBookingId) openDrawer();
           }
         });
       }

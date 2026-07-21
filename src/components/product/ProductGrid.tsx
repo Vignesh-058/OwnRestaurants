@@ -4,13 +4,14 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface ProductGridProps {
- products: CategoryItem[];
- onProductClick: (product: CategoryItem) => void;
- title?: string;
- isSidebarOpen?: boolean;
+  products: CategoryItem[];
+  onProductClick: (product: CategoryItem) => void;
+  title?: string;
+  isSidebarOpen?: boolean;
+  layout?: 'vertical' | 'horizontal';
 }
 
-export const ProductGrid = ({ products, onProductClick, title, isSidebarOpen = true }: ProductGridProps) => {
+export const ProductGrid = ({ products, onProductClick, title, isSidebarOpen = true, layout = 'vertical' }: ProductGridProps) => {
   if (!products || products.length === 0) return null;
 
   return (
@@ -21,9 +22,11 @@ export const ProductGrid = ({ products, onProductClick, title, isSidebarOpen = t
       <motion.div 
         className={cn(
           "grid gap-4 md:gap-5 transition-all duration-300",
-          isSidebarOpen 
-            ? "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4" 
-            : "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5"
+          layout === 'horizontal'
+            ? "grid-cols-1 lg:grid-cols-2"
+            : isSidebarOpen 
+              ? "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4" 
+              : "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5"
         )}
         initial="hidden"
         whileInView="visible"
@@ -49,6 +52,7 @@ export const ProductGrid = ({ products, onProductClick, title, isSidebarOpen = t
             <ProductCard 
               product={product} 
               onClick={onProductClick} 
+              layout={layout}
             />
           </motion.div>
         ))}

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Calendar, Plus } from 'lucide-react';
+import { ChevronLeft, MapPin, Calendar, Plus, Clock } from 'lucide-react';
 import { CreditCard as CreditCardIcon, Banknote, Smartphone } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,29 +17,94 @@ import { isValidMongoId } from '@/utils/cartPayload';
 import { useOrderCheckout } from '@/hooks/mutations/useOrderCheckout';
 import { toast } from 'sonner';
 import { DiscountList } from '@/components/discount/DiscountList';
+import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
+import { useActivePreBooking } from '@/hooks/queries/usePreBooking';
 
 export const CheckoutPage = () => {
   const navigate = useNavigate();
   const org = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
-  const { clearCart, orderId } = useCartStore();
+  const { clearCart, orderId, tableInfo, preBookingId, preOrderDate, preOrderTime } = useCartStore();
   const { user } = useAuthStore();
   const { mutateAsync: checkoutOrder } = useOrderCheckout();
-
-  const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
-  const [deliveryType, setDeliveryType] = useState<string>('Door Delivery');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isAddressListOpen, setIsAddressListOpen] = useState(false);
-  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const { mutate: updateCart } = useUpdateCart();
 
   const settings = useSettingsStore((state) => state.settings);
+
+  const availableOrderTypes = selectedOutlet?.orderType?.length 
+    ? selectedOutlet.orderType 
+    : ['Door Delivery', 'Self Pickup', 'Dine In'];
+    
+  const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
+  const [deliveryType, setDeliveryType] = useState<string>(availableOrderTypes[0]);
+
+  // Make sure deliveryType updates if available order types change (e.g. outlet switch)
+  useEffect(() => {
+    if (availableOrderTypes.length > 0 && !availableOrderTypes.includes(deliveryType)) {
+      setDeliveryType(availableOrderTypes[0]);
+    }
+  }, [availableOrderTypes, deliveryType]);
+
+  const handleDeliveryTypeChange = (type: string) => {
+    setDeliveryType(type);
+    
+    if (orderId && selectedOutlet) {
+      const items = useCartStore.getState().cartItems.map(c => ({
+        itemId: c.product_retailer_id,
+        quantity: c.quantity,
+        variationId: c.variationId || "",
+        addOnDetails: c.addons || [],
+        currency: org?.currency === '₹' ? 'INR' : (org?.currency || 'INR')
+      }));
+
+      updateCart({
+        orderId,
+        outletId: selectedOutlet._id,
+        customerPhoneNo: user?.phone || '0000000000',
+        customerName: user?.name || 'Guest',
+        items,
+        deliveryType: type,
+        orderType: type,
+        instruction: type === 'Dine In' && tableInfo ? `Table: ${tableInfo.tableName}` : '',
+        ...(selectedAddress && type === 'Door Delivery' && isValidMongoId(selectedAddress._id) ? { addressId: selectedAddress._id } : {})
+      });
+    }
+  };
+
+  const handleAddressChange = (addr: any) => {
+    setSelectedAddress(addr);
+    setIsAddressListOpen(false);
+
+    if (orderId && selectedOutlet && deliveryType === 'Door Delivery' && isValidMongoId(addr._id)) {
+      const items = useCartStore.getState().cartItems.map(c => ({
+        itemId: c.product_retailer_id,
+        quantity: c.quantity,
+        variationId: c.variationId || "",
+        addOnDetails: c.addons || [],
+        currency: org?.currency === '₹' ? 'INR' : (org?.currency || 'INR')
+      }));
+
+      updateCart({
+        orderId,
+        outletId: selectedOutlet._id,
+        customerPhoneNo: user?.phone || '0000000000',
+        customerName: user?.name || 'Guest',
+        items,
+        deliveryType,
+        orderType: deliveryType,
+        instruction: '',
+        addressId: addr._id
+      });
+    }
+  };
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isAddressListOpen, setIsAddressListOpen] = useState(false);
+
   const [selectedPaymentMode, setSelectedPaymentMode] = useState<string>(settings?.defaultPaymentMode || 'COD');
   
   // Specific selection for online payment subtypes
   const [onlineMethod, setOnlineMethod] = useState<string | null>(null);
-
-  const [scheduleDate, setScheduleDate] = useState('');
-  const [scheduleTime, setScheduleTime] = useState('');
   
   // Coupon handled by DiscountList
 
@@ -48,6 +113,8 @@ export const CheckoutPage = () => {
     outletId: selectedOutlet?._id || ''
   });
   const { data: addresses, isLoading: isAddrLoading } = useAddresses();
+
+
 
   const discountAmount = cart?.discountAmount ?? cart?.couponDiscount ?? cart?.savedAmount ?? 0;
   const calculatedGrandTotal = (cart?.orderTotal || 0) + (cart?.deliveryCharge || 0) + (cart?.totalTax || 0) - discountAmount;
@@ -86,6 +153,10 @@ export const CheckoutPage = () => {
       toast.error('Please select a delivery address.');
       return;
     }
+    if (deliveryType === 'Dine In' && !tableInfo) {
+      toast.error('Please scan a QR code on a table to select your Dine-In table.');
+      return;
+    }
     if (selectedPaymentMode === 'Online Payment' && !onlineMethod) {
       toast.error('Please select an online payment method');
       return;
@@ -108,21 +179,35 @@ export const CheckoutPage = () => {
     };
 
     if (onlineMethod) payload.onlineMethod = onlineMethod;
-    if (scheduleDate) payload.scheduleDate = scheduleDate;
-    if (scheduleTime) payload.scheduleTime = scheduleTime;
+    if (orderTiming === 'later') {
+      if (scheduleDate) payload.scheduleDate = scheduleDate;
+      if (scheduleTime) payload.scheduleTime = scheduleTime;
+    }
     
-    if (selectedAddress) {
+    if (preBookingId) payload.preBookingId = preBookingId;
+    if (preOrderDate) payload.preOrderDate = preOrderDate;
+    if (preOrderTime) payload.preOrderTime = preOrderTime;
+    
+    if (selectedAddress && deliveryType === 'Door Delivery') {
       if (isValidMongoId(selectedAddress._id)) {
         payload.addressId = selectedAddress._id;
       }
+      if (selectedAddress.state) payload.state = selectedAddress.state;
+      if (selectedAddress.city) payload.city = selectedAddress.city;
+      if (selectedAddress.pincode) payload.pincode = selectedAddress.pincode;
+      if (selectedAddress.latitude !== undefined) payload.latitude = selectedAddress.latitude;
+      if (selectedAddress.longitude !== undefined) payload.longitude = selectedAddress.longitude;
     }
 
     setIsProcessing(true);
     
     try {
+      console.log('--- TEMPORARY PAYLOAD CHECK ---');
       console.log('Order ID', orderId);
       console.log('Customer Phone', user?.phone);
       console.log('Outlet ID', selectedOutlet._id);
+      console.log('Final Payload:', JSON.stringify(payload, null, 2));
+      console.log('-------------------------------');
       
       await checkoutOrder(payload);
       
@@ -178,6 +263,20 @@ export const CheckoutPage = () => {
           {/* LEFT COLUMN: Addresses, Pre-Booking, Payment */}
           <div className="flex-1 space-y-6 md:space-y-8 w-full">
             
+            {preBookingId && preOrderDate && preOrderTime && (
+              <div className="bg-primary/10 p-4 md:p-5 rounded-[20px] shadow-sm border border-primary/20 flex items-start gap-3">
+                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <Clock className="w-5 h-5 text-primary" />
+                 </div>
+                 <div>
+                    <h3 className="font-extrabold text-[16px] text-primary">Pre-order Scheduled</h3>
+                    <p className="text-[13px] text-primary/80 font-medium mt-1">
+                      For {new Date(preOrderDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at {preOrderTime}
+                    </p>
+                 </div>
+              </div>
+            )}
+
             {/* Delivery Details (Merged Card) */}
             <div className="bg-card p-4 md:p-5 rounded-[20px] shadow-sm border border-border">
               <div className="flex items-center justify-between mb-4">
@@ -199,12 +298,14 @@ export const CheckoutPage = () => {
               </div>
               
               <div className="space-y-4">
-                {/* Delivery Type Compact */}
-                <div className="grid grid-cols-3 gap-2">
-                  {['Door Delivery', 'Self Pickup', 'Dine In'].map((type) => (
+                <div 
+                  className="grid gap-2"
+                  style={{ gridTemplateColumns: `repeat(${availableOrderTypes.length || 1}, minmax(0, 1fr))` }}
+                >
+                  {availableOrderTypes.map((type) => (
                     <div 
                       key={type}
-                      onClick={() => setDeliveryType(type)}
+                      onClick={() => handleDeliveryTypeChange(type)}
                       className={`relative p-2.5 border rounded-[12px] cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
                         deliveryType === type 
                           ? 'border-primary bg-primary/10 text-primary' 
@@ -216,7 +317,7 @@ export const CheckoutPage = () => {
                   ))}
                 </div>
 
-                {/* Delivery Address Compact View */}
+                {/* Dynamic Fulfillment Information */}
                 {deliveryType === 'Door Delivery' && (
                   <div className="mt-4 border-t border-border pt-4">
                     {!isAddressListOpen && selectedAddress ? (
@@ -249,10 +350,7 @@ export const CheckoutPage = () => {
                                   ? 'border-primary bg-primary/10' 
                                   : 'border-border bg-card'
                               }`}
-                              onClick={() => {
-                                setSelectedAddress(addr);
-                                setIsAddressListOpen(false);
-                              }}
+                              onClick={() => handleAddressChange(addr)}
                             >
                               <p className="text-[13px] font-bold text-foreground uppercase mb-1"> {addr.type}</p>
                               <p className="text-[12px] text-muted-foreground line-clamp-1">
@@ -267,43 +365,33 @@ export const CheckoutPage = () => {
                     )}
                   </div>
                 )}
-              </div>
-            </div>
-
-            {/* Pre-Booking (Schedule Order) */}
-            {settings?.preBookingEnabled && (
-              <div className="bg-card rounded-[20px] shadow-sm border border-border overflow-hidden">
-                <div 
-                  className="p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-muted"
-                  onClick={() => setIsScheduleOpen(!isScheduleOpen)}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Calendar className="w-4 h-4 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-extrabold text-[16px] text-foreground">Schedule Order <span className="font-normal text-[12px] text-muted-foreground">(Optional)</span></h3>
+                
+                {deliveryType === 'Self Pickup' && selectedOutlet && (
+                  <div className="mt-4 border-t border-border pt-4">
+                    <div className="bg-muted p-3 rounded-[12px] border border-border">
+                      <h4 className="font-bold text-[13px] text-foreground mb-1">Pickup Outlet</h4>
+                      <p className="text-[13px] text-muted-foreground">{selectedOutlet.outletName}</p>
+                      <p className="text-[12px] text-muted-foreground mt-1">{selectedOutlet.address}</p>
                     </div>
                   </div>
-                  <div className={`transition-transform duration-300 ${isScheduleOpen ? 'rotate-180' : ''}`}>▼</div>
-                </div>
+                )}
                 
-                {isScheduleOpen && (
-                  <div className="px-4 md:px-5 pb-4 md:pb-5 pt-2 border-t border-border">
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <div className="flex-1 space-y-1">
-                        <label className="text-[12px] font-bold text-muted-foreground">Date</label>
-                        <Input type="date" value={scheduleDate} onChange={(e) => setScheduleDate(e.target.value)} className="rounded-[12px] h-11 bg-muted border-none focus-visible:ring-1 focus-visible:ring-primary text-[13px]" />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <label className="text-[12px] font-bold text-muted-foreground">Time</label>
-                        <Input type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="rounded-[12px] h-11 bg-muted border-none focus-visible:ring-1 focus-visible:ring-primary text-[13px]" />
-                      </div>
+                {deliveryType === 'Dine In' && (
+                  <div className="mt-4 border-t border-border pt-4">
+                    <div className="bg-muted p-3 rounded-[12px] border border-border">
+                      <h4 className="font-bold text-[13px] text-foreground mb-1">Table Selection</h4>
+                      {tableInfo ? (
+                        <p className="text-[13px] text-primary font-bold">Selected Table: {tableInfo.tableName}</p>
+                      ) : (
+                        <p className="text-[13px] text-muted-foreground">No table selected. Scan QR code on your table.</p>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
-            )}
+            </div>
+
+
 
             {/* Choose Payment Method */}
             <div className="bg-card p-4 md:p-5 rounded-[20px] shadow-sm border border-border">
@@ -412,10 +500,12 @@ export const CheckoutPage = () => {
                   <span className="text-foreground font-bold">{org?.currency || '₹'}{cart.orderTotal.toFixed(2)}</span>
                 </div>
 
-                <div className="flex justify-between items-start text-[14px]">
-                  <span className="text-muted-foreground font-medium">Delivery</span>
-                  <span className="text-foreground font-bold">{org?.currency || '₹'}{cart.deliveryCharge?.toFixed(2) || '0.00'}</span>
-                </div>
+                {cart.deliveryCharge > 0 && (
+                  <div className="flex justify-between items-start text-[14px]">
+                    <span className="text-muted-foreground font-medium">Delivery</span>
+                    <span className="text-foreground font-bold">{org?.currency || '₹'}{cart.deliveryCharge?.toFixed(2) || '0.00'}</span>
+                  </div>
+                )}
 
                 <div className="flex justify-between items-start text-[14px]">
                   <span className="text-muted-foreground font-medium">Tax</span>
@@ -449,6 +539,7 @@ export const CheckoutPage = () => {
                   disabled={
                     isProcessing ||
                     (deliveryType === 'Door Delivery' && !selectedAddress) ||
+                    (deliveryType === 'Dine In' && !tableInfo) ||
                     (selectedPaymentMode === 'Online Payment' && !onlineMethod)
                   }
                 >
@@ -475,6 +566,11 @@ export const CheckoutPage = () => {
                 {deliveryType === 'Door Delivery' && !selectedAddress && !isProcessing && (
                   <p className="text-destructive text-[11px] font-bold text-center mt-2 hidden md:block">
                     Select a delivery address to continue
+                  </p>
+                )}
+                {deliveryType === 'Dine In' && !tableInfo && !isProcessing && (
+                  <p className="text-destructive text-[11px] font-bold text-center mt-2 hidden md:block">
+                    Scan a QR code on your table to continue
                   </p>
                 )}
                 {selectedPaymentMode === 'Online Payment' && !onlineMethod && !isProcessing && (

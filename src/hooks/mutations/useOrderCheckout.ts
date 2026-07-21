@@ -12,6 +12,11 @@ interface OrderCheckoutPayload {
   scheduleDate?: string;
   scheduleTime?: string;
   onlineMethod?: string;
+  state?: string;
+  city?: string;
+  pincode?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export const useOrderCheckout = () => {

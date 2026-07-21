@@ -26,5 +26,31 @@ export const categoryService = {
  console.error('[CategoryService] API Request Failed with unhandled error:', error.response?.status, error.response?.data);
  throw error;
  }
- }
+ },
+  getPreOrderCategories: async (payload: {
+    belongsTo: string;
+    outletId: string;
+    preBookId: string;
+    preOrderDate: string;
+    preOrderTime: string;
+  }): Promise<Category[]> => {
+    try {
+      const response = await axiosInstance.post<ApiResponse<Category[]>>(`${ENV.CATEGORY_API}/preOrder`, payload);
+      const raw = response.data;
+      const data = (raw as any)?.data !== undefined ? (raw as any).data : raw;
+      const categories = Array.isArray(data) ? data : (data?.categories || data?.items || (raw as any)?.categories || []);
+      
+      return categories.map((cat: any) => ({
+        ...cat,
+        items: Array.isArray(cat.items) ? cat.items : (Array.isArray(cat.products) ? cat.products : [])
+      }));
+    } catch (error: any) {
+      if (error.response?.status === 400 || error.response?.status === 404) {
+        console.warn(`[CategoryService] API Request Failed: ${error.response?.status} - ${error.response?.data?.message || 'No pre-order categories found'}`);
+        return [];
+      }
+      console.error('[CategoryService] API Request Failed with unhandled error:', error.response?.status, error.response?.data);
+      throw error;
+    }
+  }
 };

@@ -196,6 +196,20 @@ export const OrderSuccessPage = () => {
 
             <Separator className="bg-gray-100" />
 
+            {/* Scheduled Delivery Section */}
+            {order?.scheduleDate && (
+              <div className="bg-orange-50/50 p-4 rounded-2xl border border-orange-100 flex items-start gap-3">
+                <Clock className="w-5 h-5 text-orange-500 mt-0.5" />
+                <div>
+                  <p className="text-xs font-bold text-orange-600/80 uppercase tracking-wider mb-0.5">Scheduled Delivery</p>
+                  <p className="font-bold text-orange-900">{order.scheduleDate}</p>
+                  {order.scheduleTime && (
+                    <p className="text-sm font-semibold text-orange-700 mt-0.5">{order.scheduleTime}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Items */}
             <div className="space-y-4">
               {isLoading ? (
