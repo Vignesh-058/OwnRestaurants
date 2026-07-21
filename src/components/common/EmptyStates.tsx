@@ -9,21 +9,21 @@ const fadeAnimation = {
 
 export const EmptyProducts = () => (
  <motion.div {...fadeAnimation} className="flex flex-col items-center justify-center py-24 text-center">
- <div className="h-20 w-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
- <ShoppingBag className="h-10 w-10 text-slate-400" />
+ <div className="h-20 w-20 bg-muted dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
+ <ShoppingBag className="h-10 w-10 text-muted-foreground/80" />
  </div>
- <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No products available</h3>
- <p className="text-slate-500 max-w-sm">We couldn't find any products in this category at the moment. Please check back later.</p>
+ <h3 className="text-xl font-bold text-foreground dark:text-white mb-2">No products available</h3>
+ <p className="text-muted-foreground max-w-sm">We couldn't find any products in this category at the moment. Please check back later.</p>
  </motion.div>
 );
 
 export const EmptyCategories = () => (
  <motion.div {...fadeAnimation} className="flex flex-col items-center justify-center py-16 text-center">
- <div className="h-16 w-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
- <Tag className="h-8 w-8 text-slate-400" />
+ <div className="h-16 w-16 bg-muted dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+ <Tag className="h-8 w-8 text-muted-foreground/80" />
  </div>
- <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">No categories available</h3>
- <p className="text-sm text-slate-500">Categories are currently being updated.</p>
+ <h3 className="text-lg font-bold text-foreground dark:text-white mb-1">No categories available</h3>
+ <p className="text-sm text-muted-foreground">Categories are currently being updated.</p>
  </motion.div>
 );
 
@@ -32,18 +32,18 @@ export const EmptyOutlets = () => (
  <div className="h-24 w-24 bg-orange-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 border border-orange-100 dark:border-slate-700">
  <Store className="h-12 w-12 text-orange-500" />
  </div>
- <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">No outlets are currently available</h3>
- <p className="text-slate-500 text-lg max-w-md">This organization has no active outlets. Please try again later.</p>
+ <h3 className="text-2xl font-bold text-foreground dark:text-white mb-3">No outlets are currently available</h3>
+ <p className="text-muted-foreground text-lg max-w-md">This organization has no active outlets. Please try again later.</p>
  </motion.div>
 );
 
 export const EmptySearch = () => (
  <motion.div {...fadeAnimation} className="flex flex-col items-center justify-center py-20 text-center">
- <div className="h-20 w-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
- <Search className="h-10 w-10 text-slate-400" />
+ <div className="h-20 w-20 bg-muted dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
+ <Search className="h-10 w-10 text-muted-foreground/80" />
  </div>
- <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Products will appear when available</h3>
- <p className="text-slate-500 max-w-sm">Try adjusting your search or filters to find what you're looking for.</p>
+ <h3 className="text-xl font-bold text-foreground dark:text-white mb-2">Products will appear when available</h3>
+ <p className="text-muted-foreground max-w-sm">Try adjusting your search or filters to find what you're looking for.</p>
  </motion.div>
 );
 

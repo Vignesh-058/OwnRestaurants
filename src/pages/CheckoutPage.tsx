@@ -224,7 +224,7 @@ export const CheckoutPage = () => {
                         <div className="flex-1 pr-4">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-[13px] font-bold text-foreground uppercase tracking-wider">
-                              🏠 {selectedAddress.type}
+                               {selectedAddress.type}
                             </span>
                           </div>
                           <p className="text-[13px] text-muted-foreground line-clamp-1">
@@ -254,7 +254,7 @@ export const CheckoutPage = () => {
                                 setIsAddressListOpen(false);
                               }}
                             >
-                              <p className="text-[13px] font-bold text-foreground uppercase mb-1">🏠 {addr.type}</p>
+                              <p className="text-[13px] font-bold text-foreground uppercase mb-1"> {addr.type}</p>
                               <p className="text-[12px] text-muted-foreground line-clamp-1">
                                 {`${addr.address1}, ${addr.city}, ${addr.state}`}
                               </p>

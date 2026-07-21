@@ -76,74 +76,29 @@ export const HeroBanner = () => {
   };
 
   return (
-    <section id="home" className="relative w-full min-h-[600px] lg:h-[700px] bg-background overflow-hidden flex items-center pt-[72px] lg:pt-0">
-      <div className="max-w-[1440px] mx-auto w-full px-6 md:px-10 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center relative z-10 py-12 lg:py-0">
+    <section id="home" className="relative w-full pt-[80px] lg:pt-[24px] pb-6 bg-background flex justify-center">
+      <div className="w-full max-w-[1440px] px-4 md:px-6 lg:px-8">
         
-        {/* Left Content Area */}
-        <div className="flex flex-col text-left space-y-6">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <h1 className="text-4xl md:text-5xl lg:text-[64px] font-extrabold text-foreground leading-[1.15] tracking-tight mb-6">
-              {organization?.theme?.config?.home?.hero?.title || (
-                <>Delicious Food Delivered <span className="text-primary relative inline-block">Fresh<svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/30" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 10 Q 50 20 100 10" fill="transparent" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/></svg></span> to Your Doorstep</>
-              )}
-            </h1>
-            
-            <p className="text-muted-foreground text-lg md:text-xl font-medium max-w-lg mb-10 leading-relaxed">
-              {organization?.theme?.config?.home?.hero?.description || "Order from your favorite restaurants with fast delivery, secure payments, and exclusive offers."}
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-7 rounded-full text-[17px] font-bold shadow-[0_8px_20px_rgba(255,107,0,0.25)] hover:shadow-[0_12px_24px_rgba(255,107,0,0.35)] hover:-translate-y-1 transition-all duration-300"
-                onClick={() => {
-                  navigate('/products');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              >
-                Explore Products
-              </Button>
-              <Button 
-                variant="outline"
-                className="bg-card hover:bg-muted border-border text-foreground px-8 py-7 rounded-full text-[17px] font-bold hover:-translate-y-1 transition-all duration-300 shadow-sm"
-                onClick={() => {
-                  const offersSection = document.getElementById('offers');
-                  if(offersSection) {
-                    offersSection.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    navigate('/offers');
-                  }
-                }}
-              >
-                View Offers
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="relative w-full h-[280px] sm:h-[400px] lg:h-[600px] flex items-center justify-center lg:justify-end">
+        <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] flex items-center justify-center">
           {isLoading ? (
-             <Skeleton className="w-full max-w-[550px] h-full rounded-[32px] opacity-50 bg-muted" />
+             <Skeleton className="w-full h-full rounded-[24px] opacity-50 bg-muted" />
           ) : hasBanners ? (
-            <div className="w-full max-w-[550px] relative group">
-              <div className="overflow-hidden w-full h-full rounded-[32px] shadow-floating relative border border-border" ref={emblaRef}>
+            <div className="w-full h-full relative group">
+              <div className="overflow-hidden w-full h-full rounded-[24px] shadow-sm relative border border-border" ref={emblaRef}>
                 <div className="flex w-full h-full touch-pan-y">
                   {activeBanners.map((banner, index) => {
                     const imgUrl = getImageUrl(banner.image?.webView || banner.image?.mobileView);
                     return (
                       <div 
                         key={banner._id || index} 
-                        className="flex-[0_0_100%] min-w-0 relative h-[280px] sm:h-[400px] lg:h-[600px] cursor-pointer"
+                        className="flex-[0_0_100%] min-w-0 relative h-full cursor-pointer"
                         onClick={() => handleBannerClick(banner)}
                       >
-                        <div className="absolute inset-0 bg-muted rounded-[32px] overflow-hidden">
+                        <div className="absolute inset-0 bg-muted">
                           <img 
                             src={imgUrl} 
                             alt={banner.title || "Promotional Banner"} 
-                            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                             fetchPriority={index === 0 ? "high" : "auto"}
                             loading={index === 0 ? "eager" : "lazy"}
                           />
@@ -159,29 +114,29 @@ export const HeroBanner = () => {
                 <>
                   <button 
                     onClick={scrollPrev}
-                    className="absolute -left-5 top-1/2 -translate-y-1/2 w-12 h-12 bg-card rounded-full shadow-lg border border-border flex items-center justify-center text-foreground hover:text-primary hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/90 backdrop-blur-md rounded-full shadow-md border border-border flex items-center justify-center text-foreground hover:text-primary hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
                     aria-label="Previous banner"
                   >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
                   <button 
                     onClick={scrollNext}
-                    className="absolute -right-5 top-1/2 -translate-y-1/2 w-12 h-12 bg-card rounded-full shadow-lg border border-border flex items-center justify-center text-foreground hover:text-primary hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/90 backdrop-blur-md rounded-full shadow-md border border-border flex items-center justify-center text-foreground hover:text-primary hover:scale-105 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
                     aria-label="Next banner"
                   >
-                    <ChevronRight className="w-6 h-6" />
+                    <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
                   </button>
 
                   {/* Pagination Dots */}
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20 glass-panel px-4 py-2 rounded-full shadow-sm">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm">
                     {activeBanners.map((_, idx) => (
                       <button
                         key={idx}
                         onClick={() => emblaApi && emblaApi.scrollTo(idx)}
                         className={`transition-all duration-300 rounded-full ${
                           selectedIndex === idx 
-                            ? "w-8 h-2 bg-primary shadow-[0_0_10px_rgba(255,107,0,0.3)]" 
-                            : "w-2 h-2 bg-foreground/20 hover:bg-foreground/40"
+                            ? "w-6 h-1.5 bg-primary shadow-sm" 
+                            : "w-1.5 h-1.5 bg-white/60 hover:bg-white"
                         }`}
                         aria-label={`Go to slide ${idx + 1}`}
                       />
@@ -191,7 +146,7 @@ export const HeroBanner = () => {
               )}
             </div>
           ) : (
-            <div className="w-full max-w-[550px] h-full rounded-[32px] bg-card border border-border shadow-floating flex items-center justify-center text-center p-8">
+            <div className="w-full h-full rounded-[24px] bg-muted border border-border flex items-center justify-center text-center p-8">
                <p className="text-muted-foreground font-medium">Promotional banners will appear here.</p>
             </div>
           )}

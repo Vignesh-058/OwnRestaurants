@@ -26,9 +26,9 @@ export const bannerService = {
  }
  
  if (error instanceof AxiosError) {
- console.error('[BannerService] ❌ Request Failed with status:', error.response?.status);
- console.error('[BannerService] ❌ Response Data:', error.response?.data);
- console.error('[BannerService] ❌ Request Payload:', error.config?.data);
+ console.error('[BannerService]  Request Failed with status:', error.response?.status);
+ console.error('[BannerService]  Response Data:', error.response?.data);
+ console.error('[BannerService]  Request Payload:', error.config?.data);
  }
  throw error;
  }

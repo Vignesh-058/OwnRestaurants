@@ -91,14 +91,14 @@ export const LocationPermissionModal = () => {
           >
             <button 
               onClick={handleSkip}
-              className="absolute top-5 right-5 sm:top-6 sm:right-6 h-8 w-8 flex items-center justify-center rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+              className="absolute top-5 right-5 sm:top-6 sm:right-6 h-8 w-8 flex items-center justify-center rounded-full bg-slate-800/50 hover:bg-slate-700 text-muted-foreground/80 hover:text-white transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="text-center mb-8">
               <h2 className="text-2xl font-black text-white tracking-tight mb-3">Enable Location</h2>
-              <p className="text-[14.5px] text-slate-400 font-medium leading-relaxed">
+              <p className="text-[14.5px] text-muted-foreground/80 font-medium leading-relaxed">
                 Allow location access to discover nearby restaurants and provide accurate delivery estimates.
               </p>
             </div>
@@ -110,7 +110,7 @@ export const LocationPermissionModal = () => {
                 </div>
                 <div>
                   <h4 className="text-[15px] font-bold text-white mb-0.5">Find nearby outlets</h4>
-                  <p className="text-[13px] text-slate-400 font-medium">See exactly what's available in your area.</p>
+                  <p className="text-[13px] text-muted-foreground/80 font-medium">See exactly what's available in your area.</p>
                 </div>
               </motion.div>
               
@@ -120,7 +120,7 @@ export const LocationPermissionModal = () => {
                 </div>
                 <div>
                   <h4 className="text-[15px] font-bold text-white mb-0.5">Accurate delivery</h4>
-                  <p className="text-[13px] text-slate-400 font-medium">Get precise delivery times and tracking.</p>
+                  <p className="text-[13px] text-muted-foreground/80 font-medium">Get precise delivery times and tracking.</p>
                 </div>
               </motion.div>
               
@@ -130,7 +130,7 @@ export const LocationPermissionModal = () => {
                 </div>
                 <div>
                   <h4 className="text-[15px] font-bold text-white mb-0.5">Privacy assured</h4>
-                  <p className="text-[13px] text-slate-400 font-medium">We only use this to improve your experience.</p>
+                  <p className="text-[13px] text-muted-foreground/80 font-medium">We only use this to improve your experience.</p>
                 </div>
               </motion.div>
             </div>

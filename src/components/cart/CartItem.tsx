@@ -50,17 +50,17 @@ export const CartItem = ({
         exit={{ opacity: 0, x: -20, scale: 0.97 }}
         transition={{ duration: 0.22, ease: 'easeOut' }}
         className={cn(
-          'bg-card rounded-[18px] border border-border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden',
+          'bg-white rounded-[20px] border border-[#FFE2CC] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden',
           !isInStock && 'opacity-60',
         )}
       >
         {/* ── Main Row ── */}
-        <div className="flex gap-3 p-4">
+        <div className="flex gap-4 p-4">
 
           {/* Product Image — 90×90 */}
-          <div className="relative shrink-0 w-[90px] h-[90px] rounded-xl overflow-hidden bg-muted border border-border">
+          <div className="relative shrink-0 w-[90px] h-[90px] rounded-[16px] overflow-hidden bg-[#FAF8F5] border border-[#FFE2CC]">
             <div className="w-full h-full flex items-center justify-center">
-              <ShoppingBag className="w-7 h-7 text-muted-foreground/30" />
+              <ShoppingBag className="w-8 h-8 text-[#FF6B00]/20" />
             </div>
             {/* Veg/Non-veg indicator */}
             <span className={cn(
@@ -75,38 +75,40 @@ export const CartItem = ({
           <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
 
             {/* Top: name + remove button */}
+            {/* Top: name + price */}
             <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h3 className="font-extrabold text-[16px] text-foreground leading-tight line-clamp-2 mb-0.5">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-[16px] text-[#1F2937] leading-tight line-clamp-2 mb-0.5">
                   {item.name}
                 </h3>
                 {item.variationId && (
-                  <p className="text-[13px] text-muted-foreground font-medium mb-1 line-clamp-1">Variation selected</p>
+                  <p className="text-[13px] text-[#6B7280] font-medium mb-1 line-clamp-1">Variation selected</p>
                 )}
                 {item.addons && item.addons.length > 0 && (
-                  <span className="text-[11px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-[4px] inline-block mb-1">
+                  <span className="text-[11px] font-semibold text-[#FF6B00] bg-[#FFF4EB] px-1.5 py-0.5 rounded-[4px] inline-block mb-1">
                     +{item.addons.length} add-on{item.addons.length > 1 ? 's' : ''}
                   </span>
                 )}
                 {!isInStock && (
-                  <p className="text-[11px] font-bold text-destructive uppercase tracking-wide mt-0.5">Out of Stock</p>
+                  <p className="text-[11px] font-bold text-[#EF4444] uppercase tracking-wide mt-0.5">Out of Stock</p>
                 )}
               </div>
 
-              {/* Remove */}
-              <button
-                type="button"
-                aria-label="Remove item"
-                onClick={() => setActiveModal('remove')}
-                disabled={isUpdating}
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-destructive/10 transition-colors group disabled:opacity-40 shrink-0 -mt-1 -mr-1"
-              >
-                <Trash2 className="w-4 h-4 text-muted-foreground group-hover:text-destructive transition-colors" />
-              </button>
+              {/* Price */}
+              <div className="text-right shrink-0">
+                <p className="text-[18px] font-bold text-[#1F2937] leading-none tabular-nums mt-0.5">
+                  {currency}{itemTotal.toLocaleString()}
+                </p>
+                {item.quantity > 1 && (
+                  <p className="text-[12px] text-[#6B7280] font-medium mt-1">
+                    {currency}{sellingPrice.toLocaleString()} each
+                  </p>
+                )}
+              </div>
             </div>
 
-            {/* Bottom: quantity + price */}
-            <div className="flex items-center justify-between mt-2">
+            {/* Bottom: quantity + remove */}
+            <div className="flex items-center justify-between mt-3">
               <QuantitySelector
                 quantity={item.quantity}
                 onIncrease={() => onUpdateQuantity(item, item.quantity + 1)}
@@ -115,38 +117,39 @@ export const CartItem = ({
                 size="sm"
               />
 
-              <div className="text-right">
-                <p className="text-[18px] font-extrabold text-primary leading-none tabular-nums">
-                  {currency}{itemTotal.toLocaleString()}
-                </p>
-                {item.quantity > 1 && (
-                  <p className="text-[11px] text-muted-foreground font-medium mt-1">
-                    {currency}{sellingPrice.toLocaleString()} each
-                  </p>
-                )}
-              </div>
+              {/* Remove */}
+              <button
+                type="button"
+                aria-label="Remove item"
+                onClick={() => setActiveModal('remove')}
+                disabled={isUpdating}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[#EF4444] hover:bg-[#FEF2F2] transition-colors group disabled:opacity-40"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className="text-[13px] font-semibold">Remove</span>
+              </button>
             </div>
           </div>
         </div>
 
         {/* ── Cooking Instructions Accordion ── */}
-        <div className="border-t border-border">
+        <div className="border-t border-[#FFE2CC]">
           <button
             type="button"
             onClick={() => setIsInstructionOpen(p => !p)}
-            className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-muted/30 transition-colors group"
+            className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#FFF4EB] transition-colors group"
             aria-expanded={isInstructionOpen}
           >
-            <div className="flex items-center gap-2 text-muted-foreground group-hover:text-primary transition-colors">
-              <UtensilsCrossed className="w-3.5 h-3.5 shrink-0" />
-              <span className="text-[12px] font-semibold">
+            <div className="flex items-center gap-2 text-[#6B7280] group-hover:text-[#FF6B00] transition-colors">
+              <UtensilsCrossed className="w-4 h-4 shrink-0" />
+              <span className="text-[13px] font-semibold">
                 Cooking Instructions
-                <span className="ml-1 font-normal opacity-70">(Optional)</span>
+                <span className="ml-1 font-normal opacity-80">(Optional)</span>
               </span>
-              {instruction && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
+              {instruction && <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B00] shrink-0" />}
             </div>
-            <span className="text-muted-foreground/50 group-hover:text-primary transition-colors">
-              {isInstructionOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            <span className="text-[#6B7280]/60 group-hover:text-[#FF6B00] transition-colors">
+              {isInstructionOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </span>
           </button>
 
@@ -170,13 +173,11 @@ export const CartItem = ({
                       placeholder="E.g. Less spicy, No onion, Extra crispy, Separate packing..."
                       rows={2}
                       maxLength={MAX_INSTRUCTION_LENGTH}
-                      className="w-full bg-background border border-border rounded-[12px] px-4 py-3 text-[14px] text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                      className="w-full bg-[#FAF8F5] border border-[#FFE2CC] rounded-[12px] px-4 py-3 text-[14px] text-[#1F2937] placeholder:text-[#6B7280] resize-none focus:outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-[#FF6B00]/10 transition-all"
                     />
                     <span className={cn(
                       'absolute bottom-3 right-4 text-[11px] font-medium tabular-nums pointer-events-none',
-                      instruction.length >= MAX_INSTRUCTION_LENGTH ? 'text-destructive'
-                        : instruction.length > MAX_INSTRUCTION_LENGTH * 0.8 ? 'text-yellow-500'
-                          : 'text-muted-foreground/50',
+                      instruction.length >= MAX_INSTRUCTION_LENGTH ? 'text-[#EF4444]' : 'text-[#6B7280]/60'
                     )}>
                       {instruction.length}/{MAX_INSTRUCTION_LENGTH}
                     </span>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { 
-  Package, MapPin, Ticket, Wallet, CreditCard, 
-  HelpCircle, Info, LogOut, Bell, Globe
+  Package, MapPinned, TicketPercent, Wallet, CreditCard, 
+  HelpCircle, Info, LogOut, Bell, Globe, UserRound, ChevronRight
 } from 'lucide-react';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
@@ -22,27 +22,16 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
   const showAddresses = profileConfig?.showSavedAddresses ?? true;
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [language, setLanguage] = useState('English');
-
   const menuItems = [
-    { id: 'offers', icon: Ticket, title: 'Offers & Coupons' },
-    showOrders ? { id: 'orders', icon: Package, title: 'Orders' } : null,
-    showAddresses ? { id: 'addresses', icon: MapPin, title: 'Addresses' } : null,
-    { id: 'rewards', icon: Wallet, title: 'Rewards' },
-    { id: 'payments', icon: CreditCard, title: 'Payments' },
-    { id: 'help', icon: HelpCircle, title: 'Help' },
-    { id: 'about', icon: Info, title: 'About' },
-  ].filter(Boolean) as Array<{ id: string, icon: any, title: string }>;
-
-  const handleLanguageChange = () => {
-    setLanguage(prev => prev === 'English' ? 'Español' : 'English');
-  };
+    { id: 'about', icon: UserRound, title: 'Profile Information', subtitle: 'View your account details' },
+    showOrders ? { id: 'orders', icon: Package, title: 'Order History', subtitle: 'Track your recent orders' } : null,
+    showAddresses ? { id: 'addresses', icon: MapPinned, title: 'Manage Addresses', subtitle: 'Add or edit delivery addresses' } : null,
+    { id: 'offers', icon: TicketPercent, title: 'Offers & Coupons', subtitle: 'Available discounts and rewards' },
+  ].filter(Boolean) as Array<{ id: string, icon: any, title: string, subtitle: string }>;
 
   return (
-    <div className="flex flex-col space-y-6 w-full">
-      {/* Navigation Cards */}
-      <div className="flex flex-col space-y-3">
+    <div className="flex flex-col space-y-4 w-full">
+      <div className="flex flex-col space-y-3 w-full">
         {menuItems.map((item) => {
           const isActive = activeTab === item.id;
           return (
@@ -50,59 +39,38 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
               key={item.id}
               onClick={() => onTabChange?.(item.id)}
               className={cn(
-                "flex items-center gap-4 w-full h-[60px] px-5 rounded-[16px] transition-all duration-200 text-left group",
+                "flex items-center gap-4 w-full p-4 rounded-xl transition-all duration-300 text-left group border border-transparent shadow-sm",
                 isActive 
-                  ? "bg-primary text-primary-foreground shadow-sm hover:-translate-y-0.5" 
-                  : "bg-card text-foreground shadow-sm hover:bg-primary/10 hover:-translate-y-0.5"
+                  ? "bg-[#FFF4EB] border-orange-100 shadow-md" 
+                  : "bg-white hover:bg-[#FFF4EB] hover:shadow-md hover:border-orange-100"
               )}
             >
-              <item.icon 
-                className={cn(
-                  "w-[22px] h-[22px] transition-colors", 
-                  isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary"
-                )} 
-              />
-              <span className="font-bold text-[16px]">
-                {item.title}
-              </span>
+              <div className="w-12 h-12 rounded-[16px] flex items-center justify-center shrink-0 transition-colors duration-300 bg-[#FFF4EB] text-[#FF6B00] group-hover:bg-[#FF6B00] group-hover:text-white">
+                <item.icon className="w-6 h-6" />
+              </div>
+              <div className="flex flex-col flex-1">
+                <span className="font-semibold text-[16px] text-[#1F2937] leading-tight">
+                  {item.title}
+                </span>
+                {item.subtitle && (
+                  <span className="text-[14px] font-normal text-[#6B7280] mt-0.5">
+                    {item.subtitle}
+                  </span>
+                )}
+              </div>
+              <ChevronRight className="w-5 h-5 text-[#6B7280] group-hover:text-[#FF6B00] transition-colors" />
             </button>
           );
         })}
       </div>
 
-      {/* Settings Card */}
-      <div className="bg-card rounded-[20px] p-5 shadow-sm border border-border">
-        <h4 className="font-bold text-[16px] text-foreground mb-4">Settings</h4>
-        <div className="flex flex-col space-y-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Bell className="w-[18px] h-[18px] text-muted-foreground" />
-              <span className="font-medium text-[15px] text-foreground">Notifications</span>
-            </div>
-            <Switch 
-              checked={notificationsEnabled} 
-              onCheckedChange={setNotificationsEnabled}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Globe className="w-[18px] h-[18px] text-muted-foreground" />
-              <span className="font-medium text-[15px] text-foreground">Language</span>
-            </div>
-            <button onClick={handleLanguageChange} className="text-primary font-bold text-[14px]">
-              {language}
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Sign Out Button */}
-      <div className="mt-auto pt-4">
+      <div className="mt-4 pt-4">
         <button 
           onClick={() => setIsLogoutOpen(true)}
-          className="flex items-center justify-center gap-3 w-full h-[60px] rounded-[16px] bg-card border border-destructive/20 text-destructive font-bold text-[16px] transition-all duration-200 hover:bg-destructive/10 hover:-translate-y-0.5 shadow-sm"
+          className="group flex items-center justify-center gap-2 w-full h-[54px] rounded-[16px] bg-white border border-[#FF6B00] text-[#FF6B00] font-bold text-[16px] transition-all duration-300 hover:bg-[#FF6B00] hover:text-white shadow-sm hover:shadow-md"
         >
-          <LogOut className="w-[20px] h-[20px]" />
+          <LogOut className="w-5 h-5 group-hover:text-white transition-colors" />
           Sign Out
         </button>
       </div>

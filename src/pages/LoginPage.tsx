@@ -100,7 +100,7 @@ export const LoginPage = () => {
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, type: 'spring', bounce: 0.3 }}
-        className="w-full max-w-[460px] bg-foreground rounded-[24px] shadow-2xl border border-[rgba(255,255,255,0.08)] relative z-10"
+        className="w-full max-w-[460px] bg-card rounded-[32px] shadow-[0_20px_50px_-12px_rgba(255,107,53,0.15)] border border-border relative z-10"
       >
         
         <div className="p-10">
@@ -114,8 +114,8 @@ export const LoginPage = () => {
               className="relative mb-6"
             >
               {/* Soft Glow Behind Logo */}
-              <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
-              <div className="relative z-10 w-28 h-28 sm:w-32 sm:h-32 bg-white rounded-3xl p-4 shadow-xl border border-white/20 transform rotate-[-2deg] hover:rotate-0 transition-all duration-300">
+              <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full" />
+              <div className="relative z-10 w-28 h-28 sm:w-32 sm:h-32 bg-white rounded-3xl p-4 shadow-sm border border-border transform rotate-[-2deg] hover:rotate-0 transition-all duration-300">
                 <img 
                   src={organization?.logoImage || defaultLogo} 
                   alt={organization?.brandName || "IEYAL Solutions"} 
@@ -124,16 +124,16 @@ export const LoginPage = () => {
               </div>
             </motion.div>
             
-            <h1 className="text-[36px] font-bold text-white tracking-tight mb-4">
+            <h1 className="text-[32px] font-black text-foreground tracking-tight mb-3">
               {step === 1 ? 'Welcome Back' : 'Verify Your Phone'}
             </h1>
-            <div className="text-[18px] text-muted-foreground font-medium leading-relaxed max-w-sm">
+            <div className="text-[16px] text-muted-foreground font-medium leading-relaxed max-w-sm">
               {step === 1 ? (
                 <p>Sign in with your mobile number to continue.</p>
               ) : (
                 <p>
                   Enter the 6-digit verification code sent to your mobile number. <br/>
-                  <span className="font-bold text-slate-800 dark:text-slate-200 mt-1 block">
+                  <span className="font-bold text-foreground mt-1 block">
                     {countryCode} {phone.replace(/(\d{5})(\d{5})/, '$1 $2')}
                   </span>
                 </p>
@@ -190,16 +190,16 @@ export const LoginPage = () => {
                   </motion.div>
 
                   {/* Trust Indicators */}
-                  <div className="mt-8 flex flex-col items-center gap-4 text-slate-500 dark:text-slate-400">
-                    <div className="flex items-center gap-2 text-[15px] font-semibold text-slate-600 dark:text-slate-300">
-                      <svg className="w-[18px] h-[18px] text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="mt-8 flex flex-col items-center gap-4 text-muted-foreground">
+                    <div className="flex items-center gap-2 text-[15px] font-semibold text-foreground">
+                      <svg className="w-[18px] h-[18px] text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
                       Secure OTP Login
                     </div>
                     <div className="flex items-center justify-center gap-6 text-sm font-medium opacity-80">
-                      <span className="flex items-center gap-1.5"><span className="text-emerald-500 font-bold">✓</span> Fast Delivery</span>
-                      <span className="flex items-center gap-1.5"><span className="text-emerald-500 font-bold">✓</span> 10,000+ Users</span>
+                      <span className="flex items-center gap-1.5"><span className="text-success font-bold"></span> Fast Delivery</span>
+                      <span className="flex items-center gap-1.5"><span className="text-success font-bold"></span> 10,000+ Users</span>
                     </div>
                   </div>
                 </motion.form>
@@ -248,16 +248,16 @@ export const LoginPage = () => {
                   </motion.div>
 
                   {/* Trust Indicators */}
-                  <div className="mt-8 flex flex-col items-center gap-4 text-slate-500 dark:text-slate-400">
-                    <div className="flex items-center gap-2 text-[15px] font-semibold text-slate-600 dark:text-slate-300">
-                      <svg className="w-[18px] h-[18px] text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <div className="mt-8 flex flex-col items-center gap-4 text-muted-foreground">
+                    <div className="flex items-center gap-2 text-[15px] font-semibold text-foreground">
+                      <svg className="w-[18px] h-[18px] text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                       </svg>
-                      Secure OTP Verification
+                      Verified & Secured
                     </div>
                     <div className="flex items-center justify-center gap-6 text-sm font-medium opacity-80">
-                      <span className="flex items-center gap-1.5"><span className="text-emerald-500 font-bold">✓</span> End-to-end secure</span>
-                      <span className="flex items-center gap-1.5"><span className="text-emerald-500 font-bold">✓</span> Fast authentication</span>
+                      <span className="flex items-center gap-1.5"><span className="text-success font-bold"></span> End-to-end secure</span>
+                      <span className="flex items-center gap-1.5"><span className="text-success font-bold"></span> Fast authentication</span>
                     </div>
                   </div>
 
@@ -272,7 +272,7 @@ export const LoginPage = () => {
                     <Button 
                       type="button"
                       variant="ghost" 
-                      className="h-10 px-4 rounded-xl text-[14px] text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-all group"
+                      className="h-10 px-4 rounded-xl text-[14px] text-muted-foreground hover:text-foreground dark:hover:text-white hover:bg-muted dark:hover:bg-slate-800 font-medium transition-all group"
                       onClick={() => {
                         setStep(1);
                         setOtp(['', '', '', '', '', '']);
@@ -289,7 +289,7 @@ export const LoginPage = () => {
           </div>
 
           {/* Footer Links */}
-          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-4 text-[13px] font-semibold text-slate-400 dark:text-slate-500">
+          <div className="mt-8 pt-6 border-t border-border dark:border-slate-800 flex items-center justify-center gap-4 text-[13px] font-semibold text-muted-foreground/80 dark:text-muted-foreground">
             <a href="#" className="hover:text-primary transition-colors">Need Help?</a>
             <span className="w-[3px] h-[3px] rounded-full bg-slate-300 dark:bg-slate-700" />
             <a href="#" className="hover:text-primary transition-colors">Privacy</a>

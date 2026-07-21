@@ -5,15 +5,15 @@ import { Phone, ChevronDown, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const COUNTRIES = [
-  { code: '+91', flag: '🇮🇳', name: 'India', abbr: 'IN' },
-  { code: '+971', flag: '🇦🇪', name: 'United Arab Emirates', abbr: 'AE' },
-  { code: '+966', flag: '🇸🇦', name: 'Saudi Arabia', abbr: 'SA' },
-  { code: '+974', flag: '🇶🇦', name: 'Qatar', abbr: 'QA' },
-  { code: '+965', flag: '🇰🇼', name: 'Kuwait', abbr: 'KW' },
-  { code: '+65', flag: '🇸🇬', name: 'Singapore', abbr: 'SG' },
-  { code: '+60', flag: '🇲🇾', name: 'Malaysia', abbr: 'MY' },
-  { code: '+1', flag: '🇺🇸', name: 'United States', abbr: 'US' },
-  { code: '+44', flag: '🇬🇧', name: 'United Kingdom', abbr: 'UK' },
+  { code: '+91', flag: '', name: 'India', abbr: 'IN' },
+  { code: '+971', flag: '', name: 'United Arab Emirates', abbr: 'AE' },
+  { code: '+966', flag: '', name: 'Saudi Arabia', abbr: 'SA' },
+  { code: '+974', flag: '', name: 'Qatar', abbr: 'QA' },
+  { code: '+965', flag: '', name: 'Kuwait', abbr: 'KW' },
+  { code: '+65', flag: '', name: 'Singapore', abbr: 'SG' },
+  { code: '+60', flag: '', name: 'Malaysia', abbr: 'MY' },
+  { code: '+1', flag: '', name: 'United States', abbr: 'US' },
+  { code: '+44', flag: '', name: 'United Kingdom', abbr: 'UK' },
 ];
 
 interface PhoneInputProps {
@@ -64,7 +64,7 @@ export const PhoneInput = ({ phone, onChange, countryCode = '+91', onCountryCode
       className="space-y-2 w-full relative"
       ref={containerRef}
     >
-      <Label htmlFor="phone" className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">
+      <Label htmlFor="phone" className="text-sm font-semibold text-foreground/80  ml-1">
         Mobile Number
       </Label>
       <div 
@@ -80,13 +80,13 @@ export const PhoneInput = ({ phone, onChange, countryCode = '+91', onCountryCode
             alt={selectedCountry.name}
             className="w-6 h-auto mr-2.5 rounded-sm shadow-sm"
           />
-          <span className="font-bold text-slate-800 dark:text-slate-200 text-[15px]">{selectedCountry.code}</span>
-          <ChevronDown className={`w-4 h-4 text-slate-400 ml-1.5 transition-transform ${isOpen ? 'rotate-180 text-primary' : ''}`} />
+          <span className="font-bold text-foreground  text-[15px]">{selectedCountry.code}</span>
+          <ChevronDown className={`w-4 h-4 text-muted-foreground/80 ml-1.5 transition-transform ${isOpen ? 'rotate-180 text-primary' : ''}`} />
         </div>
 
         {/* Input Area */}
         <div className="flex-1 flex items-center relative">
-          <Phone className="w-[22px] h-[22px] text-slate-400 absolute left-4 group-focus-within:text-primary transition-colors" strokeWidth={1.75} />
+          <Phone className="w-[22px] h-[22px] text-muted-foreground/80 absolute left-4 group-focus-within:text-primary transition-colors" strokeWidth={1.75} />
           <Input
             id="phone"
             type="tel"
@@ -97,7 +97,7 @@ export const PhoneInput = ({ phone, onChange, countryCode = '+91', onCountryCode
             onChange={handleChange}
             disabled={disabled}
             aria-label="Mobile Number"
-            className="flex-1 h-full border-0 bg-transparent pl-12 pr-4 text-[17px] font-semibold text-white placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="flex-1 h-full border-0 bg-transparent pl-12 pr-4 text-[17px] font-semibold text-white placeholder:text-muted-foreground/80 focus-visible:ring-0 focus-visible:ring-offset-0"
           />
         </div>
       </div>
@@ -110,18 +110,18 @@ export const PhoneInput = ({ phone, onChange, countryCode = '+91', onCountryCode
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute top-[calc(100%+8px)] left-0 w-full z-[9999] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-[16px] shadow-[0_12px_40px_-10px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[300px]"
+            className="absolute top-[calc(100%+8px)] left-0 w-full z-[9999] bg-white dark:bg-slate-900 border border-border dark:border-slate-800/80 rounded-[16px] shadow-[0_12px_40px_-10px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[300px]"
           >
               {/* Search Header */}
-              <div className="px-3 pt-3 pb-2 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
-                <div className="relative flex items-center bg-slate-50 dark:bg-slate-800/60 rounded-xl h-10 px-3 transition-colors focus-within:bg-slate-100 dark:focus-within:bg-slate-800">
-                  <Search className="w-4 h-4 text-slate-400 shrink-0" />
+              <div className="px-3 pt-3 pb-2 border-b border-border dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
+                <div className="relative flex items-center bg-muted dark:bg-slate-800/60 rounded-xl h-10 px-3 transition-colors focus-within:bg-muted dark:focus-within:bg-slate-800">
+                  <Search className="w-4 h-4 text-muted-foreground/80 shrink-0" />
                   <input 
                     type="text" 
                     placeholder="Search country or code..." 
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="flex-1 bg-transparent border-0 pl-2.5 text-[15px] font-medium focus:ring-0 outline-none dark:text-white placeholder:text-slate-400 h-full"
+                    className="flex-1 bg-transparent border-0 pl-2.5 text-[15px] font-medium focus:ring-0 outline-none dark:text-white placeholder:text-muted-foreground/80 h-full"
                     autoFocus
                   />
                 </div>
@@ -142,8 +142,8 @@ export const PhoneInput = ({ phone, onChange, countryCode = '+91', onCountryCode
                         }}
                         className={`flex items-center justify-between px-3 h-11 rounded-[12px] cursor-pointer transition-all duration-200 select-none group ${
                           isSelected 
-                            ? 'bg-slate-100 dark:bg-slate-800' 
-                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                            ? 'bg-muted dark:bg-slate-800' 
+                            : 'hover:bg-muted dark:hover:bg-slate-800/40'
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -152,18 +152,18 @@ export const PhoneInput = ({ phone, onChange, countryCode = '+91', onCountryCode
                             alt={country.name}
                             className="w-5 h-auto rounded-sm shadow-sm drop-shadow-sm"
                           />
-                          <span className={`text-[15px] transition-colors ${isSelected ? 'font-semibold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white'}`}>
+                          <span className={`text-[15px] transition-colors ${isSelected ? 'font-semibold text-foreground dark:text-white' : 'font-medium text-foreground/80  group-hover:text-foreground dark:group-hover:text-white'}`}>
                             {country.name}
                           </span>
                         </div>
-                        <span className={`text-[14px] ${isSelected ? 'font-semibold text-slate-900 dark:text-white' : 'font-medium text-slate-500 dark:text-slate-400'}`}>
+                        <span className={`text-[14px] ${isSelected ? 'font-semibold text-foreground dark:text-white' : 'font-medium text-muted-foreground dark:text-muted-foreground/80'}`}>
                           {country.code}
                         </span>
                       </div>
                     );
                   })
                 ) : (
-                  <div className="p-4 text-center text-[14px] text-slate-500 font-medium">
+                  <div className="p-4 text-center text-[14px] text-muted-foreground font-medium">
                     No countries found
                   </div>
                 )}

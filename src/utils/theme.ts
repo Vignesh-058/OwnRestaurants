@@ -5,8 +5,9 @@ export const applyOrganizationTheme = (themeConfig?: ThemeColors) => {
   if (!themeConfig) return;
 
   if (themeConfig.primaryColor) {
-    root.style.setProperty('--primary', themeConfig.primaryColor);
-    root.style.setProperty('--ring', themeConfig.primaryColor);
+    // We ignore the backend primary color to enforce the preferred #FF6B00 brand color
+    // root.style.setProperty('--primary', themeConfig.primaryColor);
+    // root.style.setProperty('--ring', themeConfig.primaryColor);
   }
 
   if (themeConfig.secondaryColor) {

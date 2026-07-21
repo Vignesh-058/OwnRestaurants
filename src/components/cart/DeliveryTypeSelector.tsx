@@ -31,7 +31,6 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled, compact }: Pro
             Order Type
           </h3>
         </div>
-        <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
       </div>
 
       <RadioGroup
@@ -47,7 +46,7 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled, compact }: Pro
               ? 'flex-1 relative flex flex-col items-center justify-center gap-1.5 py-2 px-2 rounded-[12px] border-2 cursor-pointer transition-all duration-200 min-h-[56px] py-1.5'
               : 'relative flex items-center justify-between p-4 rounded-[16px] border-2 cursor-pointer transition-all duration-300',
             value === 'Door Delivery'
-              ? 'border-primary bg-accent shadow-[0_2px_8px_rgba(255,107,0,0.08)]'
+              ? 'border-primary bg-accent shadow-[0_2px_8px_rgba(255, 107, 53,0.08)]'
               : 'border-muted bg-white hover:border-accent/60 hover:bg-accent/10',
             disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
           )}
@@ -104,7 +103,7 @@ export const DeliveryTypeSelector = ({ value, onChange, disabled, compact }: Pro
               ? 'flex-1 relative flex flex-col items-center justify-center gap-1.5 py-2 px-2 rounded-[12px] border-2 cursor-pointer transition-all duration-200 min-h-[56px] py-1.5'
               : 'relative flex items-center justify-between p-4 rounded-[16px] border-2 cursor-pointer transition-all duration-300',
             value === 'Self Pickup'
-              ? 'border-primary bg-accent shadow-[0_2px_8px_rgba(255,107,0,0.08)]'
+              ? 'border-primary bg-accent shadow-[0_2px_8px_rgba(255, 107, 53,0.08)]'
               : 'border-muted bg-white hover:border-accent/60 hover:bg-accent/10',
             disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
           )}

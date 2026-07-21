@@ -5,7 +5,7 @@ import { useCartStore } from '@/store/CartStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import type { CategoryItem } from '@/types/category.types';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { AddToCartButton } from '@/components/ui/add-to-cart-button';
 import { Loader2, Minus, Plus, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
@@ -159,7 +159,7 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
       removeItem({
         outletId: selectedOutlet._id,
         orderId: orderId || '',
-        itemid: lastItem._id || lastItem.product_retailer_id,
+        itemid: (lastItem._id && !lastItem._id.startsWith('temp-')) ? lastItem._id : lastItem.product_retailer_id,
         customerPhoneNo: user?.phone || '0000000000',
         customerName: user?.name || 'Guest'
       }, {
@@ -295,135 +295,93 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
   return (
     <div
       className={cn(
-        "group relative flex flex-col w-full h-full min-h-[280px] sm:min-h-[300px] lg:min-h-[340px] premium-card overflow-hidden cursor-default",
+        "group relative flex flex-col w-full h-full bg-white rounded-[18px] shadow-[0_8px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 overflow-hidden transition-all duration-300",
         className,
       )}
+      onClick={() => _onClick && _onClick(product)}
     >
-      {/* 1. Large Product Image (Responsive Height) */}
-      <div className="relative w-full h-[150px] sm:h-[170px] lg:h-[200px] shrink-0 bg-muted overflow-hidden">
+      {/* 1. Large Product Image */}
+      <div className="relative w-full aspect-[4/3] shrink-0 bg-muted overflow-hidden">
         <img
           src={product.imageUrl?.[0] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           loading="lazy"
         />
 
-        {/* Top Left: Veg/Non-Veg Badge */}
-        {product.dietryType && (
-          <div className="absolute top-3 left-3 z-10 flex items-center justify-center w-7 h-7 rounded-md bg-card/90 backdrop-blur-md shadow-sm border border-border">
-            <div
-              className={cn(
-                "flex items-center justify-center w-3.5 h-3.5 border-[1.5px] rounded-[3px]",
-                isVeg ? "border-green-600" : "border-red-600"
-              )}
-            >
-              <div className={cn("w-1.5 h-1.5 rounded-xl", isVeg ? "bg-green-600" : "bg-red-600")} />
-            </div>
+        {/* Top Gradient for text readability if needed */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent h-12 pointer-events-none" />
+
+        {/* Discount Badge (Top Left) */}
+        {discountDisplay && (
+          <div className="absolute top-0 left-0 z-10 bg-[#FF6B00] text-white text-[12px] font-bold px-3.5 py-1.5 rounded-br-[12px] shadow-sm flex items-center tracking-wide">
+            {discountDisplay}
           </div>
         )}
 
-        {/* Top Right: Discount & Bestseller */}
-        <div className="absolute top-3 right-3 flex flex-col items-end gap-2 z-10">
-
-          {discountDisplay && (
-            <div className="bg-primary text-primary-foreground text-[11px] font-extrabold px-2.5 py-1.5 rounded-md shadow-sm flex items-center gap-1 tracking-wide">
-              {discountDisplay}
-            </div>
-          )}
+        {/* Veg/Non-Veg Indicator (Bottom Left of Image) */}
+        <div className="absolute bottom-3 left-3 z-10 bg-white p-1 rounded shadow-sm flex items-center justify-center">
+          <div
+            className={cn(
+              "flex items-center justify-center w-3 h-3 border rounded-[2px]",
+              isVeg ? "border-green-600" : "border-red-600"
+            )}
+          >
+            <div className={cn("w-1.5 h-1.5 rounded-full", isVeg ? "bg-green-600" : "bg-red-600")} />
+          </div>
         </div>
       </div>
 
       {/* 2. Product Information & Actions */}
-      <div className="flex flex-col flex-1 p-3.5 sm:p-4 lg:p-5">
+      <div className="flex flex-col flex-1 p-4">
+        
         {/* Title */}
-        <h3 className="font-extrabold text-[17px] text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+        <h3 className="font-extrabold text-[16px] text-foreground line-clamp-1 leading-tight group-hover:text-primary transition-colors mb-1.5">
           {product.name}
         </h3>
         
-        {/* Rating */}
-        {product.rating && (
-          <div className="flex items-center gap-1 mt-1.5">
-            <Star className="w-4 h-4 fill-warning text-warning" />
-            <span className="text-[13px] font-bold text-muted-foreground">{product.rating}</span>
-          </div>
-        )}
-        
-        {/* Description */}
-        {descText && (
-          <p className="text-muted-foreground font-medium text-[13px] line-clamp-2 mt-2 leading-relaxed">
-            {descText}
-          </p>
-        )}
+        {/* Rating & Secondary Info */}
+        <div className="flex items-center gap-2 mb-2">
+          {product.rating && (
+            <div className="flex items-center gap-1 bg-muted px-1.5 py-0.5 rounded text-[12px] font-bold text-foreground">
+              <Star className="w-3.5 h-3.5 fill-[#F4B400] text-[#F4B400]" />
+              {product.rating}
+            </div>
+          )}
+          {descText && (
+            <span className="text-muted-foreground text-[12px] font-medium line-clamp-1 flex-1">
+              {descText}
+            </span>
+          )}
+        </div>
 
         <div className="flex-1" />
 
-        {/* Price & Add Button Row */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-          {/* Price Column */}
+        {/* Bottom Row: Price & Add to Cart */}
+        <div className="flex items-center justify-between mt-3">
           <div className="flex flex-col">
-            <span className="text-[18px] font-extrabold text-foreground leading-none tracking-tight">
-              {currency}{sellingPrice.toLocaleString()}
-            </span>
-            {originalPrice > sellingPrice && (
-              <span className="text-[13px] font-medium text-muted-foreground line-through leading-none mt-1.5">
-                {currency}{originalPrice.toLocaleString()}
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[18px] font-extrabold text-foreground leading-none">
+                {currency}{sellingPrice.toLocaleString()}
               </span>
-            )}
+              {originalPrice > sellingPrice && (
+                <span className="text-[13px] font-semibold text-muted-foreground line-through leading-none">
+                  {currency}{originalPrice.toLocaleString()}
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* Add Button / Quantity Selector */}
-          <div className="relative h-[38px] lg:h-[42px] w-[105px] lg:w-[115px] shrink-0" onClick={(e) => e.stopPropagation()}>
-            <AnimatePresence mode="wait">
-              {totalQuantity > 0 ? (
-                <motion.div
-                  key="quantity"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute inset-0 flex items-center justify-between bg-card rounded-full p-1 border border-primary shadow-sm"
-                >
-                  <button
-                    onClick={handleDecrement}
-                    disabled={isAdding || isRemoving}
-                    className="w-[30px] h-[30px] lg:w-[34px] lg:h-[34px] flex items-center justify-center rounded-full bg-accent text-primary transition-colors duration-200 hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
-                  >
-                    <Minus className="w-4 h-4 stroke-[3]" />
-                  </button>
-                  <span className="text-[14px] lg:text-[15px] font-extrabold text-primary select-none flex-1 text-center">
-                    {totalQuantity}
-                  </span>
-                  <button
-                    onClick={handleIncrement}
-                    disabled={isAdding || isRemoving}
-                    className="w-[30px] h-[30px] lg:w-[34px] lg:h-[34px] flex items-center justify-center rounded-full bg-accent text-primary transition-colors duration-200 hover:bg-primary hover:text-primary-foreground disabled:opacity-50"
-                  >
-                    <Plus className="w-4 h-4 stroke-[3]" />
-                  </button>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="add-btn"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute inset-0"
-                >
-                  <Button
-                    className="w-full h-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-[14px] shadow-sm hover:shadow-md transition-all duration-300 border-0"
-                    onClick={handleQuickAdd}
-                    disabled={isAdding}
-                  >
-                    {isAdding ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "Add +"
-                    )}
-                  </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div className="w-[100px] sm:w-[110px] h-[36px] sm:h-[40px] shrink-0 ml-2">
+            <AddToCartButton
+              quantity={totalQuantity}
+              onAdd={handleQuickAdd}
+              onIncrement={handleIncrement}
+              onDecrement={handleDecrement}
+              isLoading={isAdding || isRemoving}
+              disabled={!product.active}
+              className="h-full w-full"
+            />
           </div>
         </div>
       </div>

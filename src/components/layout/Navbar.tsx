@@ -1,6 +1,6 @@
-import { MapPin, ShoppingCart } from 'lucide-react';
+import { MapPin, ShoppingCart, Bell, Search, Mic } from 'lucide-react';
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/CartStore";
@@ -14,6 +14,7 @@ import defaultLogo from "@/assets/Ieyal Logo.jpeg";
 
 export const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   const [activeSection, setActiveSection] = useState("home");
 
@@ -43,6 +44,7 @@ export const Navbar = () => {
   ];
 
   const activeTabId = (() => {
+    if (currentPath.startsWith("/cart")) return "cart";
     if (currentPath.startsWith("/products")) return "products";
     if (currentPath === "/") return "home";
     if (currentPath.startsWith("/offers")) return "offers";
@@ -54,7 +56,6 @@ export const Navbar = () => {
     return "";
   })();
 
-  // Use framer-motion container variants for smooth content transition
   const fadeVariants = {
     hidden: { opacity: 0, y: -10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
@@ -66,7 +67,7 @@ export const Navbar = () => {
 
     const handleScroll = () => {
       const sections = ["home", "how-it-works", "features"];
-      const headerOffset = 80; // height of navbar
+      const headerOffset = 80; 
       
       let currentSection = activeSection;
       
@@ -74,7 +75,6 @@ export const Navbar = () => {
         const element = document.getElementById(sectionId);
         if (element) {
           const rect = element.getBoundingClientRect();
-          // If the top of the element is near the top of the viewport (accounting for header)
           if (rect.top <= headerOffset + 150 && rect.bottom >= headerOffset) {
             currentSection = sectionId;
           }
@@ -114,240 +114,277 @@ export const Navbar = () => {
       layout
       transition={{ duration: 0.4, ease: "easeInOut" }}
       className={cn(
-        "w-full fixed top-0 left-0 right-0 z-[100] flex items-center bg-background/80 backdrop-blur-xl px-4 md:px-8 xl:px-12 transition-all duration-300",
+        "w-full fixed top-0 left-0 right-0 z-[100] flex flex-col justify-center bg-background/95 backdrop-blur-xl px-4 md:px-8 xl:px-12 transition-all duration-300 border-b border-border shadow-sm",
         isAuthenticated
-          ? "h-20 border-b border-border shadow-sm"
-          : "h-16 md:h-20 border-b border-border shadow-sm"
+          ? "py-3 md:h-[76px] md:py-0"
+          : "py-3 md:h-[76px] md:py-0"
       )}
     >
-      <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between gap-4 relative">
-        {/* LEFT SECTION: Logo & Delivery */}
-        <div className="flex items-center gap-3 md:gap-4 shrink-0">
-
-          <Link
-            to={isAuthenticated ? "/" : "/"}
-            onClick={(e) => {
-              if (!isAuthenticated) {
-                e.preventDefault();
-                scrollToSection('home');
-              }
-            }}
-            className="flex items-center group"
-          >
-            <motion.img
-              layout
-              src={organization?.logoImage || defaultLogo}
-              alt={organization?.name || "IEYAL Solutions"}
-              className={cn(
-                "object-contain drop-shadow-sm transition-transform group-hover:scale-105",
-                isAuthenticated
-                  ? "w-[36px] h-[36px] md:w-[48px] md:h-[48px] rounded-[10px] md:rounded-[12px]"
-                  : "w-[32px] h-[32px] md:w-[40px] md:h-[40px] rounded-lg"
+      <style>{`
+        @media (max-width: 767px) {
+          .pt-\\[80px\\] {
+            padding-top: 130px !important;
+          }
+        }
+      `}</style>
+      <div className="w-full max-w-[1440px] mx-auto flex flex-col gap-3 md:gap-0 relative">
+        <div className="flex items-center justify-between w-full relative">
+          {/* LEFT SECTION: Logo & Delivery */}
+          <div className="flex items-center gap-3 md:gap-4 shrink-0 max-w-[40%]">
+            <Link
+              to={isAuthenticated ? "/" : "/"}
+              onClick={(e) => {
+                if (!isAuthenticated) {
+                  e.preventDefault();
+                  scrollToSection('home');
+                }
+              }}
+              className="flex items-center group md:flex shrink-0"
+            >
+              <motion.img
+                layout
+                src={organization?.logoImage || defaultLogo}
+                alt={organization?.name || "IEYAL Solutions"}
+                className={cn(
+                  "object-contain drop-shadow-sm transition-transform group-hover:scale-105 hidden md:block",
+                  isAuthenticated
+                    ? "w-[36px] h-[36px] md:w-[44px] md:h-[44px] rounded-[10px] md:rounded-[12px]"
+                    : "w-[32px] h-[32px] md:w-[40px] md:h-[40px] rounded-lg"
+                )}
+              />
+              {!isAuthenticated && organization?.name && (
+                <motion.span 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="hidden sm:block ml-3 font-extrabold text-foreground tracking-tight text-lg"
+                >
+                  {organization.name}
+                </motion.span>
               )}
-            />
-            {!isAuthenticated && organization?.name && (
-              <motion.span 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="hidden sm:block ml-3 font-extrabold text-foreground tracking-tight text-lg"
-              >
-                {organization.name}
-              </motion.span>
-            )}
-          </Link>
+            </Link>
 
-          <AnimatePresence mode="wait">
-            {isAuthenticated && showLocation && (
-              <motion.div 
-                key="location-card"
-                variants={fadeVariants}
-                initial="hidden" animate="visible" exit="exit"
-                className="flex items-center gap-3 lg:gap-4 shrink-0 min-w-0"
-              >
-                {/* Divider between Logo and Location Card */}
-                <div className="hidden md:block w-[1px] h-[40px] bg-border ml-1 mr-1 lg:mx-0"></div>
-
-                {/* Desktop/Laptop/Tablet Location Card */}
-                <button
-                  onClick={openOutletModal}
-                  className="hidden md:flex flex-col items-start justify-center text-left w-[200px] lg:w-[260px] xl:w-[320px] h-[64px] bg-card border border-border rounded-2xl px-3 lg:px-4 py-2 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group shadow-sm shrink-0"
+            <AnimatePresence mode="wait">
+              {isAuthenticated && showLocation && (
+                <motion.div 
+                  key="location-card"
+                  variants={fadeVariants}
+                  initial="hidden" animate="visible" exit="exit"
+                  className="flex items-center gap-3 lg:gap-4 shrink-0 min-w-0"
                 >
-                  <div className="flex items-center w-full mb-1">
-                    <span className="text-[10px] lg:text-[11px] font-bold text-muted-foreground uppercase tracking-widest leading-none flex items-center gap-1.5">
-                      <MapPin className="w-3 h-3 text-primary" /> {selectedOutlet ? 'SELECTED OUTLET' : 'SELECT OUTLET'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between min-w-0 w-full">
-                    <div className="flex flex-col min-w-0 flex-1 truncate pr-2">
-                      {selectedOutlet ? (
-                        <>
-                          <span className="text-[14px] lg:text-[16px] xl:text-[17px] font-bold text-foreground leading-none truncate mb-0.5">
-                            {selectedOutlet.outletName}
-                          </span>
-                          {(selectedOutlet.outletDetails?.address || selectedOutlet.outletDetails?.city) && (
-                            <span className="text-[10px] lg:text-[11px] text-muted-foreground truncate leading-none">
-                              {selectedOutlet.outletDetails.address || selectedOutlet.outletDetails.city}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <span className="text-[14px] lg:text-[15px] font-bold text-foreground leading-none truncate">
-                          Choose a nearby restaurant
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[11px] lg:text-[12px] font-bold text-primary group-hover:underline transition-colors shrink-0 leading-none">
-                      Change
-                    </span>
-                  </div>
-                </button>
+                  {/* Divider between Logo and Location Card on Desktop */}
+                  <div className="hidden md:block w-[1px] h-[36px] bg-border ml-1 mr-1 lg:mx-0 shrink-0"></div>
 
-                {/* Mobile Compact Location Button */}
-                <button
-                  onClick={openOutletModal}
-                  className="md:hidden flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1.5 hover:shadow-sm transition-all max-w-[100px] sm:max-w-[150px]"
-                >
-                  <MapPin className="w-3.5 h-3.5 shrink-0 text-primary" />
-                  <span className="text-[11px] font-bold text-foreground truncate">
-                    {selectedOutlet?.outletName || "Select"}
-                  </span>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* CENTER SECTION */}
-        <AnimatePresence mode="wait">
-          {isAuthenticated ? (
-            <motion.nav 
-              key="auth-nav"
-              variants={fadeVariants}
-              initial="hidden" animate="visible" exit="exit"
-              className="hidden lg:flex items-center bg-card/80 backdrop-blur-md border border-border rounded-full p-1.5 relative shrink-0 shadow-sm"
-            >
-              {showMenu && navLinks.map((link) => {
-                const active = activeTabId === link.id;
-                return (
-                  <Link
-                    key={link.id}
-                    to={link.path}
-                    className={cn(
-                      "relative px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 z-10",
-                      active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
-                    )}
+                  {/* Desktop/Laptop/Tablet Location Card */}
+                  <button
+                    onClick={openOutletModal}
+                    className="hidden md:flex flex-col items-start justify-center text-left w-full max-w-[200px] lg:max-w-[240px] h-[52px] md:h-[56px] bg-card border border-border rounded-xl px-3 lg:px-4 py-1 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group shadow-sm shrink-0"
                   >
-                    {active && (
-                      <motion.div
-                        layoutId="nav-link-pill-v5"
-                        className="absolute inset-0 bg-primary rounded-full shadow-sm"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    <span className="relative z-20">{link.label}</span>
-                  </Link>
-                );
-              })}
-            </motion.nav>
-          ) : (
-            <motion.div 
-              key="public-nav"
-              variants={fadeVariants}
-              initial="hidden" animate="visible" exit="exit"
-              className="hidden lg:flex items-center gap-8 text-muted-foreground font-semibold text-[14px]"
-            >
-              <button 
-                onClick={() => scrollToSection('home')} 
-                className={cn("transition-colors hover:text-foreground", activeSection === 'home' && "text-primary")}
-              >
-                Home
-              </button>
-              <button 
-                onClick={() => scrollToSection('how-it-works')} 
-                className={cn("transition-colors hover:text-foreground", activeSection === 'how-it-works' && "text-primary")}
-              >
-                How it Works
-              </button>
-              <button 
-                onClick={() => scrollToSection('features')} 
-                className={cn("transition-colors hover:text-foreground", activeSection === 'features' && "text-primary")}
-              >
-                Features
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                    <div className="flex items-center w-full mb-0.5">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none flex items-center gap-1.5">
+                        <MapPin className="w-3 h-3 text-primary" /> {selectedOutlet ? 'SELECTED OUTLET' : 'SELECT OUTLET'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between min-w-0 w-full">
+                      <div className="flex flex-col min-w-0 flex-1 truncate pr-2">
+                        {selectedOutlet ? (
+                          <>
+                            <span className="text-[13px] lg:text-[14px] font-extrabold text-foreground leading-none truncate mb-0.5">
+                              {selectedOutlet.outletName}
+                            </span>
+                            {(selectedOutlet.outletDetails?.address || selectedOutlet.outletDetails?.city) && (
+                              <span className="text-[10px] text-muted-foreground truncate leading-none">
+                                {selectedOutlet.outletDetails.address || selectedOutlet.outletDetails.city}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-[13px] lg:text-[14px] font-bold text-foreground leading-none truncate">
+                            Choose a nearby restaurant
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] font-bold text-primary group-hover:underline transition-colors shrink-0 leading-none">
+                        Change
+                      </span>
+                    </div>
+                  </button>
 
-        {/* RIGHT SECTION: Cart & Profile / Sign In */}
-        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+                  {/* Mobile Location Header Design */}
+                  <button
+                    onClick={openOutletModal}
+                    className="md:hidden flex items-start gap-2 text-left bg-transparent border-0 px-0 hover:shadow-none max-w-[220px]"
+                  >
+                    <MapPin className="w-[20px] h-[20px] shrink-0 text-primary mt-0.5" />
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[14px] font-extrabold text-foreground truncate leading-tight">
+                        {selectedOutlet?.outletName || "Select Location"}
+                      </span>
+                      <span className="text-[11px] font-medium text-muted-foreground truncate leading-tight mt-0.5">
+                        {selectedOutlet?.outletDetails?.city || selectedOutlet?.outletDetails?.address || "Tap to select"}
+                      </span>
+                    </div>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* CENTER SECTION (Desktop Only) - Perfectly Centered */}
           <AnimatePresence mode="wait">
             {isAuthenticated ? (
-              <motion.div 
-                key="auth-right"
-                variants={fadeVariants}
-                initial="hidden" animate="visible" exit="exit"
-                className="flex items-center gap-2 md:gap-4"
-              >
-                {showCart && (
-                  <Link 
-                    to="/cart"
-                    className="flex items-center gap-1.5 md:gap-2 h-[36px] md:h-[48px] px-3 md:px-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 shrink-0 group"
-                  >
-                    <ShoppingCart className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5] group-hover:scale-110 transition-transform" />
-                    
-                    {/* Desktop/Tablet text */}
-                    <span className="hidden sm:flex text-[13px] md:text-sm font-bold tracking-wide items-center gap-1.5">
-                      {totalCartQuantity > 0 ? (
-                        <>
-                          <span>{totalCartQuantity} items</span>
-                          <span className="opacity-50">•</span>
-                          <span>
-                            {currency}
-                            {cartTotal.toLocaleString()}
-                          </span>
-                        </>
-                      ) : (
-                        "Cart"
-                      )}
-                    </span>
-                    
-                    {/* Mobile minimal text */}
-                    <span className="sm:hidden text-[12px] font-bold flex items-center">
-                      {totalCartQuantity > 0 ? totalCartQuantity : "Cart"}
-                    </span>
-                  </Link>
-                )}
+              <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center justify-center z-50 pointer-events-none w-max">
+                <motion.nav 
+                  key="auth-nav"
+                  variants={fadeVariants}
+                  initial="hidden" animate="visible" exit="exit"
+                  className="pointer-events-auto flex items-center bg-card/80 backdrop-blur-md border border-border rounded-full p-1.5 shadow-sm"
+                >
+                  {showMenu && navLinks.map((link) => {
+                    const active = activeTabId === link.id;
+                    return (
+                      <Link
+                        key={link.id}
+                        to={link.path}
+                        className={cn(
+                          "relative px-5 xl:px-6 py-2 rounded-full text-[13.5px] font-bold transition-all duration-300 z-10",
+                          active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        {active && (
+                          <motion.div
+                            layoutId="nav-link-pill-v5"
+                            className="absolute inset-0 bg-primary rounded-full shadow-sm"
+                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          />
+                        )}
+                        <span className="relative z-20">{link.label}</span>
+                      </Link>
+                    );
+                  })}
 
-                {showProfile && (
-                  <div className="flex items-center gap-2.5 shrink-0 ml-2">
-                    <span className="hidden xl:inline text-sm font-bold text-foreground">
-                      {user?.name || "Account"}
-                    </span>
-                    <AccountPanel />
-                  </div>
-                )}
-              </motion.div>
+
+                </motion.nav>
+              </div>
             ) : (
-              <motion.div 
-                key="public-right"
-                variants={fadeVariants}
-                initial="hidden" animate="visible" exit="exit"
-                className="flex items-center gap-3"
-              >
-                <Link to="/products" className="hidden sm:block">
-                  <Button variant="ghost" className="text-foreground hover:bg-muted font-bold rounded-full h-[40px] px-5 transition-colors">
-                    Explore Menu
-                  </Button>
-                </Link>
-                <Link to="/login">
-                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-[40px] px-6 shadow-md transition-transform hover:-translate-y-0.5 border-0">
-                    Sign In
-                  </Button>
-                </Link>
-              </motion.div>
+              <div className="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center justify-center z-50">
+                <motion.div 
+                  key="public-nav"
+                  variants={fadeVariants}
+                  initial="hidden" animate="visible" exit="exit"
+                  className="flex items-center gap-8 text-muted-foreground font-semibold text-[14px]"
+                >
+                  <button 
+                    onClick={() => scrollToSection('home')} 
+                    className={cn("transition-colors hover:text-foreground", activeSection === 'home' && "text-primary")}
+                  >
+                    Home
+                  </button>
+                  <button 
+                    onClick={() => scrollToSection('how-it-works')} 
+                    className={cn("transition-colors hover:text-foreground", activeSection === 'how-it-works' && "text-primary")}
+                  >
+                    How it Works
+                  </button>
+                  <button 
+                    onClick={() => scrollToSection('features')} 
+                    className={cn("transition-colors hover:text-foreground", activeSection === 'features' && "text-primary")}
+                  >
+                    Features
+                  </button>
+                </motion.div>
+              </div>
             )}
           </AnimatePresence>
 
+          {/* RIGHT SECTION: Cart & Profile / Sign In */}
+          <div className="flex items-center justify-end gap-2 md:gap-4 shrink-0 max-w-[40%] ml-auto">
+            <AnimatePresence mode="wait">
+              {isAuthenticated ? (
+                <motion.div 
+                  key="auth-right"
+                  variants={fadeVariants}
+                  initial="hidden" animate="visible" exit="exit"
+                  className="flex items-center gap-2 md:gap-4"
+                >
+                  {/* Mobile Nav Icons (Mobile Cart) */}
+                  <div className="md:hidden flex items-center gap-1.5">
+                    {showCart && (
+                      <Link to="/cart" className={cn(
+                        "p-2 rounded-full relative transition-colors",
+                        activeTabId === "cart" ? "text-primary bg-primary/10" : "text-foreground hover:bg-muted"
+                      )}>
+                        <ShoppingCart className="w-[22px] h-[22px]" />
+                        {totalCartQuantity > 0 && (
+                          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[14px] h-[14px] px-1 bg-primary text-primary-foreground rounded-full text-[9px] font-black border border-background">
+                            {totalCartQuantity}
+                          </span>
+                        )}
+                      </Link>
+                    )}
+                  </div>
+
+                  {/* Desktop Right Section (Cart + Profile) */}
+                  <div className="hidden md:flex items-center gap-3 xl:gap-4">
+                    
+                    {/* Desktop Cart Icon */}
+                    {showCart && (
+                      <Link to="/cart" className={cn(
+                        "p-2 rounded-full relative transition-colors",
+                        activeTabId === "cart" ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      )}>
+                        <ShoppingCart className="w-[22px] h-[22px]" />
+                        {totalCartQuantity > 0 && (
+                          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-[16px] px-1 bg-primary text-primary-foreground rounded-full text-[10px] font-black border border-background">
+                            {totalCartQuantity}
+                          </span>
+                        )}
+                      </Link>
+                    )}
+
+                    {showProfile && (
+                      <div className="flex items-center gap-2.5 shrink-0 pl-1 border-l border-border">
+                        <span className="hidden xl:block text-sm font-bold text-foreground max-w-[120px] truncate leading-tight">
+                          {user?.name || "Account"}
+                        </span>
+                        <AccountPanel />
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key="public-right"
+                  variants={fadeVariants}
+                  initial="hidden" animate="visible" exit="exit"
+                  className="flex items-center gap-3"
+                >
+                  <Link to="/products" className="hidden sm:block">
+                    <Button variant="ghost" className="text-foreground hover:bg-muted font-bold rounded-full h-[40px] px-5 transition-colors">
+                      Explore Menu
+                    </Button>
+                  </Link>
+                  <Link to="/login">
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full h-[40px] px-6 shadow-md transition-transform hover:-translate-y-0.5 border-0">
+                      Sign In
+                    </Button>
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Mobile Search Bar */}
+        <div className="md:hidden w-full mt-1 relative pb-1">
+          <Search className="absolute left-3.5 top-[23px] -translate-y-1/2 w-[18px] h-[18px] text-primary" />
+          <input 
+            type="text" 
+            placeholder="Search for dishes, restaurants..." 
+            onClick={() => navigate('/search')}
+            readOnly
+            className="w-full h-[46px] pl-10 pr-10 rounded-full bg-surface border border-border text-[13px] font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
+          />
+          <Mic className="absolute right-3.5 top-[23px] -translate-y-1/2 w-[18px] h-[18px] text-primary" />
         </div>
       </div>
     </motion.header>

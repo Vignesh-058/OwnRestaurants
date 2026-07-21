@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { CartList } from '@/components/cart/CartList';
 import { CartSummary } from '@/components/cart/CartSummary';
+import { DiscountList } from '@/components/discount/DiscountList';
 import { EmptyCart } from '@/components/cart/EmptyCart';
 import { CartSkeleton } from '@/components/cart/CartSkeleton';
 import type { CartItem } from '@/types/cart.types';
@@ -25,14 +26,14 @@ const MobileCheckoutFooter = () => {
   const currency = organization?.currency || '₹';
   if (cartItemCount === 0) return null;
   return (
-    <div className="lg:hidden fixed left-0 right-0 z-50 bg-white border-t border-border shadow-[0_-4px_24px_rgba(0,0,0,0.10)] px-4 py-3 transition-all duration-300" style={{ bottom: 'var(--floating-nav-height, 0px)' }}>
+    <div className="lg:hidden fixed left-0 right-0 z-50 bg-white border-t border-[#FFE2CC] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] px-4 py-3 transition-all duration-300" style={{ bottom: 'var(--floating-nav-height, 0px)' }}>
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Grand Total</p>
-          <p className="text-[20px] font-black text-primary leading-none tabular-nums">{currency}{grandTotal.toLocaleString()}</p>
+          <p className="text-[11px] text-[#6B7280] font-medium uppercase tracking-wide">Grand Total</p>
+          <p className="text-[20px] font-bold text-[#FF6B00] leading-none tabular-nums">{currency}{grandTotal.toLocaleString()}</p>
         </div>
         <Button
-          className="flex-1 h-[48px] rounded-full text-[15px] font-bold bg-primary hover:bg-primary text-white shadow-[0_4px_16px_rgba(255,107,0,0.3)] transition-all"
+          className="flex-1 h-[48px] rounded-[16px] text-[15px] font-bold bg-[#FF6B00] hover:bg-[#FF7A1A] text-white shadow-[0_4px_16px_rgba(255,107,0,0.2)] transition-all"
           disabled={!checkoutEnable}
           onClick={() => navigate('/checkout')}
         >
@@ -40,7 +41,7 @@ const MobileCheckoutFooter = () => {
         </Button>
       </div>
       {!checkoutEnable && checkOutMessage && (
-        <p className="text-[11px] text-destructive font-semibold text-center mt-1.5">{checkOutMessage}</p>
+        <p className="text-[11px] text-[#EF4444] font-semibold text-center mt-1.5">{checkOutMessage}</p>
       )}
     </div>
   );
@@ -133,7 +134,7 @@ export const CartPage = () => {
    removeItem({
     outletId: selectedOutlet._id,
     orderId,
-    itemid: item._id || item.product_retailer_id,
+    itemid: (item._id && !item._id.startsWith('temp-')) ? item._id : item.product_retailer_id,
     customerPhoneNo,
     customerName
    }, {
@@ -168,7 +169,7 @@ export const CartPage = () => {
   removeItem({
    outletId: selectedOutlet._id,
    orderId,
-   itemid: item._id || item.product_retailer_id,
+   itemid: (item._id && !item._id.startsWith('temp-')) ? item._id : item.product_retailer_id,
    customerPhoneNo,
    customerName
   }, {
@@ -199,10 +200,8 @@ export const CartPage = () => {
  const isEmpty = !cartItems || cartItems.length === 0;
 
    return (
-    <div className="w-full min-h-screen bg-muted">
+    <div className="w-full min-h-screen bg-[#FAF8F5]">
       <div className="w-full max-w-[1800px] mx-auto px-6 lg:px-8 py-6">
-
-         
 
         {isEmpty ? (
           <>
@@ -212,51 +211,44 @@ export const CartPage = () => {
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="w-11 h-11 rounded-full hover:bg-border bg-white shadow-sm border border-border shrink-0"
+            className="w-11 h-11 rounded-full hover:bg-[#FFF4EB] bg-white shadow-sm border border-[#FFE2CC] shrink-0"
           >
-            <ArrowLeft className="w-5 h-5 text-foreground" />
+            <ArrowLeft className="w-5 h-5 text-[#1F2937]" />
           </Button>
           <div>
-            <h1 className="text-[32px] md:text-[38px] font-black text-foreground leading-none">
+            <h1 className="text-[32px] md:text-[38px] font-bold text-[#1F2937] leading-none">
               Shopping Cart
             </h1>
-            {!isEmpty && (
-              <p className="text-[15px] text-muted-foreground font-medium mt-1">
-                {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
-              </p>
-            )}
           </div>
         </div>
             <EmptyCart />
           </>
         ) : (
           <>
-            {/* CSS Grid: cart items left / premium summary right */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(380px,1fr)] gap-6 items-start pb-40 lg:pb-8">
+            {/* CSS Grid: 1:1 ratio (1fr for Cart, 1fr for Order Summary) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-40 lg:pb-8">
 
             {/* Left — Cart Items */}
             <div className="min-w-0 space-y-5 w-full">
               {/* ── Page Header ── */}
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="w-11 h-11 rounded-full hover:bg-border bg-white shadow-sm border border-border shrink-0"
-          >
-            <ArrowLeft className="w-5 h-5 text-foreground" />
-          </Button>
-          <div>
-            <h1 className="text-[32px] md:text-[38px] font-black text-foreground leading-none">
-              Shopping Cart
-            </h1>
-            {!isEmpty && (
-              <p className="text-[15px] text-muted-foreground font-medium mt-1">
-                {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
-              </p>
-            )}
-          </div>
-        </div>
+              <div className="flex items-center gap-4 mb-6">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate(-1)}
+                  className="w-11 h-11 rounded-full hover:bg-[#FFF4EB] bg-white shadow-sm border border-[#FFE2CC] shrink-0"
+                >
+                  <ArrowLeft className="w-5 h-5 text-[#1F2937]" />
+                </Button>
+                <div>
+                  <h1 className="text-[32px] md:text-[38px] font-bold text-[#1F2937] leading-none">
+                    Shopping Cart
+                  </h1>
+                  <p className="text-[15px] text-[#6B7280] font-medium mt-1">
+                    {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
+                  </p>
+                </div>
+              </div>
               <CartList
                 items={cartItems}
                 currency={currency}
@@ -266,21 +258,23 @@ export const CartPage = () => {
               />
             </div>
 
-            {/* Right — Order Summary: fixed 360px, sticky desktop / inline mobile */}
-            <div className="hidden lg:block lg:sticky lg:top-[96px] lg:self-start w-full max-h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden rounded-[20px] custom-scrollbar shadow-sm">
-              <CartSummary
-                currency={currency}
-                deliveryType={localDeliveryType}
-                onDeliveryTypeChange={val => {
-                  setLocalDeliveryType(val);
-                  triggerCartUpdate(val, localInstruction);
-                }}
-                isUpdating={isUpdating}
-              />
+            {/* Right — Order Summary */}
+            <div className="hidden lg:flex lg:flex-col lg:sticky lg:top-[96px] lg:self-start w-full max-h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden custom-scrollbar">
+              <div className="w-full flex-shrink-0">
+                <CartSummary
+                  currency={currency}
+                  deliveryType={localDeliveryType}
+                  onDeliveryTypeChange={val => {
+                    setLocalDeliveryType(val);
+                    triggerCartUpdate(val, localInstruction);
+                  }}
+                  isUpdating={isUpdating}
+                />
+              </div>
             </div>
 
-            {/* Mobile inline summary */}
-            <div className="lg:hidden w-full">
+            {/* Mobile Layout */}
+            <div className="lg:hidden w-full flex flex-col gap-6 pb-24">
               <CartSummary
                 currency={currency}
                 deliveryType={localDeliveryType}

@@ -90,7 +90,7 @@ export const OTPInput = ({ otp, onChange, onSubmit, disabled }: OTPInputProps) =
             onChange={(e) => handleChange(index, e)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             disabled={disabled}
-            className="w-full aspect-square text-center text-[20px] font-bold rounded-[12px] border-white/10 shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 bg-foreground text-white placeholder:text-slate-500 p-0"
+            className="w-full aspect-square text-center text-[20px] font-bold rounded-[12px] border-white/10 shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-300 bg-foreground text-white placeholder:text-muted-foreground p-0"
           />
         </motion.div>
       ))}

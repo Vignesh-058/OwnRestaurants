@@ -143,7 +143,7 @@ export const CartDrawer = () => {
     removeItem({
       outletId: selectedOutlet._id,
       orderId,
-      itemid: item._id || item.product_retailer_id,
+      itemid: (item._id && !item._id.startsWith('temp-')) ? item._id : item.product_retailer_id,
       customerPhoneNo,
       customerName
     });
@@ -218,7 +218,7 @@ export const CartDrawer = () => {
               {cartItems.length > 0 && (
                 <div className="bg-accent rounded-[12px] p-3 border border-accent">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[16px]">🛵</span>
+                    <span className="text-[16px]"></span>
                     <p className="text-[13px] font-bold text-foreground">
                       {amountToFreeDelivery > 0 ? (
                         <>You're <span className="text-primary">{currency}{amountToFreeDelivery.toLocaleString()}</span> away from Free Delivery</>
@@ -257,7 +257,7 @@ export const CartDrawer = () => {
                   <p className="text-muted-foreground text-[15px] mb-8 max-w-[260px] mx-auto">Looks like you haven't added anything yet. Discover our delicious menu.</p>
                   <Button 
                     onClick={handleContinueShopping}
-                    className="rounded-full px-8 h-[54px] text-[16px] font-bold bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white shadow-[0_8px_20px_rgba(255,107,0,0.25)] border-0 w-full"
+                    className="rounded-full px-8 h-[54px] text-[16px] font-bold bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white shadow-[0_8px_20px_rgba(255, 107, 53,0.25)] border-0 w-full"
                   >
                     Browse Products
                   </Button>
@@ -429,7 +429,7 @@ export const CartDrawer = () => {
               <div className="bg-white p-4 md:px-6 md:pb-6 md:pt-4 shrink-0 shadow-[0_-4px_25px_rgba(0,0,0,0.04)] z-10 border-t border-muted">
                 <div className="flex flex-col gap-3">
                   <Button 
-                    className="w-full h-[56px] rounded-[16px] text-[16px] font-bold bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white shadow-[0_8px_20px_rgba(255,107,0,0.25)] hover:shadow-[0_12px_25px_rgba(255,107,0,0.35)] hover:-translate-y-0.5 transition-all duration-300 border-0 flex items-center justify-between px-6"
+                    className="w-full h-[56px] rounded-[16px] text-[16px] font-bold bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white shadow-[0_8px_20px_rgba(255, 107, 53,0.25)] hover:shadow-[0_12px_25px_rgba(255, 107, 53,0.35)] hover:-translate-y-0.5 transition-all duration-300 border-0 flex items-center justify-between px-6"
                     onClick={handleCheckout}
                   >
                     <div className="flex flex-col items-start leading-none text-left">

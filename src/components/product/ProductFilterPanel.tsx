@@ -177,7 +177,7 @@ export const ProductFilterPanel = ({
                   className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
                 <label htmlFor={`rating-${rating}`} className="text-[14px] font-medium text-muted-foreground cursor-pointer hover:text-foreground leading-none flex items-center gap-1">
-                  {rating}<span className="text-warning">★</span> & Above
+                  {rating}<span className="text-warning"></span> & Above
                 </label>
               </div>
             ))}
@@ -188,7 +188,7 @@ export const ProductFilterPanel = ({
         <AccordionSection title="Food Type">
           <RadioGroup value={foodType} onValueChange={(v) => setFoodType(v as FoodType)} className="flex flex-col gap-3">
             {[
-              { id: 'all', label: 'All Types', icon: '🍽️' },
+              { id: 'all', label: 'All Types', icon: '️' },
               { id: 'veg', label: 'Veg', icon: '' },
               { id: 'non-veg', label: 'Non Veg', icon: '' },
             ].map(option => (

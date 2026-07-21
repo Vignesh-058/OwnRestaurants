@@ -34,9 +34,9 @@ export const ResendOTP = ({ onResend, isSending }: ResendOTPProps) => {
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -5 }}
-          className="text-[14.5px] font-medium text-slate-500 dark:text-slate-400"
+          className="text-[14.5px] font-medium text-muted-foreground dark:text-muted-foreground/80"
         >
-          Resend code in <span className="font-bold text-slate-800 dark:text-slate-200">00:{timeLeft.toString().padStart(2, '0')}</span>
+          Resend code in <span className="font-bold text-foreground ">00:{timeLeft.toString().padStart(2, '0')}</span>
         </motion.p>
       ) : (
         <motion.p 
@@ -44,7 +44,7 @@ export const ResendOTP = ({ onResend, isSending }: ResendOTPProps) => {
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -5 }}
-          className="text-[14.5px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5"
+          className="text-[14.5px] font-medium text-muted-foreground dark:text-muted-foreground/80 flex items-center gap-1.5"
         >
           Didn't receive the code?{' '}
           <Button 

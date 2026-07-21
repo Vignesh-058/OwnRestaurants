@@ -1,12 +1,17 @@
 import { useCoupons } from '@/hooks/queries/useCoupons';
 import { motion } from 'framer-motion';
-import { Ticket, Clock, ArrowRight } from 'lucide-react';
+import { ArrowRight, Utensils, Pizza, Leaf, Croissant } from 'lucide-react';
 import { format } from 'date-fns';
+
+const foodImages = [
+  "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=800",
+  "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800",
+];
 
 export const TodaysOffers = () => {
   const { data: coupons = [], isLoading } = useCoupons();
 
-  // Filter active coupons if necessary, assuming the hook returns active ones or checking isActive
   const activeCoupons = coupons.filter(c => c.isActive !== false && c.status !== 'Expired' && c.status !== 'Disabled');
 
   if (isLoading || !activeCoupons || activeCoupons.length === 0) {
@@ -14,23 +19,25 @@ export const TodaysOffers = () => {
   }
 
   return (
-    <section id="offers" className="py-20 md:py-28 bg-background border-b border-border">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+    <section id="offers" className="py-10 md:py-16 bg-background border-b border-border">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
           <div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-foreground tracking-tight mb-4 capitalize">
+            <h2 className="text-[24px] md:text-[36px] font-black text-[#1e1b4b] tracking-tight mb-1.5 md:mb-2 capitalize leading-tight">
               Today's Special Offers
             </h2>
-            <div className="w-24 h-1.5 bg-primary rounded-full mb-6" />
-            <p className="text-muted-foreground text-lg font-medium max-w-2xl">
+            <div className="w-12 md:w-20 h-1.5 md:h-2 bg-primary rounded-full mb-2 md:mb-4" />
+            <p className="text-muted-foreground text-[14px] md:text-[17px] font-medium max-w-2xl">
               Grab these exclusive deals before they expire and enjoy premium meals at a fraction of the cost.
             </p>
           </div>
-          <button className="text-primary font-bold text-sm uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all" onClick={() => {
+          <button className="text-primary font-extrabold text-[12px] md:text-[13px] uppercase tracking-widest flex items-center gap-1.5 md:gap-2 hover:gap-2 md:hover:gap-3 transition-all pb-1 md:pb-0" onClick={() => {
             const el = document.getElementById('product-menu');
             if (el) el.scrollIntoView({ behavior: 'smooth' });
           }}>
-            View All Offers <ArrowRight className="w-4 h-4" />
+            <span className="hidden sm:inline">VIEW ALL OFFERS</span>
+            <span className="sm:hidden">VIEW ALL</span>
+            <ArrowRight className="w-4 h-4 md:w-4 md:h-4" />
           </button>
         </div>
 
@@ -42,41 +49,60 @@ export const TodaysOffers = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="group relative bg-card border border-border rounded-2xl p-8 overflow-hidden hover:border-primary/40 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              className="relative rounded-[20px] h-[260px] overflow-hidden shadow-lg group cursor-pointer border border-[#F0EBE1]"
             >
-              {/* Background Decoration */}
-              <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
-
-              <div className="flex items-start justify-between mb-6 relative z-10">
-                <div className="w-14 h-14 rounded-full bg-background border border-border flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                  <Ticket className="w-6 h-6 text-primary" />
-                </div>
-                <div className="bg-foreground text-background px-3 py-1 rounded-full text-xs font-bold tracking-wider">
-                  {coupon.code}
-                </div>
+              {/* Left Background Image */}
+              <img 
+                src={foodImages[idx % foodImages.length]} 
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                alt="Offer" 
+              />
+              
+              {/* Dark Gradient over image for text readability */}
+              <div className="absolute inset-0 w-[50%] bg-gradient-to-r from-black/80 to-transparent" />
+              
+              {/* Logo / Icon on the left */}
+              <div className="absolute top-6 left-6 flex flex-col items-center">
+                 <div className="text-white mb-1"><Utensils className="w-7 h-7" strokeWidth={1.5} /></div>
+                 <span className="text-white text-[11px] font-extrabold tracking-widest uppercase">YOUR LOGO</span>
               </div>
 
-              <div className="relative z-10">
-                <h3 className="text-xl font-extrabold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {coupon.name || `${coupon.discountValue}${coupon.discountType === 'Percentage' ? '%' : '₹'} OFF`}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6 h-10 line-clamp-2">
-                  {coupon.description || `Get ${coupon.discountValue}${coupon.discountType === 'Percentage' ? '%' : '₹'} off on your order.`}
-                </p>
+              {/* Right Overlay container */}
+              <div className="absolute inset-y-0 right-0 w-[55%] flex">
+                {/* The Wave SVG */}
+                <div className="w-[60px] h-full shrink-0 -mr-[1px] relative z-10">
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full absolute inset-0 drop-shadow-[-5px_0_15px_rgba(0,0,0,0.1)]">
+                    {/* Red Wave (slightly wider/shifted left) */}
+                    <path d="M100,0 C-10,25 70,75 100,100 Z" fill="#F04F4F" transform="translate(-4, 0)" />
+                    {/* Beige Wave */}
+                    <path d="M100,0 C-10,25 70,75 100,100 Z" fill="#FFF7ED" />
+                  </svg>
+                </div>
 
-                <div className="flex items-center justify-between border-t border-border pt-6">
-                  {coupon.validTill || coupon.expiryDate ? (
-                    <div className="flex items-center text-xs font-bold text-muted-foreground">
-                      <Clock className="w-4 h-4 mr-1.5" />
-                      Valid till {format(new Date(coupon.validTill || coupon.expiryDate!), 'MMM dd, yyyy')}
-                    </div>
-                  ) : (
-                    <div className="text-xs font-bold text-green-500">Valid Anytime</div>
-                  )}
+                {/* Right Content Background */}
+                <div className="flex-1 bg-[#FFF7ED] py-5 pr-5 flex flex-col items-center justify-center text-center relative z-10 border-r border-[#F0EBE1]">
                   
-                  <button className="text-primary font-bold text-sm uppercase tracking-widest relative after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-primary after:scale-x-0 group-hover:after:scale-x-100 after:transition-transform after:origin-left">
-                    Shop Now
-                  </button>
+                  {/* Faint Background doodles */}
+                  <div className="absolute top-3 right-3 text-[#F04F4F]/10 rotate-[15deg]"><Pizza className="w-8 h-8" /></div>
+                  <div className="absolute bottom-4 left-0 text-[#F04F4F]/10 -rotate-12"><Croissant className="w-7 h-7" /></div>
+                  <div className="absolute bottom-12 right-4 text-[#F04F4F]/10 rotate-45"><Leaf className="w-6 h-6" /></div>
+
+                  <h3 className="text-[26px] xl:text-[28px] font-black text-[#F04F4F] leading-[1.1] mb-2 drop-shadow-sm px-2">
+                    {coupon.name || (coupon.discountValue ? `${coupon.discountValue}${coupon.discountType === 'Percentage' ? '%' : '₹'} OFF` : 'Discount')}
+                  </h3>
+                  
+                  <p className="text-[#A07C70] text-[12px] font-medium leading-relaxed mb-4 line-clamp-3 px-1">
+                    {coupon.description || `Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore.`}
+                  </p>
+                  
+                  <div className="mt-auto flex flex-col items-center">
+                     <div className="text-[#F04F4F] font-extrabold text-[14px]">
+                       {coupon.code ? `CODE: ${coupon.code}` : 'NO CODE REQUIRED'}
+                     </div>
+                     <div className="text-[#F04F4F] font-bold text-[12px] mt-0.5">
+                       {coupon.validTill || coupon.expiryDate ? format(new Date(coupon.validTill || coupon.expiryDate!), 'EEEE, dd MMM yyyy') : 'Valid Anytime'}
+                     </div>
+                  </div>
                 </div>
               </div>
             </motion.div>

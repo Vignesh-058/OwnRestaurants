@@ -39,7 +39,7 @@ export const EmptyStoreState = () => {
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  transition={{ delay: 0.3 }}
- className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mb-3"
+ className="text-2xl font-black tracking-tight text-foreground dark:text-white mb-3"
  >
  No nearby outlets available.
  </motion.h3>

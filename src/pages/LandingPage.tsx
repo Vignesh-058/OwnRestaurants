@@ -14,8 +14,8 @@ import { StoreClosedPage } from "@/components/common/StoreClosedPage";
 import { SettingsLoader } from "@/components/common/SettingsLoader";
 import { StoreConfig } from "@/components/home/StoreConfig";
 import { HeroBanner } from "@/components/home/HeroBanner";
-import { DeliveryInfoBar } from "@/components/home/DeliveryInfoBar";
-import { CategoriesCarousel } from "@/components/home/CategoriesCarousel";
+import { OrganizationAndOutletInfo } from "@/components/home/OrganizationAndOutletInfo";
+import { HotDealsBanner } from "@/components/home/HotDealsBanner";
 import { ProductCollection } from "@/components/home/ProductCollection";
 import { TodaysOffers } from "@/components/home/TodaysOffers";
 
@@ -170,15 +170,9 @@ export const LandingPage = () => {
             <div className="w-full flex flex-col bg-background">
               <>
                 <HeroBanner />
-                <DeliveryInfoBar />
+                <OrganizationAndOutletInfo />
                 
-                {!isCategoriesLoading && !isCategoriesError && (
-                  <CategoriesCarousel
-                    categories={categories}
-                    activeCategoryId={activeCategoryId}
-                    onSelectCategory={handleCategorySelect}
-                  />
-                )}
+                <HotDealsBanner />
                 
                 <ProductCollection 
                   title="Best Sellers" 

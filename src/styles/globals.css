@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 @import "./colors.css";
 @import "./theme.css";
@@ -13,16 +14,15 @@
     @apply border-border;
   }
   html {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; /* High-end SaaS typography */
+    font-family: 'Outfit', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   body {
     @apply bg-background text-foreground;
-    /* Soft mesh gradient background for a modern feel */
     background-image: 
-      radial-gradient(at 0% 0%, rgba(255, 107, 0, 0.03) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(255, 107, 0, 0.02) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(255, 107, 53, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(255, 107, 53, 0.03) 0px, transparent 50%);
     background-attachment: fixed;
     background-color: var(--background);
   }

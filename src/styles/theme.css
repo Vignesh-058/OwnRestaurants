@@ -55,11 +55,11 @@
   }
 
   .bg-primary-gradient {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent-foreground) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   }
 
   .bg-accent-gradient {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
   }
 
   .premium-card {
@@ -73,6 +73,6 @@
   .premium-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06), 0 8px 16px rgba(0, 0, 0, 0.04);
-    border-color: rgba(255, 107, 0, 0.15); /* Slight primary tint on border */
+    border-color: rgba(255, 107, 53, 0.15); /* Slight primary tint on border */
   }
 }

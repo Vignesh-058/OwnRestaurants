@@ -75,7 +75,7 @@ export const ProductsPage = () => {
           </div>
         ) : isCategoriesError || isProductsError ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
-            <span className="text-4xl mb-4">🍽️</span>
+            <span className="text-4xl mb-4">️</span>
             <h3 className="text-2xl font-black text-foreground mb-2">Could not load products</h3>
             <p className="text-muted-foreground font-medium">Please check your connection and try again.</p>
           </div>

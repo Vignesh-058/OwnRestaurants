@@ -40,7 +40,7 @@ export const FilterChips = () => {
  )}
  {filters.dietary !== 'all' && (
  <FilterChip
- label={filters.dietary === 'veg' ? '🟢 Veg' : '🔴 Non-Veg'}
+ label={filters.dietary === 'veg' ? ' Veg' : ' Non-Veg'}
  onRemove={() => setFilters({ dietary: 'all' })}
  />
  )}
@@ -54,7 +54,7 @@ export const FilterChips = () => {
  <FilterChip label="In Stock" onRemove={() => setFilters({ inStockOnly: false })} />
  )}
  {filters.hasOffer && (
- <FilterChip label="🏷 Offers" onRemove={() => setFilters({ hasOffer: false })} />
+ <FilterChip label=" Offers" onRemove={() => setFilters({ hasOffer: false })} />
  )}
 
  {activeFilterCount > 1 && (

@@ -3,7 +3,7 @@ import type { CouponStatus } from '@/types/coupon.types';
 
 const config: Record<CouponStatus, { label: string; className: string }> = {
  Available: { label: 'Available', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
- Applied: { label: 'Applied ✓', className: 'bg-orange-100 text-orange-700 border-orange-200' },
+ Applied: { label: 'Applied ', className: 'bg-orange-100 text-orange-700 border-orange-200' },
  Expired: { label: 'Expired', className: 'bg-red-100 text-red-700 border-red-200' },
  Used: { label: 'Used', className: 'bg-gray-100 text-gray-600 border-gray-200' },
  Disabled: { label: 'Disabled', className: 'bg-yellow-100 text-yellow-700 border-yellow-200' },

@@ -117,7 +117,7 @@ export const AccountPanel = () => {
  </Avatar>
  
  <div className="flex flex-col space-y-1 relative z-10">
- <p className="text-[13px] font-medium text-border">Welcome Back 👋</p>
+ <p className="text-[13px] font-medium text-border">Welcome Back </p>
  <div className="flex items-center gap-2">
  <p className="text-[18px] font-bold leading-tight text-[#FFFFFF]">{user?.name || 'Guest User'}</p>
  {ordersCount > 10 && (
@@ -137,14 +137,14 @@ export const AccountPanel = () => {
  <div className="p-5 grid grid-cols-3 gap-3 relative z-10">
  <Card className="rounded-[18px] border border-[rgba(255,255,255,0.05)] bg-foreground hover:-translate-y-1 hover:border-primary/40 transition-all duration-250 shadow-sm cursor-pointer group">
  <CardContent className="p-3.5 flex flex-col items-center justify-center text-center h-full">
- <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250">📦</span>
+ <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250"></span>
  <span className="font-bold text-[15px] text-[#FFFFFF]">{ordersCount}</span>
  <span className="text-[11px] font-medium text-border mt-0.5 tracking-wide">Orders</span>
  </CardContent>
  </Card>
  <Card className="rounded-[18px] border border-[rgba(255,255,255,0.05)] bg-foreground hover:-translate-y-1 hover:border-primary/40 transition-all duration-250 shadow-sm cursor-pointer group">
  <CardContent className="p-3.5 flex flex-col items-center justify-center text-center h-full">
- <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250">💰</span>
+ <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250"></span>
  <span className="font-bold text-[15px] text-[#FFFFFF] truncate max-w-full">
  {currency}{spentAmount}
  </span>
@@ -153,7 +153,7 @@ export const AccountPanel = () => {
  </Card>
  <Card className="rounded-[18px] border border-[rgba(255,255,255,0.05)] bg-foreground hover:-translate-y-1 hover:border-primary/40 transition-all duration-250 shadow-sm cursor-pointer group">
  <CardContent className="p-3.5 flex flex-col items-center justify-center text-center h-full">
- <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250">📍</span>
+ <span className="text-[22px] mb-1.5 leading-none group-hover:scale-110 transition-transform duration-250"></span>
  <span className="font-bold text-[15px] text-[#FFFFFF]">{savedAddressesCount}</span>
  <span className="text-[11px] font-medium text-border mt-0.5 tracking-wide">Saved</span>
  </CardContent>

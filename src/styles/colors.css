@@ -1,85 +1,87 @@
 @layer base {
   :root {
-    /* Premium SaaS Light Theme (Apple/Stripe inspired) */
-    --background: #FFF8F3; /* Subtle warm tint matching primary orange */
-    --foreground: #09090B; /* Almost black text for maximum contrast */
+    /* Premium New Theme (Light) */
+    --background: #FAF8F5;
+    --foreground: #1F2937;
 
     --card: #FFFFFF;
-    --card-foreground: #09090B;
+    --card-foreground: #1F2937;
 
     --popover: #FFFFFF;
-    --popover-foreground: #09090B;
+    --popover-foreground: #1F2937;
 
-    /* ✅ PRIMARY = ORANGE — NEVER BLUE */
-    --primary: #FF6B00; /* Swiggy / Zomato vibe */
+    --primary: #FF6B00;
     --primary-foreground: #FFFFFF;
+    --primary-light: #FF7A1A;
+    --primary-dark: #E65A00;
 
-    --secondary: #F4F4F5; /* Soft gray for secondary buttons */
-    --secondary-foreground: #18181B;
+    --secondary: #F4B400;
+    --secondary-foreground: #FFFFFF;
 
-    --muted: #FAFAFA; /* Very light gray for subtle backgrounds */
-    --muted-foreground: #71717A; /* Medium gray for secondary text */
+    --muted: #FFF4EB;
+    --muted-foreground: #6B7280;
 
-    --accent: #FFF4ED; /* Light orange tint for hover states */
+    --accent: #FFF4EB;
     --accent-foreground: #FF6B00;
 
-    --destructive: #EF4444; /* Standard alert red */
+    --destructive: #DC2626;
     --destructive-foreground: #FFFFFF;
 
-    --success: #10B981; /* Premium emerald green */
+    --success: #22C55E;
     --success-foreground: #FFFFFF;
 
     --warning: #F59E0B;
     --warning-foreground: #FFFFFF;
 
-    --info: #0C6CEA; /* Standard info blue */
+    --info: #0C6CEA;
     --info-foreground: #FFFFFF;
 
-    --border: #E4E4E7; /* Soft subtle borders */
-    --input: #E4E4E7;
+    --border: #FFE2CC;
+    --input: #FFE2CC;
     --ring: #FF6B00;
 
-    --radius: 1rem; /* Slightly larger base radius (Apple style) */
+    --radius: 1.5rem;
   }
 
   .dark {
-    /* Premium SaaS Dark Theme (Linear inspired) */
-    --background: #09090B; /* Deep dark background */
-    --foreground: #FAFAFA; /* Off-white text */
+    /* Premium New Theme (Dark) Extrapolated */
+    --background: #1A1816;
+    --foreground: #F8F6F2;
 
-    --card: #121214; /* Slightly lighter card background */
-    --card-foreground: #FAFAFA;
+    --card: #22201D;
+    --card-foreground: #F8F6F2;
 
-    --popover: #18181B;
-    --popover-foreground: #FAFAFA;
+    --popover: #22201D;
+    --popover-foreground: #F8F6F2;
 
-    /* ✅ PRIMARY = ORANGE — NEVER BLUE */
     --primary: #FF6B00;
     --primary-foreground: #FFFFFF;
+    --primary-light: #E65A00;
+    --primary-dark: #B94400;
 
-    --secondary: #27272A; /* Dark gray for secondary */
-    --secondary-foreground: #FAFAFA;
+    --secondary: #F4B400;
+    --secondary-foreground: #1A1816;
 
-    --muted: #18181B;
-    --muted-foreground: #A1A1AA; /* Muted text */
+    --muted: #2C2925;
+    --muted-foreground: #A1A1AA;
 
-    --accent: #2A1A0A; /* Dark orange tint */
-    --accent-foreground: #FF8A3D;
+    --accent: #FF7A1A;
+    --accent-foreground: #FFFFFF;
 
-    --destructive: #7F1D1D;
-    --destructive-foreground: #FAFAFA;
+    --destructive: #DC2626;
+    --destructive-foreground: #FFFFFF;
 
-    --success: #065F46;
-    --success-foreground: #FAFAFA;
+    --success: #22C55E;
+    --success-foreground: #FFFFFF;
 
-    --warning: #78350F;
-    --warning-foreground: #FAFAFA;
+    --warning: #F59E0B;
+    --warning-foreground: #FFFFFF;
 
-    --info: #1D4ED8;
-    --info-foreground: #FAFAFA;
+    --info: #0C6CEA;
+    --info-foreground: #FFFFFF;
 
-    --border: #27272A; /* Subtle dark borders */
-    --input: #27272A;
+    --border: #3A352F;
+    --input: #3A352F;
     --ring: #FF6B00;
   }
 }

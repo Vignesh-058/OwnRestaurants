@@ -44,7 +44,7 @@ export const StoreConfig = () => {
       className="w-full flex flex-col items-center justify-center pt-6 pb-2"
     >
       {/* Delivery Mode Selector - Premium Segmented Control */}
-      <div className="flex bg-slate-100 dark:bg-slate-800/50 p-1 rounded-full w-full max-w-[340px] shadow-sm relative border border-black/5 dark:border-white/5 h-[48px]">
+      <div className="flex bg-muted dark:bg-slate-800/50 p-1 rounded-full w-full max-w-[340px] shadow-sm relative border border-black/5 dark:border-white/5 h-[48px]">
         {isDeliveryEnabled && isPickupEnabled ? (
           <>
             <div 
@@ -58,7 +58,7 @@ export const StoreConfig = () => {
               disabled={!isDeliveryEnabled}
               className={cn(
                 "flex-1 rounded-full px-4 flex items-center justify-center transition-colors relative z-10 text-[14px] font-bold tracking-wide",
-                deliveryMode === 'delivery' ? "text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                deliveryMode === 'delivery' ? "text-white" : "text-muted-foreground dark:text-muted-foreground/80 hover:text-foreground dark:hover:text-white"
               )}
               onClick={() => setDeliveryMode('delivery')}
             >
@@ -68,7 +68,7 @@ export const StoreConfig = () => {
               disabled={!isPickupEnabled}
               className={cn(
                 "flex-1 rounded-full px-4 flex items-center justify-center transition-colors relative z-10 text-[14px] font-bold tracking-wide",
-                deliveryMode === 'pickup' ? "text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                deliveryMode === 'pickup' ? "text-white" : "text-muted-foreground dark:text-muted-foreground/80 hover:text-foreground dark:hover:text-white"
               )}
               onClick={() => setDeliveryMode('pickup')}
             >

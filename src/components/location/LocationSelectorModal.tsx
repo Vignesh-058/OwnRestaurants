@@ -223,21 +223,21 @@ export const LocationSelectorModal = () => {
             <div className="flex items-center gap-3">
               {view === 'add-address' && (
                 <button onClick={() => setView('search')} className="p-1.5 hover:bg-white/10 rounded-full transition-colors">
-                  <ChevronLeft className="h-6 w-6 text-slate-400" />
+                  <ChevronLeft className="h-6 w-6 text-muted-foreground/80" />
                 </button>
               )}
               <div className="flex flex-col justify-center">
                 <h2 className="text-2xl font-black text-white tracking-tight leading-tight">
                   {view === 'search' ? 'Select Delivery Address' : 'Add New Address'}
                 </h2>
-                <p className="text-[14px] text-slate-400 font-medium mt-1 leading-tight">
+                <p className="text-[14px] text-muted-foreground/80 font-medium mt-1 leading-tight">
                   {view === 'search' ? 'Choose your preferred delivery address to continue.' : 'Enter specific details for this location'}
                 </p>
               </div>
             </div>
             <button 
               onClick={closeModal}
-              className="h-10 w-10 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-all"
+              className="h-10 w-10 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-muted-foreground/80 hover:text-white transition-all"
             >
               <X className="h-5 w-5" />
             </button>
@@ -248,20 +248,20 @@ export const LocationSelectorModal = () => {
               <div className="p-4 space-y-4">
                 {/* Search Bar */}
                 <div className="relative group">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/80 group-focus-within:text-primary transition-colors" />
                   <input 
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search by area, street or landmark..."
-                    className="w-full h-[48px] pl-12 pr-4 bg-slate-800/50 border border-white/10 shadow-sm rounded-2xl text-[16px] font-medium focus:outline-none focus:border-primary focus:bg-slate-900 transition-all text-white placeholder:text-slate-500"
+                    className="w-full h-[48px] pl-12 pr-4 bg-slate-800/50 border border-white/10 shadow-sm rounded-2xl text-[16px] font-medium focus:outline-none focus:border-primary focus:bg-slate-900 transition-all text-white placeholder:text-muted-foreground"
                   />
                 </div>
 
                 {/* Search Results */}
                 {searchQuery.trim().length >= 3 ? (
                   <div className="space-y-4">
-                    <h3 className="text-[13px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">Search Results</h3>
+                    <h3 className="text-[13px] font-bold text-muted-foreground/80 dark:text-muted-foreground uppercase tracking-wider px-1">Search Results</h3>
                     <div className="space-y-2">
                       {isSearching ? (
                         <div className="flex justify-center py-8">
@@ -272,23 +272,23 @@ export const LocationSelectorModal = () => {
                           <button 
                             key={idx}
                             onClick={() => handleSelectSearchResult(loc)}
-                            className="w-full text-left p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-2xl transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700 flex items-start gap-4 group"
+                            className="w-full text-left p-4 hover:bg-muted dark:hover:bg-slate-800/50 rounded-2xl transition-all border border-transparent hover:border-border dark:hover:border-slate-700 flex items-start gap-4 group"
                           >
-                            <div className="mt-0.5 p-2 bg-slate-100 dark:bg-slate-800 rounded-full group-hover:bg-white dark:group-hover:bg-slate-700 transition-colors">
-                              <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                            <div className="mt-0.5 p-2 bg-muted dark:bg-slate-800 rounded-full group-hover:bg-white dark:group-hover:bg-slate-700 transition-colors">
+                              <MapPin className="h-4 w-4 text-muted-foreground dark:text-muted-foreground/80" />
                             </div>
                             <div>
-                              <span className="font-bold text-[15px] text-slate-900 dark:text-white block leading-tight">
+                              <span className="font-bold text-[15px] text-foreground dark:text-white block leading-tight">
                                 {loc.address_components?.[0]?.long_name || loc.formatted_address.split(',')[0]}
                               </span>
-                              <span className="text-[13px] font-medium text-slate-500 dark:text-slate-400 block mt-1 leading-relaxed line-clamp-2">
+                              <span className="text-[13px] font-medium text-muted-foreground dark:text-muted-foreground/80 block mt-1 leading-relaxed line-clamp-2">
                                 {loc.formatted_address}
                               </span>
                             </div>
                           </button>
                         ))
                       ) : (
-                        <div className="text-center py-8 text-[15px] font-medium text-slate-500">
+                        <div className="text-center py-8 text-[15px] font-medium text-muted-foreground">
                           No matching addresses found.
                         </div>
                       )}
@@ -329,7 +329,7 @@ export const LocationSelectorModal = () => {
                             </div>
                             <div>
                               <span className="font-bold text-[15px] block">{isLocating ? 'Locating...' : 'Use Current Location'}</span>
-                              <span className="text-[13px] font-medium text-slate-400 block mt-0.5">Using GPS to find your address</span>
+                              <span className="text-[13px] font-medium text-muted-foreground/80 block mt-0.5">Using GPS to find your address</span>
                             </div>
                           </div>
                         </button>
@@ -338,7 +338,7 @@ export const LocationSelectorModal = () => {
 
                     {/* Saved Addresses */}
                     <div className="space-y-4">
-                      <h3 className="text-[13px] font-bold text-slate-500 uppercase tracking-wider px-1">Saved Addresses</h3>
+                      <h3 className="text-[13px] font-bold text-muted-foreground uppercase tracking-wider px-1">Saved Addresses</h3>
                       
                       {isLoadingAddresses ? (
                         <div className="flex justify-center py-8">
@@ -373,7 +373,7 @@ export const LocationSelectorModal = () => {
                                   </div>
                                 )}
                                 
-                                <div className={`mt-0.5 p-3 rounded-full transition-colors ${isSelected ? 'bg-primary/20 text-primary' : 'bg-slate-800 text-slate-400 group-hover:text-white'}`}>
+                                <div className={`mt-0.5 p-3 rounded-full transition-colors ${isSelected ? 'bg-primary/20 text-primary' : 'bg-slate-800 text-muted-foreground/80 group-hover:text-white'}`}>
                                   <AddressIcon type={addr.type} />
                                 </div>
                                 <div className="flex-1 pr-6">
@@ -388,7 +388,7 @@ export const LocationSelectorModal = () => {
                                   <span className="text-[15px] font-medium text-slate-300 leading-relaxed line-clamp-3 mb-2 whitespace-pre-wrap">
                                     {fullAddressStr}
                                   </span>
-                                  <span className="text-[13px] font-medium text-slate-400 block pt-2 border-t border-white/10">
+                                  <span className="text-[13px] font-medium text-muted-foreground/80 block pt-2 border-t border-white/10">
                                     {secondaryInfo}
                                   </span>
                                 </div>
@@ -399,10 +399,10 @@ export const LocationSelectorModal = () => {
                       ) : (
                         <div className="text-center py-12 px-4 bg-slate-800/30 rounded-[18px] border border-white/10 flex flex-col items-center shadow-inner">
                           <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                            <MapPin className="w-8 h-8 text-slate-500" />
+                            <MapPin className="w-8 h-8 text-muted-foreground" />
                           </div>
                           <h4 className="text-[16px] font-bold text-white mb-1.5">No Saved Addresses</h4>
-                          <p className="text-[14px] text-slate-400 font-medium mb-6">Add your first delivery address to continue.</p>
+                          <p className="text-[14px] text-muted-foreground/80 font-medium mb-6">Add your first delivery address to continue.</p>
                           <Button 
                             onClick={() => setView('add-address')}
                             variant="outline"
@@ -420,18 +420,18 @@ export const LocationSelectorModal = () => {
             ) : (
               /* Add Address Form */
               <div className="p-6 space-y-6">
-                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
-                  <div className="font-bold text-[15px] text-slate-900 dark:text-white mb-1">
+                <div className="bg-muted dark:bg-slate-800/50 p-4 rounded-2xl border border-border dark:border-slate-800">
+                  <div className="font-bold text-[15px] text-foreground dark:text-white mb-1">
                     {pendingAddress?.street || pendingAddress?.city}
                   </div>
-                  <div className="text-[13px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 leading-relaxed">
+                  <div className="text-[13px] text-muted-foreground dark:text-muted-foreground/80 font-medium line-clamp-2 leading-relaxed">
                     {pendingAddress?.formattedAddress}
                   </div>
                 </div>
 
                 <div className="space-y-5">
                   <div>
-                    <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-2 block">House / Flat No *</label>
+                    <label className="text-[13px] font-bold text-foreground/80  mb-2 block">House / Flat No *</label>
                     <input 
                       type="text"
                       value={address1}
@@ -440,24 +440,24 @@ export const LocationSelectorModal = () => {
                         if (validationError) setValidationError('');
                       }}
                       placeholder="E.g. Flat 401, Galaxy Apts"
-                      className={`w-full h-14 px-4 bg-white dark:bg-slate-900 border rounded-2xl text-[15px] font-medium focus:outline-none focus:ring-4 transition-all ${validationError ? 'border-red-300 focus:border-red-500 focus:ring-red-500/10 dark:border-red-500/50' : 'border-slate-200 dark:border-slate-700 focus:border-primary focus:ring-primary/10'}`}
+                      className={`w-full h-14 px-4 bg-white dark:bg-slate-900 border rounded-2xl text-[15px] font-medium focus:outline-none focus:ring-4 transition-all ${validationError ? 'border-red-300 focus:border-red-500 focus:ring-red-500/10 dark:border-red-500/50' : 'border-border dark:border-slate-700 focus:border-primary focus:ring-primary/10'}`}
                     />
                     {validationError && <p className="text-[13px] text-red-500 font-bold mt-2 px-1">{validationError}</p>}
                   </div>
 
                   <div>
-                    <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-2 block">Landmark (Optional)</label>
+                    <label className="text-[13px] font-bold text-foreground/80  mb-2 block">Landmark (Optional)</label>
                     <input 
                       type="text"
                       value={landMark}
                       onChange={(e) => setLandMark(e.target.value)}
                       placeholder="E.g. Near Apollo Hospital"
-                      className="w-full h-14 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl text-[15px] font-medium focus:outline-none transition-all"
+                      className="w-full h-14 px-4 bg-white dark:bg-slate-900 border border-border dark:border-slate-700 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl text-[15px] font-medium focus:outline-none transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-2 block">Save As</label>
+                    <label className="text-[13px] font-bold text-foreground/80  mb-2 block">Save As</label>
                     <div className="flex gap-3">
                       {(
                         [
@@ -472,7 +472,7 @@ export const LocationSelectorModal = () => {
                           className={`flex-1 h-12 rounded-xl border flex items-center justify-center gap-2 text-[14px] font-bold transition-all ${
                             type === t.id 
                               ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500' 
-                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
+                              : 'bg-white dark:bg-slate-900 border-border dark:border-slate-700 hover:bg-muted dark:hover:bg-slate-800 text-muted-foreground dark:text-muted-foreground/80'
                           }`}
                         >
                           <t.icon className="h-4 w-4" />
@@ -494,7 +494,7 @@ export const LocationSelectorModal = () => {
                   <Button 
                     onClick={handleContinue}
                     disabled={!selectedAddressId}
-                    className="w-full h-[48px] rounded-2xl bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(255,107,0,0.4)] disabled:opacity-50 disabled:shadow-none transition-all group relative overflow-hidden"
+                    className="w-full h-[48px] rounded-2xl bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white text-[16px] font-bold shadow-[0_8px_20px_-6px_rgba(255, 107, 53,0.4)] disabled:opacity-50 disabled:shadow-none transition-all group relative overflow-hidden"
                   >
                     Continue
                   </Button>

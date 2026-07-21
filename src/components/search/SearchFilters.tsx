@@ -58,7 +58,7 @@ export const SearchFilters = ({ inline = false }: SearchFiltersProps) => {
  : 'bg-white text-muted-foreground hover:border-primary/50'
  }`}
  >
- {d === 'all' ? 'All' : d === 'veg' ? '🟢 Veg' : '🔴 Non-Veg'}
+ {d === 'all' ? 'All' : d === 'veg' ? ' Veg' : ' Non-Veg'}
  </button>
  ))}
  </div>
@@ -109,7 +109,7 @@ export const SearchFilters = ({ inline = false }: SearchFiltersProps) => {
  onChange={(e) => setFilters({ hasOffer: e.target.checked })}
  className="rounded border-border h-4 w-4 accent-primary"
  />
- <span className="text-sm font-medium">🏷 Has Offer / Discount</span>
+ <span className="text-sm font-medium"> Has Offer / Discount</span>
  </label>
  </div>
  </div>

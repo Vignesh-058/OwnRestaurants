@@ -274,7 +274,7 @@ export const OrderDetailsDialog = ({ order, open, onClose }: OrderDetailsDialogP
                <div />
             )}
             <Button
-              className="rounded-full font-bold h-12 px-6 bg-primary hover:bg-primary text-white shadow-[0_4px_12px_rgba(255,107,0,0.2)] gap-2"
+              className="rounded-full font-bold h-12 px-6 bg-primary hover:bg-primary text-white shadow-[0_4px_12px_rgba(255, 107, 53,0.2)] gap-2"
               onClick={() => handleRepeatOrder(order!)}
               disabled={isPending}
             >

@@ -26,36 +26,37 @@ export const FloatingCart = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-          className="fixed left-4 right-4 md:left-auto md:right-6 z-40 pointer-events-none flex justify-center md:justify-end transition-all duration-300"
-          style={{ bottom: 'max(1.5rem, calc(1rem + var(--floating-nav-height, 0px)))' }}
+          className="fixed left-0 right-0 z-50 pointer-events-none flex justify-center transition-all duration-300 px-4 md:px-0"
+          style={{ bottom: 'max(1.5rem, calc(1.5rem + var(--floating-nav-height, 0px)))' }}
         >
           <div
             onClick={() => navigate('/cart')}
-            className="bg-primary backdrop-blur-md shadow-[0_8px_32px_rgba(255,107,0,0.35)] rounded-full w-full max-w-[400px] md:w-auto py-1.5 px-2.5 md:p-3 md:pr-3 md:pl-5 pointer-events-auto cursor-pointer flex items-center justify-between border border-white/20 hover:bg-primary transition-all duration-200 hover:scale-[1.02] gap-2 md:gap-6"
+            className="bg-white shadow-[0_15px_40px_rgba(0,0,0,0.15)] rounded-full w-full max-w-[500px] p-2.5 md:p-3 pointer-events-auto cursor-pointer flex items-center justify-between border border-border/50 hover:scale-[1.02] gap-3 md:gap-4 transition-all duration-300"
           >
             {/* Left: icon + count + price */}
-            <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-              <div className="h-8 w-8 md:h-10 md:w-10 bg-white/20 rounded-full flex items-center justify-center relative shrink-0">
-                <ShoppingBag className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                <span className="absolute -top-0.5 -right-0.5 h-[14px] w-[14px] md:h-5 md:w-5 bg-white text-primary text-[9px] md:text-[10px] font-black rounded-full flex items-center justify-center shadow-sm">
+            <div className="flex items-center gap-3.5 md:gap-4 pl-2 md:pl-3 min-w-0 flex-1">
+              <div className="relative shrink-0">
+                <div className="h-12 w-12 md:h-14 md:w-14 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                  <ShoppingBag className="h-6 w-6 md:h-7 md:w-7" />
+                </div>
+                <span className="absolute -top-1 -right-1 h-[22px] min-w-[22px] md:h-[24px] md:min-w-[24px] px-1 bg-primary text-white text-[12px] md:text-[13px] font-black rounded-full flex items-center justify-center shadow-sm">
                   {itemCount}
                 </span>
               </div>
-              <div className="flex flex-col text-white min-w-0">
-                <span className="text-[11px] md:text-[11px] font-semibold opacity-80 leading-none truncate">
-                  {itemCount} {itemCount === 1 ? 'item' : 'items'}
+              <div className="flex flex-col text-foreground min-w-0">
+                <span className="text-[14px] md:text-[16px] font-bold opacity-80 leading-none truncate mb-1 md:mb-1.5">
+                  {itemCount} {itemCount === 1 ? 'Item' : 'Items'} <span className="text-muted-foreground mx-1.5">|</span> {currency}{totalAmount.toLocaleString()}
                 </span>
-                <span className="text-[15px] md:text-[18px] font-black leading-tight tracking-tight truncate">
-                  {currency}{totalAmount.toLocaleString()}
+                <span className="text-[11px] md:text-[13px] font-medium text-muted-foreground leading-tight tracking-tight truncate">
+                  Extra charges may apply
                 </span>
               </div>
             </div>
 
-            {/* Right: View Cart pill */}
-            <div className="h-[34px] md:h-11 px-3.5 md:px-5 bg-white text-primary rounded-full flex items-center justify-center font-bold text-[12px] md:text-[14px] gap-1 md:gap-1.5 shadow-sm shrink-0 whitespace-nowrap min-w-[44px]">
-              <span className="hidden md:inline">View Cart</span>
-              <span className="md:hidden">Cart</span>
-              <ArrowRight className="h-3.5 w-3.5 md:h-4 md:w-4 shrink-0" />
+            {/* Right: View Cart CTA */}
+            <div className="h-12 md:h-[52px] px-6 md:px-8 bg-primary hover:bg-primary-light text-white rounded-full flex items-center justify-center font-bold text-[14px] md:text-[16px] gap-2 md:gap-2.5 shadow-md shrink-0 whitespace-nowrap transition-colors">
+              <span>View Cart</span>
+              <ArrowRight className="h-4 w-4 md:h-5 md:w-5 shrink-0" />
             </div>
           </div>
         </motion.div>

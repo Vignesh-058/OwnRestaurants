@@ -1,80 +1,40 @@
+import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Phone, CalendarDays, Award, Package, Wallet, Heart, MapPin } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Package, Wallet, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { CustomerProfile } from '@/types/customer.types';
+import { useOrganizationStore } from '@/store/OrganizationStore';
+import { useProfileStats } from '@/hooks/queries/useProfileStats';
 
 interface ProfileHeaderProps {
   profile: CustomerProfile | null;
 }
 
-import { useOrders } from '@/hooks/queries/useOrders';
-import { useAddresses } from '@/hooks/queries/useAddresses';
-
 export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
-  const { data: ordersData } = useOrders();
-  const { data: addresses } = useAddresses();
+  const organization = useOrganizationStore((state) => state.organization);
+  const currency = organization?.currency || '₹';
   
-  const liveOrdersCount = ordersData?.totalOrders || 0;
-  const liveAddressesCount = addresses?.length || 0;
-
-
-
-  const joinDate = profile?.createdAt 
-    ? new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-    : new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-  const ordersCount = liveOrdersCount;
-  const { tier, badgeColor } = (() => {
-    if (ordersCount > 15) {
-      return { 
-        tier: 'Platinum Member', 
-        badgeColor: 'bg-indigo-50 text-indigo-600 border-indigo-200' 
-      };
-    }
-    if (ordersCount > 5) {
-      return { 
-        tier: 'Gold Member', 
-        badgeColor: 'bg-amber-50 text-amber-600 border-amber-200' 
-      };
-    }
-    return { 
-      tier: 'Silver Member', 
-      badgeColor: 'bg-slate-50 text-slate-600 border-slate-200' 
-    };
-  })();
-
-  const rewardPoints = Math.floor((profile?.totalSpent || 0) * 0.1);
+  const { data: statsData, isLoading: isStatsLoading, isError: isStatsError } = useProfileStats();
 
   const stats = [
     {
       label: 'Orders',
-      value: ordersCount,
-      icon: Package,
-      iconColor: 'text-primary',
-      bgColor: 'bg-primary/10',
+      value: statsData?.orders,
+      prefix: '',
+      icon: <Package className="w-6 h-6" />,
     },
     {
-      label: 'Wallet',
-      value: rewardPoints,
-      prefix: '⭐',
-      icon: Wallet,
-      iconColor: 'text-primary',
-      bgColor: 'bg-primary/10',
+      label: 'Spent',
+      value: statsData?.spent,
+      prefix: currency,
+      icon: <Wallet className="w-6 h-6" />,
     },
     {
-      label: 'Favorites',
-      value: liveAddressesCount, // Using as mock for favorites if actual count isn't available
-      icon: Heart,
-      iconColor: 'text-primary',
-      bgColor: 'bg-primary/10',
-    },
-    {
-      label: 'Addresses',
-      value: liveAddressesCount,
-      icon: MapPin,
-      iconColor: 'text-primary',
-      bgColor: 'bg-primary/10',
+      label: 'Saved',
+      value: statsData?.saved, 
+      prefix: currency,
+      icon: <Gift className="w-6 h-6" />,
     }
   ];
 
@@ -82,70 +42,55 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="w-full"
+      transition={{ duration: 0.3 }}
+      className="w-full flex flex-col gap-6"
     >
-      <div className="flex flex-col xl:flex-row gap-6 lg:gap-8 justify-between">
-        
-        {/* Left Side: Profile Info */}
-        <div className="flex items-center gap-6">
-          <div className="relative group shrink-0">
-            <Avatar className="h-[100px] w-[100px] border-[4px] border-card shadow-sm bg-card group-hover:scale-105 transition-transform duration-300">
-              <AvatarImage src={profile?.avatar} alt={profile?.name || 'User'} className="object-cover" />
-              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/90 text-primary-foreground font-black text-3xl">
-                {profile?.name?.charAt(0)?.toUpperCase() || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="absolute -bottom-1 -right-1 bg-card border border-border p-1.5 rounded-full shadow-md">
-              <Award className="h-4 w-4 text-primary" />
-            </div>
-          </div>
-
-          <div className="flex flex-col space-y-2">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-              <h1 className="text-[28px] font-bold tracking-tight text-foreground leading-none">
-                {profile?.name || 'Guest Customer'}
-              </h1>
-              <Badge variant="outline" className={`font-bold rounded-[8px] px-2.5 py-0.5 text-[11px] uppercase border shadow-sm ${badgeColor}`}>
-                {tier}
-              </Badge>
-            </div>
-
-            <div className="flex items-center gap-4 text-[14px] font-medium text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <Phone className="w-4 h-4 text-primary" />
-                <span>+91 {profile?.phone || 'Not provided'}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CalendarDays className="w-4 h-4 text-primary" />
-                <span>Since {joinDate}</span>
-              </div>
-            </div>
-          </div>
+      {/* Top Profile Info */}
+      <div className="bg-white rounded-[24px] p-6 lg:p-8 shadow-sm flex items-center gap-6 border border-orange-100">
+        <div className="shrink-0">
+          <Avatar className="h-[90px] w-[90px] md:h-[100px] md:w-[100px] shadow-sm">
+            <AvatarImage src={profile?.avatar} alt={profile?.name || 'User'} className="object-cover" />
+            <AvatarFallback className="bg-[#FFF4EB] text-[#FF6B00] font-black text-3xl md:text-4xl">
+              {profile?.name?.charAt(0)?.toUpperCase() || 'U'}
+            </AvatarFallback>
+          </Avatar>
         </div>
 
-        {/* Right Side: Stat Cards */}
-        <div className="flex flex-wrap lg:flex-nowrap gap-4 shrink-0">
-          {stats.map((stat, idx) => (
-            <div 
-              key={idx} 
-              className="flex items-center gap-4 bg-card rounded-[16px] p-4 shadow-sm border border-border min-w-[150px] flex-1 lg:flex-none transition-transform hover:-translate-y-1 duration-200"
-            >
-              <div className={`w-12 h-12 rounded-[12px] flex items-center justify-center shrink-0 ${stat.bgColor}`}>
-                <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[22px] font-bold text-foreground leading-none mb-1">
-                  {stat.prefix}{stat.value.toLocaleString()}
-                </span>
-                <span className="text-[13px] font-medium text-muted-foreground">
-                  {stat.label}
-                </span>
-              </div>
-            </div>
-          ))}
+        <div className="flex flex-col space-y-1">
+          <h1 className="text-[24px] font-bold tracking-tight text-[#1F2937] leading-tight">
+            {profile?.name || 'Guest Customer'}
+          </h1>
+          <div className="flex flex-col text-[14px] font-normal text-[#6B7280] mt-1 gap-1">
+            <span>+91 {profile?.phone || 'Not provided'}</span>
+            <span>{profile?.email || `${profile?.name?.toLowerCase().replace(/\s/g, '') || 'user'}@gmail.com`}</span>
+          </div>
         </div>
+      </div>
 
+      {/* Stats Cards - 3 columns */}
+      <div className="grid grid-cols-3 gap-4 w-full">
+        {stats.map((stat, idx) => (
+          <div 
+            key={idx} 
+            className="group flex flex-col items-center justify-center bg-white rounded-2xl p-6 shadow-sm border border-orange-100 transition-all duration-300 hover:bg-[#FFF4EB] hover:shadow-lg text-center"
+          >
+            <div className="w-12 h-12 rounded-[16px] bg-[#FFF4EB] flex items-center justify-center mb-3 group-hover:bg-[#FF6B00] transition-colors duration-300 text-[#FF6B00] group-hover:text-white">
+              {stat.icon}
+            </div>
+            
+            {isStatsLoading ? (
+              <Skeleton className="h-6 w-16 mb-1 bg-orange-100" />
+            ) : (
+              <span className="text-[22px] font-bold text-[#1F2937] leading-none mb-1">
+                {isStatsError || stat.value === undefined ? '--' : `${stat.prefix}${stat.value.toLocaleString()}`}
+              </span>
+            )}
+
+            <span className="text-[14px] font-normal text-[#6B7280]">
+              {stat.label}
+            </span>
+          </div>
+        ))}
       </div>
     </motion.div>
   );

@@ -120,7 +120,7 @@ export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
         {isGeocoding && <p className="text-xs text-blue-600 mt-2 font-medium">Fetching address details...</p>}
  {form.watch('latitude') && form.watch('longitude') && (
  <p className="text-xs text-green-600 mt-2 font-medium">
- ✓ Location coordinates captured successfully
+  Location coordinates captured successfully
  </p>
  )}
  </div>

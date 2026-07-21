@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types/category.types';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, Flame, Coffee, Pizza, Croissant, UtensilsCrossed, Wheat, ChefHat, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductGrid } from './ProductGrid';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import { useProducts } from '@/hooks/useProducts';
-import { ProductFilterPanel } from './ProductFilterPanel';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 
 interface ProductCatalogueProps {
@@ -18,10 +16,21 @@ interface ProductCatalogueProps {
   onProductClick: (product: any) => void;
 }
 
+// Helper to map generic categories to icons
+const getCategoryIcon = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes('hot') || n.includes('fire') || n.includes('spicy') || n.includes('offer')) return Flame;
+  if (n.includes('coffee') || n.includes('tea') || n.includes('beverage')) return Coffee;
+  if (n.includes('pizza') || n.includes('burger')) return Pizza;
+  if (n.includes('bread') || n.includes('naan') || n.includes('roti') || n.includes('croissant')) return Croissant;
+  if (n.includes('rice') || n.includes('biryani') || n.includes('meal')) return Wheat;
+  if (n.includes('dessert') || n.includes('sweet') || n.includes('cake')) return ChefHat;
+  return UtensilsCrossed;
+};
+
 export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, onSelectCategory, onProductClick }: ProductCatalogueProps) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const activeCategory = categories.find(c => c._id === activeCategoryId) || categories[0];
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [isDesktopFilterOpen, setIsDesktopFilterOpen] = useState(false);
   
   const items = useProducts(allProducts, activeCategory?._id || 'all', '');
   const filters = useProductFilters(items);
@@ -31,195 +40,154 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
   const categoryName = (activeCategory as any).categoryName || activeCategory.name || (activeCategory as any).displayName || "Unknown";
 
   return (
-    <section id="product-menu" className="w-full flex flex-col lg:flex-row relative z-10">
-      {/* LEFT: Sidebar (Categories + Desktop Filters) */}
-      <aside className="w-full lg:w-[360px] shrink-0 bg-background border-b lg:border-b-0 lg:border-r border-border z-40 sticky top-[80px] lg:static shadow-sm lg:shadow-none">
-        <div className="flex flex-col lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] lg:overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-          
-          <div className="flex-shrink-0 lg:sticky lg:top-0 bg-background z-40 pt-4 lg:pt-6 pb-2 lg:border-none lg:shadow-none">
-            
-            {/* Mobile: Compact Search & Filter Row */}
-            <div className="px-4 lg:hidden flex items-center gap-2 mb-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <input 
-                  type="text" 
-                  placeholder="Search products..." 
-                  value={filters.searchQuery}
-                  onChange={(e) => filters.setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 h-10 bg-muted border border-border/50 rounded-full text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
-                />
-              </div>
-              <Sheet open={isMobileFilterOpen} onOpenChange={setIsMobileFilterOpen}>
-                <SheetTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    className="flex shrink-0 w-10 h-10 rounded-full border-border bg-background hover:bg-muted transition-colors relative"
-                  >
-                    <SlidersHorizontal className="w-4 h-4" />
-                    {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
-                      <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-primary border-2 border-background" />
-                    )}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[85vw] sm:max-w-md p-0 bg-white border-r-0">
-                  <div className="h-full flex flex-col">
-                    <ProductFilterPanel {...filters} onApplyMobile={() => setIsMobileFilterOpen(false)} />
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
+    <div className="w-full relative z-10 flex flex-col bg-[var(--background)]">
+      
 
-            {/* Desktop: Header Row */}
-            <div className="hidden lg:flex px-6 mb-2 items-start justify-between">
-              <div>
-                <h2 className="text-[26px] font-extrabold text-foreground tracking-tight leading-none mb-1.5">Categories</h2>
-                <p className="text-[13px] text-muted-foreground font-medium">Browse Menu</p>
-              </div>
-              
-              <Button 
-                variant="outline" 
-                size="icon"
-                onClick={() => setIsDesktopFilterOpen(!isDesktopFilterOpen)}
-                className={cn(
-                  "hidden lg:flex w-10 h-10 rounded-full border-border hover:bg-muted transition-colors relative",
-                  isDesktopFilterOpen && "bg-primary/10 border-primary/30 text-primary hover:bg-primary/10"
-                )}
+      {/* MAIN CONTENT AREA */}
+      <section id="product-menu" className="w-full flex flex-col lg:flex-row relative z-10 pt-2 lg:pt-4 px-0">
+        
+        {/* LEFT: Premium Sidebar Categories */}
+        <aside className={cn(
+          "shrink-0 z-30 lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] mb-4 lg:mb-0 transition-all duration-300 overflow-hidden",
+          isSidebarOpen ? "w-full lg:w-[300px] xl:w-[340px] opacity-100" : "w-full lg:w-0 lg:opacity-0 lg:m-0"
+        )}>
+          <div className="flex flex-row lg:flex-col lg:h-full overflow-x-auto lg:overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent gap-3 lg:gap-2 px-4 lg:px-0 pb-4 lg:pb-12 pt-1 lg:pt-2 snap-x min-w-full lg:min-w-[300px] xl:min-w-[340px]">
+            
+            {/* Desktop only section title */}
+            <div className="hidden lg:flex px-2 mb-4 items-center justify-between">
+              <h2 className="text-[20px] font-extrabold text-foreground tracking-tight">Categories</h2>
+              <button 
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-all group cursor-pointer"
+                title="Collapse Categories"
               >
-                <SlidersHorizontal className="w-4 h-4" />
-                {(filters.offers.length > 0 || filters.ratings.length > 0 || filters.foodType !== 'all') && (
-                  <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-primary border-2 border-background" />
-                )}
-              </Button>
+                <ChevronLeft className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+              </button>
             </div>
 
-            {/* Desktop: Search Bar */}
-            <div className="hidden lg:block mb-4 mt-4 px-6">
-              <div className="relative w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <input 
-                  type="text" 
-                  placeholder="Search products..." 
-                  value={filters.searchQuery}
-                  onChange={(e) => filters.setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 h-[48px] bg-background border border-border rounded-xl text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/30 focus:ring-2 focus:ring-primary/10 transition-all shadow-sm"
-                />
-              </div>
-            </div>
+            {categories.map((category) => {
+              const isActive = activeCategory._id === category._id;
+              const productCount = allProducts ? allProducts.filter(p => p.category === category._id || p.categoryId === category._id).length : 0;
+              const catName = (category as any).categoryName || category.name || (category as any).displayName || "Unknown";
+              const Icon = getCategoryIcon(catName);
 
-            {/* Desktop Filter Panel Animated */}
-            <AnimatePresence>
-              {isDesktopFilterOpen && (
-                <motion.div
-                  key="desktop-filter-panel"
-                  initial={{ opacity: 0, y: -10, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                  transition={{ duration: 0.2 }}
-                  className="hidden lg:block absolute left-6 right-6 top-[132px] z-[60]"
+              return (
+                <button
+                  key={category._id}
+                  onClick={() => onSelectCategory(category._id)}
+                  className={cn(
+                    "flex items-center justify-start w-auto lg:w-full h-[52px] lg:h-[56px] px-4 lg:px-4 rounded-full lg:rounded-[18px] transition-all duration-300 text-left group shrink-0 snap-start border lg:border-none",
+                    isActive 
+                      ? "bg-primary text-white shadow-[0_8px_25px_rgba(255,107,0,0.25)]" 
+                      : "bg-white text-[#4B5563] border-border hover:bg-muted hover:translate-x-1"
+                  )}
                 >
-                  <div className="h-[450px] bg-card rounded-[16px] border border-border shadow-floating overflow-hidden">
-                    <ProductFilterPanel {...filters} onApplyMobile={() => setIsDesktopFilterOpen(false)} />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            
-            {/* Categories List */}
-            <div className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 lg:gap-1.5 px-4 lg:px-6 pb-2 lg:pb-0 scrollbar-hide snap-x pt-1 lg:pt-2">
-              {categories.map((category) => {
-                const isActive = activeCategory._id === category._id;
-                const productCount = allProducts ? allProducts.filter(p => p.category === category._id || p.categoryId === category._id).length : 0;
-                const catName = (category as any).categoryName || category.name || (category as any).displayName || "Unknown";
-
-                return (
-                  <button
-                    key={category._id}
-                    onClick={() => onSelectCategory(category._id)}
-                    className={cn(
-                      "flex items-center justify-center lg:justify-between w-auto lg:w-full h-10 lg:h-[60px] px-4 lg:px-3 rounded-full lg:rounded-[16px] transition-all duration-300 text-left group shrink-0 snap-start border lg:border-none",
-                      isActive 
-                        ? "bg-primary text-primary-foreground lg:bg-primary/10 lg:text-primary border-primary lg:shadow-sm" 
-                        : "bg-background lg:bg-transparent text-foreground border-border hover:bg-muted"
-                    )}
-                  >
-                    <div className="flex items-center gap-2 lg:gap-3">
-                      <div className={cn(
-                        "hidden lg:flex w-[38px] h-[38px] rounded-[10px] overflow-hidden items-center justify-center shrink-0 transition-all",
-                        "bg-muted border border-border shadow-sm",
-                        isActive && "ring-2 ring-primary/20 bg-background" 
-                      )}>
-                        {category.imageUrl ? (
-                          <img src={category.imageUrl} alt={catName} className="w-[60%] h-[60%] object-contain drop-shadow-sm" />
-                        ) : (
-                          <span className="text-xs font-extrabold uppercase text-primary">{catName.charAt(0)}</span>
-                        )}
-                      </div>
-                      <span className={cn(
-                        "font-bold lg:font-extrabold text-[13px] lg:text-[15px]",
-                        isActive ? "text-primary-foreground lg:text-primary" : "text-foreground"
-                      )}>{catName}</span>
+                  <div className="flex items-center gap-3 w-full">
+                    {/* Icon or Image */}
+                    <div className={cn(
+                      "flex w-[36px] h-[36px] rounded-full overflow-hidden items-center justify-center shrink-0 transition-all shadow-sm",
+                      isActive ? "bg-white/20 text-white" : "bg-[var(--background)] text-primary group-hover:bg-white" 
+                    )}>
+                      {category.imageUrl ? (
+                        <img src={category.imageUrl} alt={catName} className="w-full h-full object-cover" />
+                      ) : (
+                        <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-primary")} />
+                      )}
                     </div>
+                    
+                    {/* Text */}
                     <span className={cn(
-                      "hidden lg:inline-block text-[13px] font-extrabold px-2.5 py-1 rounded-[8px] transition-colors",
+                      "font-bold text-[14px] lg:text-[15px] flex-1 truncate",
+                      isActive ? "text-white" : "text-[#4B5563]"
+                    )}>
+                      {catName}
+                    </span>
+
+                    {/* Count Indicator (Desktop) */}
+                    <span className={cn(
+                      "hidden lg:flex items-center justify-center min-w-[24px] text-[11px] font-extrabold px-1.5 py-0.5 rounded-[8px] transition-colors",
                       isActive 
-                        ? "text-primary bg-background shadow-sm" 
-                        : "text-muted-foreground group-hover:text-foreground bg-transparent"
+                        ? "text-primary bg-white shadow-sm" 
+                        : "text-muted-foreground group-hover:text-[#4B5563] bg-transparent"
                     )}>
                       {productCount}
                     </span>
-                  </button>
-                );
-              })}
+                  </div>
+                </button>
+              );
+            })}
+
+            {/* Premium Hot Deals Banner in Sidebar */}
+            <div className="hidden lg:flex mt-6 p-5 bg-muted rounded-[20px] border border-border flex-col items-start shadow-sm mx-2">
+              <span className="flex items-center gap-1.5 font-bold text-primary text-[15px] mb-2">
+                 Hot Deals!
+              </span>
+              <p className="text-[13px] font-medium text-foreground mb-4 leading-tight">
+                Up to 40% OFF on selected items this week.
+              </p>
+              <button className="w-full h-[40px] rounded-full bg-primary text-white font-bold text-[13px] hover:bg-primary-light transition-colors shadow-md">
+                View Offers
+              </button>
             </div>
           </div>
+        </aside>
 
+        {/* Floating Open Button (visible only when sidebar is closed on desktop) */}
+        {!isSidebarOpen && (
+          <div className="hidden lg:flex sticky top-[100px] h-fit z-40 -ml-4 mr-4">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="bg-white border shadow-[4px_4px_15px_rgba(0,0,0,0.05)] p-2 rounded-r-[12px] hover:bg-muted transition-colors cursor-pointer group"
+            >
+              <ChevronRight className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+            </button>
+          </div>
+        )}
+
+        {/* RIGHT: Product Listing */}
+        <div className="flex-1 w-full px-4 md:px-6 lg:px-8 pb-24 lg:pb-32 lg:pl-10">
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={activeCategoryId}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3 }}
+              className="w-full flex flex-col"
+            >
+              {/* Recommended Header */}
+              <div className="mb-6 lg:mb-8 flex flex-col gap-1">
+                <h3 className="text-[26px] md:text-[32px] font-extrabold text-foreground tracking-tight flex items-center gap-2">
+                  {categoryName} <span className="text-3xl"></span>
+                </h3>
+                <p className="text-[14px] font-medium text-muted-foreground">
+                  {filters.filteredItems.length} Dishes
+                </p>
+              </div>
+              
+              {/* Products Grid */}
+              {filters.filteredItems.length > 0 ? (
+                <div className="w-full">
+                  <ProductGrid 
+                    products={filters.filteredItems} 
+                    onProductClick={onProductClick}
+                    isSidebarOpen={isSidebarOpen}
+                  />
+                </div>
+              ) : (
+                <div className="py-24 text-center flex flex-col items-center justify-center bg-card rounded-[24px] border border-dashed border-border shadow-sm mt-4">
+                  <span className="text-5xl mb-4"></span>
+                  <h4 className="text-2xl font-extrabold text-foreground mb-2">No items found</h4>
+                  <p className="text-muted-foreground text-[15px] font-medium">Try adjusting your filters or search query.</p>
+                  <Button onClick={filters.resetFilters} className="mt-6 bg-primary hover:bg-primary/90 text-white rounded-full px-8 h-[48px] font-bold">
+                    Clear Filters
+                  </Button>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </aside>
-
-      {/* RIGHT: Product Listing */}
-      <div className="flex-1 w-full p-2 md:p-8 lg:p-[40px] pb-16 lg:pb-[64px]">
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={activeCategoryId}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="w-full flex flex-col max-w-[1400px] mx-auto"
-          >
-            {/* Header for right side */}
-            <div className="mb-4 lg:mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-0 px-2 lg:px-0">
-              <h3 className="text-[32px] md:text-[48px] font-extrabold text-foreground flex items-center gap-4 tracking-tight">
-                {categoryName}
-                <span className="text-[14px] md:text-[15px] font-extrabold text-muted-foreground bg-muted px-3 h-9 flex items-center justify-center rounded-full">
-                  {filters.filteredItems.length} items
-                </span>
-              </h3>
-            </div>
-            
-            {/* Products Grid */}
-            {filters.filteredItems.length > 0 ? (
-              <div className="w-full">
-                <ProductGrid 
-                  products={filters.filteredItems} 
-                  onProductClick={onProductClick}
-                />
-              </div>
-            ) : (
-              <div className="py-24 text-center flex flex-col items-center justify-center bg-card rounded-[24px] border border-dashed border-border shadow-sm">
-                <span className="text-5xl mb-4">🔍</span>
-                <h4 className="text-2xl font-extrabold text-foreground mb-2">No items found</h4>
-                <p className="text-muted-foreground text-[15px] font-medium">Try adjusting your filters or search query.</p>
-                <Button onClick={filters.resetFilters} className="mt-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6">
-                  Clear Filters
-                </Button>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };

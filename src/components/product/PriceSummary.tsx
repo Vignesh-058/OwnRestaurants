@@ -73,9 +73,9 @@ export const PriceSummary = ({
  {/* Add to Cart Button */}
  <Button 
  className={cn(
- "flex-1 h-[56px] w-full rounded-[16px] text-[16px] font-bold shadow-[0_8px_20px_rgba(255,107,0,0.25)] transition-all duration-300 border-0",
+ "flex-1 h-[56px] w-full rounded-[16px] text-[16px] font-bold shadow-[0_8px_20px_rgba(255, 107, 53,0.25)] transition-all duration-300 border-0",
  isValid && inStock
- ? "bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white hover:shadow-[0_12px_25px_rgba(255,107,0,0.35)] hover:-translate-y-0.5" 
+ ? "bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-white hover:shadow-[0_12px_25px_rgba(255, 107, 53,0.35)] hover:-translate-y-0.5" 
  : "bg-border text-muted-foreground shadow-none hover:shadow-none"
  )}
  disabled={!isValid || !inStock || isLoading}

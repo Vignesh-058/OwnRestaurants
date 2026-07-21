@@ -53,7 +53,7 @@ export const Footer = () => {
           <div className="flex flex-col space-y-5 items-center md:items-start">
             <div className="flex items-center gap-3">
               <img src={organization.logoImage || defaultLogo} alt={organization.brandName || organization.name} className="h-12 w-12 object-contain drop-shadow-sm rounded-xl bg-background border border-border p-1" />
-              <span className="font-extrabold text-2xl tracking-tight text-foreground">
+              <span className="font-black text-[28px] tracking-tight text-foreground">
                 {organization.brandName || organization.name || 'IEYAL Solutions'}
               </span>
             </div>
@@ -66,7 +66,7 @@ export const Footer = () => {
 
           {/* Section 2: Quick Links */}
           <div className="flex flex-col space-y-4">
-            <h4 className="font-bold text-[18px] text-foreground mb-2">Quick Links</h4>
+            <h4 className="font-black text-[18px] text-foreground mb-2">Quick Links</h4>
             <div className="grid grid-cols-2 gap-y-4 text-[15px]">
               <div className="flex flex-col space-y-3 items-center md:items-start">
                 <AnimatedLink to="/">Home</AnimatedLink>
@@ -83,7 +83,7 @@ export const Footer = () => {
 
           {/* Section 3: Contact Info */}
           <div className="flex flex-col space-y-4">
-            <h4 className="font-bold text-[18px] text-foreground mb-2">Contact Us</h4>
+            <h4 className="font-black text-[18px] text-foreground mb-2">Contact Us</h4>
             <div className="flex flex-col space-y-4 text-muted-foreground text-[15px] items-center md:items-start font-medium">
               {address && (
                 <div className="flex items-start gap-3 group">
