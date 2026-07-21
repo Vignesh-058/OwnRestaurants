@@ -14,7 +14,7 @@ export const useProfileStats = () => {
     queryKey: ['profileStats', belongsTo, customerPhoneNo],
     queryFn: () => profileService.getProfileStats(belongsTo, customerPhoneNo),
     enabled: isAuthenticated && !!belongsTo && !!customerPhoneNo,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: 2,
+    refetchInterval: 10000, // Refetch every 10 seconds for real-time updates
+    refetchOnWindowFocus: true,
   });
 };

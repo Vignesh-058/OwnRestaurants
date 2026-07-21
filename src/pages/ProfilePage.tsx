@@ -11,7 +11,7 @@ import { Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const EmptyOffers = () => (
-  <div className="bg-white rounded-[24px] shadow-sm border border-orange-100 p-10 flex flex-col items-center justify-center min-h-[400px] text-center">
+  <div className="bg-white rounded-[24px] shadow-sm border border-[#FFE2CC] p-10 flex flex-col items-center justify-center min-h-[400px] text-center">
     <div className="w-24 h-24 bg-[#FFF4EB] rounded-[24px] flex items-center justify-center mb-6 shadow-sm">
       <Gift className="w-12 h-12 text-[#FF6B00]" />
     </div>
@@ -29,7 +29,7 @@ const EmptyOffers = () => (
 );
 
 const PremiumCardWrapper = ({ children, title, subtitle }: { children: React.ReactNode, title?: string, subtitle?: string }) => (
-  <div className="bg-white rounded-[24px] shadow-sm border border-orange-100 p-6 lg:p-8">
+  <div className="bg-white rounded-[24px] shadow-sm border border-[#FFE2CC] p-6 lg:p-8">
     {(title || subtitle) && (
       <div className="mb-6 pb-6 border-b border-[#ECE7E2]">
         {title && <h2 className="text-[22px] font-bold text-[#1F2937] leading-tight">{title}</h2>}
@@ -64,7 +64,7 @@ export const ProfilePage = () => {
                 <h2 className="text-[24px] font-bold text-[#1F2937]">Offers & Coupons</h2>
                 <p className="text-[#6B7280] text-[14px]">View and apply your available discounts.</p>
               </div>
-              <Button variant="outline" className="h-10 rounded-full bg-white border-orange-100 text-[#1F2937] font-bold hover:bg-[#FFF4EB]">
+              <Button variant="outline" className="h-10 rounded-full bg-white border-[#FFE2CC] text-[#1F2937] font-bold hover:bg-[#FFF4EB]">
                 Refresh
               </Button>
             </div>
@@ -91,7 +91,7 @@ export const ProfilePage = () => {
         );
       default:
         return (
-          <div className="bg-white rounded-[24px] shadow-sm border border-orange-100 p-10 flex flex-col items-center justify-center min-h-[400px] text-center">
+          <div className="bg-white rounded-[24px] shadow-sm border border-[#FFE2CC] p-10 flex flex-col items-center justify-center min-h-[400px] text-center">
             <h3 className="text-[20px] font-bold text-[#1F2937] mb-2">Coming Soon</h3>
             <p className="text-[#6B7280] text-[15px]">This section is currently under development.</p>
           </div>

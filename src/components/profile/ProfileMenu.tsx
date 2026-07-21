@@ -41,11 +41,11 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
               className={cn(
                 "flex items-center gap-4 w-full p-4 rounded-xl transition-all duration-300 text-left group border border-transparent shadow-sm",
                 isActive 
-                  ? "bg-[#FFF4EB] border-orange-100 shadow-md" 
-                  : "bg-white hover:bg-[#FFF4EB] hover:shadow-md hover:border-orange-100"
+                  ? "bg-[#FFF4EB] border-[#FFE2CC] shadow-md" 
+                  : "bg-white hover:bg-[#FFF4EB] hover:shadow-md hover:border-[#FFE2CC]"
               )}
             >
-              <div className="w-12 h-12 rounded-[16px] flex items-center justify-center shrink-0 transition-colors duration-300 bg-[#FFF4EB] text-[#FF6B00] group-hover:bg-[#FF6B00] group-hover:text-white">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-300 bg-[#FFF4EB] text-[#FF6B00] group-hover:bg-[#FF6B00] group-hover:text-white">
                 <item.icon className="w-6 h-6" />
               </div>
               <div className="flex flex-col flex-1">
@@ -65,13 +65,23 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
       </div>
 
       {/* Sign Out Button */}
-      <div className="mt-4 pt-4">
+      <div className="mt-4">
         <button 
           onClick={() => setIsLogoutOpen(true)}
-          className="group flex items-center justify-center gap-2 w-full h-[54px] rounded-[16px] bg-white border border-[#FF6B00] text-[#FF6B00] font-bold text-[16px] transition-all duration-300 hover:bg-[#FF6B00] hover:text-white shadow-sm hover:shadow-md"
+          className="flex items-center gap-4 w-full p-4 rounded-xl transition-all duration-300 text-left group border border-transparent shadow-sm bg-white hover:bg-[#FFF4EB] hover:shadow-md hover:border-[#FFE2CC]"
         >
-          <LogOut className="w-5 h-5 group-hover:text-white transition-colors" />
-          Sign Out
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-300 bg-[#FFF4EB] text-[#FF6B00] group-hover:bg-[#FF6B00] group-hover:text-white">
+            <LogOut className="w-6 h-6" />
+          </div>
+          <div className="flex flex-col flex-1">
+            <span className="font-semibold text-[16px] text-[#1F2937] leading-tight">
+              Logout
+            </span>
+            <span className="text-[14px] font-normal text-[#6B7280] mt-0.5">
+              Sign out of your account
+            </span>
+          </div>
+          <ChevronRight className="w-5 h-5 text-[#6B7280] group-hover:text-[#FF6B00] transition-colors" />
         </button>
       </div>
 

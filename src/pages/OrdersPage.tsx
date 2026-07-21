@@ -143,36 +143,33 @@ export const OrdersPage = () => {
  };
 
  return (
- <div className="bg-background min-h-screen py-8 pb-32">
- <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div className="bg-[#FAF8F5] min-h-screen pt-24 pb-32">
+  <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
- {/* Main Content */}
- <motion.div 
- initial={{ opacity: 0, y: 15 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ duration: 0.5 }}
- className="flex-1 min-w-0 space-y-6"
- >
- {/* Page header */}
- <div className="flex items-center justify-between gap-4 bg-card p-5 sm:p-6 rounded-[16px] shadow-sm border border-border mb-6">
- <div className="flex items-center gap-3">
- <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0"><Package className="w-5 h-5" /></div>
- <div>
- <h1 className="text-[20px] sm:text-[22px] font-black text-foreground leading-none tracking-tight">Order History</h1>
- <p className="text-muted-foreground text-[13px] sm:text-[14px] font-medium mt-1">
- Review your recent orders
- </p>
- </div>
- </div>
- <Button
- variant="outline"
- className="w-10 h-10 rounded-full p-0 bg-card border-border text-muted-foreground hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-all shadow-sm shrink-0"
- onClick={() => refetch()}
- disabled={isLoading}
- >
- <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
- </Button>
- </div>
+  {/* Main Content */}
+  <motion.div 
+  initial={{ opacity: 0, y: 15 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+  className="flex-1 min-w-0 space-y-6"
+  >
+  {/* Page header */}
+  <div className="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-[#FFE2CC]">
+  <div>
+  <h1 className="text-[24px] font-bold text-[#1F2937] leading-none tracking-tight mb-2">Order History</h1>
+  <p className="text-[#6B7280] text-[14px] font-normal">
+  View and track all your previous orders.
+  </p>
+  </div>
+  <Button
+  variant="outline"
+  className="w-10 h-10 rounded-full p-0 bg-white border-[#FFE2CC] text-[#1F2937] hover:bg-[#FFF4EB] hover:text-[#FF6B00] hover:border-[#FF6B00]/30 transition-all shadow-sm shrink-0"
+  onClick={() => refetch()}
+  disabled={isLoading}
+  >
+  <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+  </Button>
+  </div>
 
  {/* Filters */}
  {!isLoading && !isError && (

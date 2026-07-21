@@ -1,9 +1,9 @@
 import type { Order } from '@/types/order.types';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { PaymentBadge } from './PaymentBadge';
-import { Eye, RotateCcw, Loader2, Calendar, ShoppingBag, Truck, CreditCard } from 'lucide-react';
+import { Eye, RotateCcw, Download, Calendar, MapPinned } from 'lucide-react';
 import { useRepeatOrder } from '@/hooks/orders/useRepeatOrder';
 import {
   AlertDialog,
@@ -19,7 +19,6 @@ import {
 const fmtDate = (iso: string) =>
   new Intl.DateTimeFormat('en-IN', {
     day: '2-digit', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit', hour12: true,
   }).format(new Date(iso));
 
 interface OrderCardProps {
@@ -38,94 +37,104 @@ export const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
   
   const orderId = order.orderId || order._id;
   const total = order.totalAmount ?? order.grandTotal;
-  const itemCount = order.items?.length;
-  const orderType = order.orderType;
+  const itemCount = order.items?.length || 0;
   const paymentStatus = order.paymentStatus;
-  const orderStatus = order.orderStatus;
+  const orderStatus = order.orderStatus || order.status;
   
   const formattedDate = order.createdAt ? fmtDate(order.createdAt) : '—';
+  const branchName = 'Main Outlet';
+
+  const previewItems = order.items?.slice(0, 3) || [];
+  const remainingItemsCount = Math.max(0, itemCount - 3);
 
   return (
     <>
-      <Card className="hover:shadow-lg transition-all duration-300 group overflow-hidden bg-background relative border-border/60">
-        <div className={`absolute top-0 left-0 bottom-0 w-1 ${orderStatus === 'Delivered' ? 'bg-green-500' : orderStatus === 'Cancelled' ? 'bg-destructive' : 'bg-primary'}`} />
-
-        <CardContent className="p-6 md:p-8">
-          {/* Header Row: Order ID & Status */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <div className="flex flex-col gap-1">
-              <span className="text-xl font-extrabold text-foreground tracking-tight">Order #{orderId?.slice(-8).toUpperCase() || 'UNKNOWN'}</span>
-              <div className="flex items-center gap-2 text-[14px] text-muted-foreground font-medium">
-                <Calendar className="w-4 h-4" />
-                {formattedDate}
-              </div>
+      <Card className="bg-[#FFFFFF] border border-[#FFE2CC] rounded-2xl shadow-sm hover:shadow-md hover:border-[#FF6B00]/30 transition-all duration-300 overflow-hidden group p-5 md:p-6 mb-4">
+        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
+          
+          {/* Left: Order Info */}
+          <div className="flex flex-col gap-2 w-full md:w-1/4 shrink-0">
+            <span className="text-[16px] font-semibold text-[#1F2937]">#{orderId?.slice(-8).toUpperCase() || 'UNKNOWN'}</span>
+            <div className="flex items-center gap-1.5 text-[14px] text-[#6B7280]">
+              <Calendar className="w-4 h-4 shrink-0" />
+              <span>{formattedDate}</span>
             </div>
-            {orderStatus && <OrderStatusBadge status={orderStatus} />}
+            <div className="flex items-center gap-1.5 text-[14px] text-[#6B7280]">
+              <MapPinned className="w-4 h-4 shrink-0" />
+              <span className="truncate max-w-[150px]">{branchName}</span>
+            </div>
+            <div className="mt-1">
+              {orderStatus && <OrderStatusBadge status={orderStatus} />}
+            </div>
           </div>
 
-          {/* Details Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-6 border-y border-border/50 mb-6 bg-muted/20 -mx-6 md:-mx-8 px-6 md:px-8">
-            {itemCount !== undefined && itemCount !== null && (
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 text-muted-foreground text-[13px] font-semibold uppercase tracking-wider">
-                  <ShoppingBag className="w-4 h-4" /> Items
+          {/* Center: Product Previews */}
+          <div className="flex-1 w-full border-t border-b md:border-y-0 md:border-x border-[#FFE2CC]/50 py-4 md:py-0 md:px-6 flex items-center">
+            <div className="flex flex-wrap gap-4 items-center">
+              {previewItems.map((item, idx) => {
+                const itemName = item.itemname || item.name || 'Product';
+                const firstImage = Array.isArray(item.image) ? item.image[0] : item.image;
+                
+                return (
+                  <div key={idx} className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-[#FAF8F5] border border-[#FFE2CC] overflow-hidden shrink-0 flex items-center justify-center">
+                      {firstImage ? (
+                        <img src={firstImage} alt={itemName} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xs text-gray-400">Img</div>
+                      )}
+                    </div>
+                    <div className="flex flex-col max-w-[120px]">
+                      <span className="text-[14px] font-medium text-[#1F2937] truncate">{itemName}</span>
+                      <span className="text-[13px] text-[#6B7280]">x{item.quantity || 1}</span>
+                    </div>
+                  </div>
+                );
+              })}
+              
+              {remainingItemsCount > 0 && (
+                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-[#FFF4EB] text-[#FF6B00] text-[13px] font-semibold shrink-0">
+                  +{remainingItemsCount}
                 </div>
-                <span className="text-[16px] font-bold text-foreground">{itemCount} {itemCount === 1 ? 'item' : 'items'}</span>
-              </div>
-            )}
-
-            {orderType && (
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 text-muted-foreground text-[13px] font-semibold uppercase tracking-wider">
-                  <Truck className="w-4 h-4" /> Type
-                </div>
-                <span className="text-[16px] font-bold text-foreground capitalize">{orderType.replace('_', ' ')}</span>
-              </div>
-            )}
-
-            {paymentStatus && (
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 text-muted-foreground text-[13px] font-semibold uppercase tracking-wider">
-                  <CreditCard className="w-4 h-4" /> Payment
-                </div>
-                <PaymentBadge paymentStatus={paymentStatus} />
-              </div>
-            )}
-
-            {total !== undefined && total !== null && (
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 text-muted-foreground text-[13px] font-semibold uppercase tracking-wider">
-                  Total
-                </div>
-                <span className="text-2xl font-black text-primary leading-none">₹{total.toLocaleString()}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 justify-end">
-            <Button 
-              variant="outline" 
-              className="w-full sm:w-auto font-bold h-12 px-6 shadow-none hover:bg-muted"
-              onClick={() => onViewDetails(order)}
-            >
-              <Eye className="w-4 h-4 mr-2" /> View Details
-            </Button>
-            
-            <Button 
-              className="w-full sm:w-auto font-bold h-12 px-6 shadow-sm"
-              onClick={() => handleRepeatOrder(order)}
-              disabled={isPending}
-            >
-              {isPending ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <RotateCcw className="w-4 h-4 mr-2" />
               )}
-              {isPending ? 'Processing...' : 'Repeat Order'}
-            </Button>
+            </div>
           </div>
-        </CardContent>
+
+          {/* Right: Amounts and Actions */}
+          <div className="flex flex-col gap-4 w-full md:w-auto shrink-0 md:items-end">
+            <div className="flex justify-between md:flex-col md:items-end gap-1 w-full">
+              <span className="text-[18px] font-bold text-[#1F2937]">₹{total?.toLocaleString() || 0}</span>
+              {paymentStatus && <PaymentBadge paymentStatus={paymentStatus} />}
+            </div>
+            
+            <div className="flex flex-wrap md:flex-nowrap gap-2 w-full md:w-auto mt-2">
+              <Button 
+                variant="default" 
+                className="flex-1 md:flex-none bg-[#FF6B00] hover:bg-[#FF7A1A] text-white rounded-lg h-10 px-4 font-medium transition-all"
+                onClick={() => onViewDetails(order)}
+              >
+                <Eye className="w-4 h-4 mr-2" /> View Details
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="flex-1 md:flex-none border-[#FFE2CC] text-[#1F2937] hover:bg-[#FFF4EB] hover:text-[#FF6B00] rounded-lg h-10 px-4 transition-all"
+              >
+                <Download className="w-4 h-4 md:mr-0 lg:mr-2" /> <span className="hidden lg:inline">Invoice</span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="flex-1 md:flex-none border-[#FFE2CC] text-[#1F2937] hover:bg-[#FFF4EB] hover:text-[#FF6B00] rounded-lg h-10 px-4 transition-all"
+                onClick={() => handleRepeatOrder(order)}
+                disabled={isPending}
+              >
+                <RotateCcw className="w-4 h-4 md:mr-0 lg:mr-2" /> <span className="hidden lg:inline">Reorder</span>
+              </Button>
+            </div>
+          </div>
+          
+        </div>
       </Card>
 
       <AlertDialog open={showConfirmDialog} onOpenChange={cancelReorder}>
@@ -133,14 +142,14 @@ export const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Replace cart items?</AlertDialogTitle>
             <AlertDialogDescription>
-              Your cart contains items from a different restaurant. Reordering will clear your current cart and add these items. Do you want to proceed?
+              Your cart currently contains items. Proceeding will clear your cart and add the items from this past order. Do you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl h-12 font-semibold">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl border-[#FFE2CC]">Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={confirmReorder}
-              className="rounded-xl h-12 font-bold"
+              className="bg-[#FF6B00] hover:bg-[#FF7A1A] text-white rounded-xl"
             >
               Continue
             </AlertDialogAction>
