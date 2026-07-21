@@ -27,6 +27,10 @@ export const ProfileMenu = ({ onTabChange, activeTab }: ProfileMenuProps) => {
     showOrders ? { id: 'orders', icon: Package, title: 'Order History', subtitle: 'Track your recent orders' } : null,
     showAddresses ? { id: 'addresses', icon: MapPinned, title: 'Manage Addresses', subtitle: 'Add or edit delivery addresses' } : null,
     { id: 'offers', icon: TicketPercent, title: 'Offers & Coupons', subtitle: 'Available discounts and rewards' },
+    { id: 'rewards', icon: Wallet, title: 'Rewards & Loyalty', subtitle: 'View your earned points' },
+    { id: 'help', icon: HelpCircle, title: 'Help & Support', subtitle: 'Get assistance with your account' },
+    { id: 'privacy', icon: Info, title: 'Privacy Policy', subtitle: 'Read our privacy policy' },
+    { id: 'terms', icon: Info, title: 'Terms & Conditions', subtitle: 'Review our terms of service' },
   ].filter(Boolean) as Array<{ id: string, icon: any, title: string, subtitle: string }>;
 
   return (

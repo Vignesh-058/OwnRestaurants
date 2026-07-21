@@ -130,10 +130,10 @@ export const CheckoutPage = () => {
       clearCart();
       if (selectedPaymentMode === 'COD') {
         toast.success("Order Placed Successfully!");
-        navigate('/orders');
+        navigate(`/order-success/${orderId}`);
       } else {
         toast.success(`Redirecting to ${onlineMethod} Gateway...`);
-        navigate('/orders');
+        navigate(`/order-success/${orderId}`);
       }
     } catch (error: any) {
       // Do not clear cart on error

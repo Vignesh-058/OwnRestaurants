@@ -14,6 +14,8 @@ import {
  CouponsPage,
  SearchPage,
  ProductsPage,
+ OrderSuccessPage,
+ OrderDetailsPage,
 } from '@/pages';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -34,7 +36,9 @@ const router = createBrowserRouter([
          { path: 'cart', element: <CartPage /> },
          { path: 'address', element: <AddressPage /> },
          { path: 'checkout', element: <CheckoutPage /> },
+         { path: 'order-success/:orderId', element: <OrderSuccessPage /> },
          { path: 'orders', element: <OrdersPage /> },
+         { path: 'orders/:orderId', element: <OrderDetailsPage /> },
          { path: 'profile', element: <ProfilePage /> },
          { path: 'profile/orders', element: <OrdersPage /> },
          { path: 'profile/addresses', element: <AddressPage /> },

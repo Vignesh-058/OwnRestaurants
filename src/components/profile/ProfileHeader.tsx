@@ -1,7 +1,7 @@
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Package, TicketPercent, Wallet } from 'lucide-react';
+import { Package, TicketPercent, Wallet, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { CustomerProfile } from '@/types/customer.types';
 import { useOrganizationStore } from '@/store/OrganizationStore';
@@ -19,22 +19,28 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
 
   const stats = [
     {
-      label: 'Orders',
+      label: 'Total Orders',
       value: statsData?.orders,
       prefix: '',
       icon: <Package className="w-6 h-6" />,
     },
     {
-      label: 'Discount',
-      value: statsData?.saved, // Map to saved if separate discount API not available yet
+      label: 'Amount Spent',
+      value: statsData?.spent,
+      prefix: currency,
+      icon: <Wallet className="w-6 h-6" />,
+    },
+    {
+      label: 'Total Savings',
+      value: statsData?.saved,
       prefix: currency,
       icon: <TicketPercent className="w-6 h-6" />,
     },
     {
-      label: 'Saved',
-      value: statsData?.saved, 
-      prefix: currency,
-      icon: <Wallet className="w-6 h-6" />,
+      label: 'Loyalty Points',
+      value: undefined, // Set to undefined for now to show "--"
+      prefix: '',
+      icon: <Gift className="w-6 h-6" />,
     }
   ];
 

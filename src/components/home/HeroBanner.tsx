@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useBanners } from "@/hooks/queries/useBanners";
 import { useOrganizationStore } from "@/store/OrganizationStore";
 import { useOutletStore } from "@/store/OutletStore";
+import { useSettingsStore } from "@/store/SettingsStore";
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import ENV from "@/config/env";
@@ -16,6 +17,7 @@ export const HeroBanner = () => {
   const navigate = useNavigate();
   const organization = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
+  const settings = useSettingsStore((state) => state.settings);
   const belongsTo = organization?._id || "";
   const outletId = selectedOutlet?._id || "";
 
@@ -23,13 +25,19 @@ export const HeroBanner = () => {
   const activeBanners = useMemo(() => (banners || []).filter((b) => b.active).sort((a, b) => (a.rank || 0) - (b.rank || 0)), [banners]);
   
   const hasBanners = activeBanners.length > 0;
+  const isBannerEnabled = settings?.banner?.enable ?? true;
+  const isAutoScrollEnabled = settings?.banner?.autoScroll ?? true;
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true },
-    hasBanners && activeBanners.length > 1 ? [Autoplay({ delay: 5000, stopOnInteraction: false })] : []
+    hasBanners && activeBanners.length > 1 && isAutoScrollEnabled ? [Autoplay({ delay: 5000, stopOnInteraction: false })] : []
   );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  if (!isBannerEnabled) {
+    return null;
+  }
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;

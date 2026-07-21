@@ -6,6 +6,8 @@ import { ProductCatalogue } from "@/components/product/ProductCatalogue";
 import { ProductDrawer } from "@/components/product/ProductDrawer";
 import { ProductSkeleton } from "@/components/product/ProductSkeleton";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const ProductsPage = () => {
   const {
@@ -75,9 +77,14 @@ export const ProductsPage = () => {
           </div>
         ) : isCategoriesError || isProductsError ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
-            <span className="text-4xl mb-4">️</span>
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+              <AlertCircle className="w-10 h-10 text-red-500" />
+            </div>
             <h3 className="text-2xl font-black text-foreground mb-2">Could not load products</h3>
-            <p className="text-muted-foreground font-medium">Please check your connection and try again.</p>
+            <p className="text-muted-foreground font-medium mb-6">Please check your connection and try again.</p>
+            <Button onClick={() => window.location.reload()} className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 font-bold">
+              Retry
+            </Button>
           </div>
         ) : categories.length > 0 ? (
           <ProductCatalogue 

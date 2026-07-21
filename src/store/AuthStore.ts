@@ -8,6 +8,7 @@ interface AuthState {
  isGuest: boolean;
  user: Customer | null;
  setAuth: (isAuthenticated: boolean, user: Customer, token: string) => void;
+ updateUser: (user: Partial<Customer>) => void;
  logout: () => void;
 }
 
@@ -24,6 +25,7 @@ export const useAuthStore = create<AuthState>()(
  set({ isAuthenticated, isGuest: !isAuthenticated, user });
 
  },
+ updateUser: (updates) => set((state) => ({ user: state.user ? { ...state.user, ...updates } : null })),
  logout: () => {
   TokenManager.removeToken();
   set({ isAuthenticated: false, isGuest: true, user: null });
@@ -41,8 +43,8 @@ export const useAuthStore = create<AuthState>()(
   keysToRemove.forEach(key => localStorage.removeItem(key));
   sessionStorage.clear();
   
-  // Hard redirect to login page to clear React Query cache and memory
-  window.location.href = '/login';
+  // Hard redirect to home page to clear React Query cache and memory and enforce public view
+  window.location.href = '/';
   },
  }),
  {

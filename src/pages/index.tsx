@@ -15,3 +15,5 @@ export const OrdersPage = lazy(() => import('./OrdersPage').then(m => ({ default
 export const ProfilePage = lazy(() => import('./ProfilePage').then(m => ({ default: m.ProfilePage })));
 export const CouponsPage = lazy(() => import('./CouponsPage').then(m => ({ default: m.CouponsPage })));
 export const SearchPage = lazy(() => import('./SearchPage').then(m => ({ default: m.SearchPage })));
+export const OrderSuccessPage = lazy(() => import('./OrderSuccessPage').then(m => ({ default: m.OrderSuccessPage })));
+export const OrderDetailsPage = lazy(() => import('./OrderDetailsPage').then(m => ({ default: m.default })));

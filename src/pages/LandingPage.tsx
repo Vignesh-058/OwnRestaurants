@@ -19,7 +19,6 @@ import { HotDealsBanner } from "@/components/home/HotDealsBanner";
 import { ProductCollection } from "@/components/home/ProductCollection";
 import { TodaysOffers } from "@/components/home/TodaysOffers";
 
-import { useSettings } from "@/hooks/queries/useSettings";
 import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
 import type { FilterState } from "@/types/product.types";
@@ -32,12 +31,6 @@ export const LandingPage = () => {
 
   const { data: storeStatusData, isLoading: isStoreStatusLoading } =
     useStoreStatus(belongsTo, selectedOutlet?._id || "");
-  const {
-    isLoading: isSettingsLoading,
-    isError: isSettingsError,
-    refetch: refetchSettings,
-  } = useSettings(belongsTo, selectedOutlet?._id || "");
-
   const {
     categories,
     isLoading: isCategoriesLoading,
@@ -137,32 +130,12 @@ export const LandingPage = () => {
         transition={{ duration: 0.4 }}
         className="w-full flex flex-col"
       >
-        {isStoreStatusLoading ? (
-          <StoreStatusLoader />
-        ) : storeStatusData?.storeStatus === false && (storeStatusData as any)?.openTime ? (
+        {storeStatusData?.storeStatus === false && (storeStatusData as any)?.openTime ? (
           <StoreClosedPage
             outlet={selectedOutlet!}
             storeStatus={storeStatusData}
             onBackToHome={() => window.location.reload()}
           />
-        ) : isSettingsLoading ? (
-          <SettingsLoader />
-        ) : isSettingsError ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center bg-background/50 backdrop-blur-sm z-50">
-            <h3 className="text-xl font-black tracking-tight text-foreground mb-2">
-              Configuration unavailable
-            </h3>
-            <p className="text-muted-foreground text-sm font-medium mb-6">
-              Unable to load outlet settings. Please try again.
-            </p>
-            <Button
-              onClick={() => refetchSettings()}
-              variant="default"
-              className="rounded-full px-6 font-bold shadow-md"
-            >
-              Retry
-            </Button>
-          </div>
         ) : (
           <>
             <StoreConfig />

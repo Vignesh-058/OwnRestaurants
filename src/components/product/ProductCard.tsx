@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/CartStore';
@@ -6,7 +6,7 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 import type { CategoryItem } from '@/types/category.types';
 import { cn } from '@/lib/utils';
 import { AddToCartButton } from '@/components/ui/add-to-cart-button';
-import { Loader2, Minus, Plus, Star } from 'lucide-react';
+import { Loader2, Minus, Plus, Star, ImageOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useCreateCart } from '@/hooks/cart/useCreateCart';
@@ -15,6 +15,7 @@ import { useAuthStore } from '@/store/AuthStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { getCartAddressPayload } from '@/utils/cartPayload';
 import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProductCardProps {
   product: CategoryItem;
@@ -23,6 +24,8 @@ interface ProductCardProps {
 }
 
 export const ProductCard = React.memo(({ product, className, onClick: _onClick }: ProductCardProps) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
   const cartItems = useCartStore((state) => state.cartItems) || [];
   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
@@ -295,19 +298,35 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
   return (
     <div
       className={cn(
-        "group relative flex flex-col w-full h-full bg-white rounded-[18px] shadow-[0_8px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 overflow-hidden transition-all duration-300",
+        "group relative flex flex-col w-full h-full bg-white rounded-2xl shadow-sm hover:shadow-md border border-transparent hover:border-primary overflow-hidden transition-all duration-300 cursor-pointer",
         className,
       )}
       onClick={() => _onClick && _onClick(product)}
     >
       {/* 1. Large Product Image */}
-      <div className="relative w-full aspect-[4/3] shrink-0 bg-muted overflow-hidden">
-        <img
-          src={product.imageUrl?.[0] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
-          alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          loading="lazy"
-        />
+      <div className="relative w-full aspect-[4/3] shrink-0 bg-muted overflow-hidden rounded-t-2xl">
+        {!imageLoaded && !imageError && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
+        )}
+        
+        {imageError ? (
+          <div className="absolute inset-0 bg-muted flex flex-col items-center justify-center text-muted-foreground gap-2">
+            <ImageOff className="w-8 h-8 opacity-20" />
+            <span className="text-xs font-medium opacity-50">No Image</span>
+          </div>
+        ) : (
+          <img
+            src={product.imageUrl?.[0] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"}
+            alt={product.name}
+            className={cn(
+              "w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105",
+              !imageLoaded ? "opacity-0" : "opacity-100"
+            )}
+            loading="lazy"
+            onLoad={() => setImageLoaded(true)}
+            onError={() => { setImageError(true); setImageLoaded(true); }}
+          />
+        )}
 
         {/* Top Gradient for text readability if needed */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent h-12 pointer-events-none" />
@@ -317,6 +336,13 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick }
           <div className="absolute top-0 left-0 z-10 bg-[#FF6B00] text-white text-[12px] font-bold px-3.5 py-1.5 rounded-br-[12px] shadow-sm flex items-center tracking-wide">
             {discountDisplay}
           </div>
+        )}
+        
+        {/* Bestseller Badge (Top Right) */}
+        {(product.bestseller || (product.tag && product.tag.includes('Bestseller'))) && (
+           <div className="absolute top-2 right-2 z-10 bg-yellow-400 text-yellow-900 text-[10px] uppercase font-black px-2 py-1 rounded-md shadow-sm flex items-center">
+             Bestseller
+           </div>
         )}
 
         {/* Veg/Non-Veg Indicator (Bottom Left of Image) */}

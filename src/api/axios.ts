@@ -99,11 +99,9 @@ axiosInstance.interceptors.response.use(
      return Promise.reject(error);
    }
 
-   // Silently handle 401 — no toast, just redirect to login
+   // Handle 401 - clear token but let ProtectedRoute handle any necessary redirects
+   // This prevents a forced global redirect when unauthenticated users browse public pages
    TokenManager.removeToken();
-   if (window.location.pathname !== '/login') {
-     setTimeout(() => { window.location.href = '/login'; }, 300);
-   }
    return Promise.reject(error);
  } else if (status === 403) {
   if (!import.meta.env.DEV) showToastOnce('403', () => toast.error('Unauthorized', { id: '403' }));

@@ -70,7 +70,7 @@ export const SearchBar = ({ autoFocus, className }: SearchBarProps) => {
  onFocus={() => { setIsFocused(true); setShowSuggestions(true); }}
  onBlur={() => setIsFocused(false)}
  onKeyDown={handleKeyDown}
- placeholder="Search products, categories..."
+ placeholder="Search your favorite dishes..."
  className="flex-1 bg-transparent outline-none text-base font-medium placeholder:text-muted-foreground/60"
  aria-label="Search products"
  aria-autocomplete="list"

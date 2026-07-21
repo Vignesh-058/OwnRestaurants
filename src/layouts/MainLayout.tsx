@@ -18,6 +18,7 @@ import { useOutletStore } from '@/store/OutletStore';
 import { EmptyStoreState } from '@/components/common/EmptyStoreState';
 import { PageTransition } from '@/components/common/PageTransition';
 import { FloatingNav } from '@/components/layout/FloatingNav';
+import { LandingPageSkeleton } from '@/components/common/LandingPageSkeleton';
 
 export const MainLayout = () => {
   const location = useLocation();
@@ -35,8 +36,8 @@ export const MainLayout = () => {
   const outletId = selectedOutlet?._id || '';
 
   // 3. Fetch specific configurations based on Selected Outlet
-  useSettings(belongsTo, outletId);
-  useStoreStatus(belongsTo, outletId);
+  const settingsQuery = useSettings(belongsTo, outletId);
+  const storeStatusQuery = useStoreStatus(belongsTo, outletId);
   const bannersQuery = useBanners(belongsTo, outletId);
 
   useEffect(() => {
@@ -52,23 +53,27 @@ export const MainLayout = () => {
       if (theme.borderColor) root.style.setProperty('--border', theme.borderColor);
       if (theme.secondaryColor) root.style.setProperty('--secondary', theme.secondaryColor);
       if (theme.secondaryTextColor) root.style.setProperty('--muted-foreground', theme.secondaryTextColor);
-
-      // Example for border radius if backend starts sending it natively top-level
-      // if (theme.radius) root.style.setProperty('--radius', theme.radius + 'px');
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     belongsTo, outletId, outletsQuery.isSuccess, bannersQuery.isSuccess, orgQuery.isSuccess, orgQuery.data
   ]);
 
+  const isInitializing = 
+    orgQuery.isLoading || 
+    (belongsTo && outletsQuery.isLoading) || 
+    (belongsTo && outletId && settingsQuery.isLoading) || 
+    (belongsTo && outletId && storeStatusQuery.isLoading);
 
-  if (orgQuery.isLoading || (belongsTo && outletsQuery.isLoading)) {
-    return <LoadingState message="Initializing application..." />;
+  if (isInitializing) {
+    return <LandingPageSkeleton />;
   }
 
-  if (orgQuery.isError || outletsQuery.isError) {
-    return <ApiErrorState message="Failed to load organization data." onRetry={() => orgQuery.refetch()} />;
+  if (orgQuery.isError || outletsQuery.isError || settingsQuery.isError) {
+    return <ApiErrorState message="Failed to load application data." onRetry={() => {
+      orgQuery.refetch();
+      outletsQuery.refetch();
+      settingsQuery.refetch();
+    }} />;
   }
 
   if (outletsQuery.isSuccess && outletsQuery.data?.outlets?.length === 0) {

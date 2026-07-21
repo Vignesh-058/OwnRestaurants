@@ -4,7 +4,6 @@ import { useAuthStore } from '@/store/AuthStore';
 import { useOrders } from '@/hooks/queries/useOrders';
 import { useOrderStore } from '@/store/OrderStore';
 import { OrderCard } from '@/components/orders/OrderCard';
-import { OrderDetailsDialog } from '@/components/orders/OrderDetailsDialog';
 import { OrderFilters } from '@/components/orders/OrderFilters';
 import { OrderSkeleton } from '@/components/orders/OrderSkeleton';
 import { EmptyOrders } from '@/components/orders/EmptyOrders';
@@ -18,8 +17,7 @@ export const OrdersPage = () => {
  const navigate = useNavigate();
  const { isAuthenticated } = useAuthStore();
  const { isLoading, isError, refetch } = useOrders();
- const { orders, pagination, loading, error, selectedOrder, setSelectedOrder, filters, searchQuery } = useOrderStore();
- const [dialogOpen, setDialogOpen] = useState(false);
+ const { orders, pagination, loading, error, filters, searchQuery } = useOrderStore();
  const [sort, setSort] = useState('newest');
 
  useEffect(() => {
@@ -27,13 +25,7 @@ export const OrdersPage = () => {
  }, []);
 
  const handleViewDetails = (order: Order) => {
- setSelectedOrder(order);
- setDialogOpen(true);
- };
-
- const handleCloseDialog = () => {
- setDialogOpen(false);
- setTimeout(() => setSelectedOrder(null), 300);
+ navigate(`/orders/${order.orderId || order._id}`, { state: { order } });
  };
 
  // Client-side filter + search + sort on current page results
@@ -94,35 +86,37 @@ export const OrdersPage = () => {
  if (loading) return <OrderSkeleton />;
 
  if (error) {
- return (
- <motion.div 
- initial={{ opacity: 0, scale: 0.95 }}
- animate={{ opacity: 1, scale: 1 }}
- className="min-h-[45vh] flex flex-col items-center justify-center p-8 border border-red-500/20 dark:border-red-500/10 rounded-[2rem] bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl shadow-lg gap-4"
- >
- <div className="h-14 w-14 rounded-full bg-red-500/10 flex items-center justify-center text-red-500">
- <AlertCircle className="h-7 w-7" />
- </div>
- <div>
- <h2 className="text-xl font-black text-foreground">Couldn't load orders</h2>
- <p className="text-muted-foreground text-sm mt-1">{error}</p>
- </div>
- <Button onClick={() => refetch()} className="rounded-full shadow-premium gap-2 px-6 h-11 font-black text-xs">
- <RefreshCw className="h-4 w-4" />
- Try Again
- </Button>
- </motion.div>
- );
+  return (
+  <motion.div 
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={{ opacity: 1, scale: 1 }}
+  className="min-h-[45vh] flex flex-col items-center justify-center p-8 border border-[#FFE2CC] rounded-2xl bg-[#FFFFFF] shadow-sm gap-4 text-center"
+  >
+  <div className="h-20 w-20 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-2">
+  <AlertCircle className="h-10 w-10 text-red-500" />
+  </div>
+  <div>
+  <h2 className="text-[24px] font-bold text-[#1F2937] tracking-tight">Couldn't load orders</h2>
+  <p className="text-[#6B7280] text-[14px] mt-2 max-w-sm">Unable to load your orders. Please try again.</p>
+  </div>
+  <Button onClick={() => refetch()} className="rounded-xl mt-4 bg-[#FF6B00] hover:bg-[#FF7A1A] text-white px-8 h-11 font-bold">
+  <RefreshCw className="h-4 w-4 mr-2" />
+  Try Again
+  </Button>
+  </motion.div>
+  );
  }
 
  if (!orders?.length) return <EmptyOrders />;
 
  if (processedOrders.length === 0) {
- return (
- <div className="py-20 text-center border border-border/80 dark:border-white/10 rounded-[2rem] text-muted-foreground bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl">
- No orders match your current filters.
- </div>
- );
+  return (
+  <div className="py-20 flex flex-col items-center justify-center text-center border border-[#FFE2CC] rounded-2xl bg-[#FFFFFF] shadow-sm">
+  <Package className="h-12 w-12 text-gray-300 mb-4" />
+  <h3 className="text-xl font-bold text-[#1F2937]">No matches found</h3>
+  <p className="text-[#6B7280] mt-1">No orders match your current filters or search.</p>
+  </div>
+  );
  }
 
  return (
@@ -187,12 +181,6 @@ export const OrdersPage = () => {
  </motion.div>
  </div>
 
- {/* Order Details Dialog */}
- <OrderDetailsDialog
- order={selectedOrder}
- open={dialogOpen}
- onClose={handleCloseDialog}
- />
  </div>
  );
 };

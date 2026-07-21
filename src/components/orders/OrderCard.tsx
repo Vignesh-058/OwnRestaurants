@@ -116,12 +116,15 @@ export const OrderCard = ({ order, onViewDetails }: OrderCardProps) => {
                 <Eye className="w-4 h-4 mr-2" /> View Details
               </Button>
               
-              <Button 
-                variant="outline" 
-                className="flex-1 md:flex-none border-[#FFE2CC] text-[#1F2937] hover:bg-[#FFF4EB] hover:text-[#FF6B00] rounded-lg h-10 px-4 transition-all"
-              >
-                <Download className="w-4 h-4 md:mr-0 lg:mr-2" /> <span className="hidden lg:inline">Invoice</span>
-              </Button>
+              {order.bill && (
+                <Button 
+                  variant="outline" 
+                  className="flex-1 md:flex-none border-[#FFE2CC] text-[#1F2937] hover:bg-[#FFF4EB] hover:text-[#FF6B00] rounded-lg h-10 px-4 transition-all"
+                  onClick={() => window.open(order.bill, '_blank')}
+                >
+                  <Download className="w-4 h-4 md:mr-0 lg:mr-2" /> <span className="hidden lg:inline">Invoice</span>
+                </Button>
+              )}
               
               <Button 
                 variant="outline" 

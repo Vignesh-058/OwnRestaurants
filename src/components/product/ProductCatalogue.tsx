@@ -175,10 +175,12 @@ export const ProductCatalogue = ({ categories, allProducts, activeCategoryId, on
                   />
                 </div>
               ) : (
-                <div className="py-24 text-center flex flex-col items-center justify-center bg-card rounded-[24px] border border-dashed border-border shadow-sm mt-4">
-                  <span className="text-5xl mb-4"></span>
-                  <h4 className="text-2xl font-extrabold text-foreground mb-2">No items found</h4>
-                  <p className="text-muted-foreground text-[15px] font-medium">Try adjusting your filters or search query.</p>
+                <div className="py-24 text-center flex flex-col items-center justify-center bg-white rounded-3xl border border-dashed border-border shadow-sm mt-4">
+                  <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+                    <Search className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                  <h4 className="text-2xl font-extrabold text-foreground mb-2">No products available</h4>
+                  <p className="text-muted-foreground text-[15px] font-medium">Try selecting a different category or adjusting your filters.</p>
                   <Button onClick={filters.resetFilters} className="mt-6 bg-primary hover:bg-primary/90 text-white rounded-full px-8 h-[48px] font-bold">
                     Clear Filters
                   </Button>

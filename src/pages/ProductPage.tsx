@@ -4,9 +4,10 @@ import type {
 } from "@/types/category.types";
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, Minus, Plus, Share2, Star, Clock } from "lucide-react";
+import { ChevronLeft, Minus, Plus, Share2, Star, Clock, ImageOff, AlertCircle, ChevronRight, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useItemDetail } from "@/hooks/queries/useItemDetail";
 import { useAddToCart, useUpdateCart } from "@/hooks/queries/useCart";
 import { useAuthStore } from "@/store/AuthStore";
@@ -39,6 +40,8 @@ export const ProductPage = () => {
   >(undefined);
   const [addonSelections, setAddonSelections] = useState<AddonSelection>({});
   const [quantity, setQuantity] = useState(1);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const {
     data: item,
@@ -226,9 +229,38 @@ export const ProductPage = () => {
     }
   };
 
-  if (isLoading) return <PageLoader />;
-  if (isError || !item)
-    return <ErrorState description="Product not found" onRetry={refetch} />;
+  if (isLoading) {
+    return (
+      <div className="max-w-7xl mx-auto w-full px-4 lg:px-8 py-8 lg:py-12">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12">
+          <div className="lg:col-span-5 h-[350px] lg:h-[600px]">
+            <Skeleton className="w-full h-full rounded-3xl" />
+          </div>
+          <div className="lg:col-span-7 space-y-6">
+            <Skeleton className="w-24 h-6" />
+            <Skeleton className="w-3/4 h-12" />
+            <Skeleton className="w-1/2 h-8" />
+            <Skeleton className="w-full h-[200px] rounded-3xl mt-12" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !item) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6">
+          <AlertCircle className="w-12 h-12 text-red-500" />
+        </div>
+        <h3 className="text-3xl font-black text-foreground mb-3">Product not found</h3>
+        <p className="text-muted-foreground font-medium mb-8 text-lg">The item you are looking for is unavailable.</p>
+        <Button onClick={() => navigate(-1)} className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 py-6 text-lg font-bold">
+          Go Back
+        </Button>
+      </div>
+    );
+  }
 
   const isPending = isAdding || isUpdating;
   const hasBasePrice = item.sellingPrice < item.basePrice;
@@ -307,195 +339,164 @@ export const ProductPage = () => {
 
   return (
     <div
-      className="lg:pb-12 w-full min-h-screen bg-background transition-all duration-300"
+      className="w-full min-h-screen bg-[#FAF8F5] transition-all duration-300"
       style={{
         paddingBottom: "calc(6.5rem + var(--floating-nav-height, 0px))",
       }}
     >
-      {/* 1. HERO SECTION */}
-      <div className="relative w-full lg:h-[500px] bg-black">
-        {/* Header Actions */}
-        <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 md:p-6 bg-gradient-to-b from-black/60 to-transparent">
+      <div className="max-w-7xl mx-auto w-full lg:py-8 px-0 lg:px-8 flex flex-col lg:grid lg:grid-cols-12 gap-0 lg:gap-12 relative">
+        
+        {/* Mobile Header (Back & Share) */}
+        <div className="lg:hidden absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-4 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="rounded-full bg-white/20 hover:bg-white text-white hover:text-black backdrop-blur-md h-10 w-10 border border-white/30"
+            className="rounded-full bg-white/20 hover:bg-white text-white hover:text-black backdrop-blur-md h-10 w-10 border border-white/30 pointer-events-auto"
           >
             <ChevronLeft className="h-6 w-6" />
           </Button>
 
-          <div className="flex gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleShare}
-              className="rounded-full bg-white/20 hover:bg-white text-white hover:text-black backdrop-blur-md h-10 w-10 border border-white/30"
-            >
-              <Share2 className="h-5 w-5" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleShare}
+            className="rounded-full bg-white/20 hover:bg-white text-white hover:text-black backdrop-blur-md h-10 w-10 border border-white/30 pointer-events-auto"
+          >
+            <Share2 className="h-5 w-5" />
+          </Button>
         </div>
 
-        {/* Hero Image */}
-        <div className="relative w-full h-[350px] lg:h-full overflow-hidden">
-          <img
-            src={
-              item.image?.[0] ||
-              "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80"
-            }
-            alt={item.itemname}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        {/* LEFT COLUMN: IMAGE GALLERY */}
+        <div className="lg:col-span-5 relative w-full lg:sticky lg:top-24 lg:h-max">
+          <div className="relative w-full h-[350px] lg:h-auto lg:aspect-[4/5] bg-muted overflow-hidden lg:rounded-3xl lg:shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+            {!imageLoaded && !imageError && (
+              <Skeleton className="absolute inset-0 w-full h-full" />
+            )}
+            {imageError ? (
+              <div className="absolute inset-0 bg-muted flex flex-col items-center justify-center text-muted-foreground gap-3">
+                <ImageOff className="w-10 h-10 opacity-20" />
+                <span className="text-sm font-medium opacity-50">No Image Available</span>
+              </div>
+            ) : (
+              <img
+                src={item.image?.[0] || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80"}
+                alt={item.itemname}
+                className={cn(
+                  "w-full h-full object-cover transition-opacity duration-500",
+                  !imageLoaded ? "opacity-0" : "opacity-100"
+                )}
+                loading="lazy"
+                onLoad={() => setImageLoaded(true)}
+                onError={() => { setImageError(true); setImageLoaded(true); }}
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent lg:hidden pointer-events-none" />
 
-          {/* Discount Badge (Top Left) */}
-          {discountDisplay && (
-            <div className="absolute top-0 left-0 z-10 bg-[#FF6B00] text-white text-[12px] md:text-[14px] font-bold px-3.5 py-1.5 md:px-4 md:py-2 rounded-br-[12px] md:rounded-br-[16px] shadow-sm flex items-center tracking-wide">
-              {discountDisplay}
-            </div>
-          )}
-
-          {/* Mobile Text Content overlaid on Image */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 lg:hidden">
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              {item.dietryType && (
-                <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/30">
-                  <div
-                    className={cn(
-                      "w-3 h-3 rounded-[3px] border flex items-center justify-center bg-white",
-                      isVeg ? "border-green-600" : "border-red-600",
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "w-1.5 h-1.5 rounded-full",
-                        isVeg ? "bg-green-600" : "bg-red-600",
-                      )}
-                    />
-                  </div>
-                  <span className="text-white text-xs font-bold">
-                    {isVeg ? "Veg" : "Non-Veg"}
-                  </span>
+            {/* Badges on Image */}
+            <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+              {discountDisplay && (
+                <div className="bg-[#FF6B00] text-white text-[13px] font-black px-3 py-1.5 rounded-lg shadow-sm flex items-center tracking-wide w-max">
+                  {discountDisplay}
                 </div>
               )}
-              {isBestseller && (
-                <span className="bg-orange-500/90 text-white backdrop-blur-md px-2.5 py-1 rounded-md border border-white/20 text-xs font-black uppercase tracking-wider flex items-center gap-1">
-                  <Star className="w-3 h-3 fill-current" /> Bestseller
-                </span>
-              )}
             </div>
 
-            <h1 className="text-3xl font-black text-white leading-tight mb-2 tracking-tight">
-              {item.itemname}
-            </h1>
-
-            <div className="flex items-center gap-4 text-white/90 text-sm font-semibold mb-4">
-              <span className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded text-green-400">
-                <Star className="w-4 h-4 fill-current" /> {rating} (120+)
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-4 h-4" /> 25 mins
-              </span>
-            </div>
-
-            <div className="flex items-end gap-3">
-              <p className="text-3xl font-black text-white">
-                {org?.currency || "₹"}
-                {item.sellingPrice || item.basePrice}
-              </p>
-              {hasBasePrice && (
-                <p className="text-lg font-bold text-white/50 line-through mb-1">
-                  {org?.currency || "₹"}
-                  {item.basePrice}
-                </p>
-              )}
-              {discountDisplay && (
-                <span className="text-orange-400 font-bold mb-1 ml-1">
-                  {discountDisplay}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 md:px-8 -mt-6 lg:mt-12 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
-          {/* Left Column (Desktop Text Content + Tabs) */}
-          <div className="lg:col-span-7">
-            {/* Desktop Hero Content (Hidden on Mobile) */}
-            <div className="hidden lg:block mb-8">
-              <div className="flex flex-wrap items-center gap-3 mb-4">
+            {/* Mobile Title Overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 lg:hidden">
+              <div className="flex flex-wrap items-center gap-2 mb-3">
                 {item.dietryType && (
-                  <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
-                    <div
-                      className={cn(
-                        "w-4 h-4 rounded-[4px] border flex items-center justify-center",
-                        isVeg
-                          ? "border-green-600 bg-green-50"
-                          : "border-red-600 bg-red-50",
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "w-2 h-2 rounded-full",
-                          isVeg ? "bg-green-600" : "bg-red-600",
-                        )}
-                      />
+                  <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-2 py-1 rounded-md border border-white/30">
+                    <div className={cn("w-3 h-3 rounded-[3px] border flex items-center justify-center bg-white", isVeg ? "border-green-600" : "border-red-600")}>
+                      <div className={cn("w-1.5 h-1.5 rounded-full", isVeg ? "bg-green-600" : "bg-red-600")} />
                     </div>
-                    <span className="text-foreground text-sm font-bold">
-                      {isVeg ? "Vegetarian" : "Non-Vegetarian"}
-                    </span>
+                    <span className="text-white text-[11px] font-bold">{isVeg ? "Veg" : "Non-Veg"}</span>
                   </div>
                 )}
                 {isBestseller && (
-                  <span className="bg-orange-100 text-orange-700 px-3 py-1.5 rounded-lg border border-orange-200 text-sm font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                    <Star className="w-4 h-4 fill-current" /> Bestseller
+                  <span className="bg-yellow-400/90 text-yellow-900 backdrop-blur-md px-2 py-1 rounded-md text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-current" /> Bestseller
                   </span>
                 )}
               </div>
-
-              <h1 className="text-4xl xl:text-5xl font-extrabold text-foreground leading-tight mb-4 tracking-tight">
-                {item.itemname}
-              </h1>
-
-              <div className="flex items-center gap-6 text-muted-foreground text-base font-bold mb-6">
-                <span className="flex items-center gap-1.5 bg-green-50 px-3 py-1 rounded-lg text-green-700 border border-green-100 shadow-sm">
-                  <Star className="w-5 h-5 fill-current" /> {rating} (120+
-                  Reviews)
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Clock className="w-5 h-5" /> 25-30 mins delivery
-                </span>
-              </div>
-
-              <div className="flex items-end gap-4 p-5 bg-white rounded-2xl border border-black/5 shadow-sm inline-flex">
-                <div className="flex flex-col">
-                  {hasBasePrice && (
-                    <p className="text-lg font-bold text-muted-foreground line-through">
-                      {org?.currency || "₹"}
-                      {item.basePrice}
-                    </p>
-                  )}
-                  <p className="text-4xl font-extrabold text-primary">
-                    {org?.currency || "₹"}
-                    {item.sellingPrice || item.basePrice}
-                  </p>
-                </div>
+              <h1 className="text-2xl font-black text-white leading-tight mb-1">{item.itemname}</h1>
+              <div className="flex items-center gap-3 text-white/90 text-xs font-semibold">
+                <span className="flex items-center gap-1 text-yellow-400"><Star className="w-3.5 h-3.5 fill-current" /> {rating}</span>
+                <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> 25 mins</span>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Information Tabs */}
-            <ProductInfoTabs product={item as any} />
-
-            {/* Recommended Products */}
-            <RecommendedProducts />
+        {/* RIGHT COLUMN: DETAILS */}
+        <div className="lg:col-span-7 px-4 md:px-8 lg:px-0 pt-6 pb-32 lg:pb-0 lg:pt-0">
+          
+          {/* Desktop Breadcrumbs & Header */}
+          <div className="hidden lg:flex items-center justify-between mb-8">
+            <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+              <div className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors" onClick={() => navigate('/')}>
+                <Home className="w-4 h-4" /> Home
+              </div>
+              <ChevronRight className="w-4 h-4 opacity-50" />
+              <div className="flex items-center gap-1 hover:text-primary cursor-pointer transition-colors" onClick={() => navigate('/products')}>
+                Products
+              </div>
+              <ChevronRight className="w-4 h-4 opacity-50" />
+              <span className="text-foreground line-clamp-1 max-w-[200px]">{item.itemname}</span>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 hover:bg-primary/5 hover:text-primary hover:border-primary/30">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
-          {/* Right Column (Customization & Cart) */}
-          <div className="lg:col-span-5">
-            <div className="lg:sticky lg:top-24 space-y-6">
+          {/* Desktop Title & Meta */}
+          <div className="hidden lg:block mb-8">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              {item.dietryType && (
+                <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border shadow-sm">
+                  <div className={cn("w-4 h-4 rounded-[4px] border flex items-center justify-center", isVeg ? "border-green-600 bg-green-50" : "border-red-600 bg-red-50")}>
+                    <div className={cn("w-2 h-2 rounded-full", isVeg ? "bg-green-600" : "bg-red-600")} />
+                  </div>
+                  <span className="text-foreground text-xs font-extrabold uppercase tracking-wide">{isVeg ? "Vegetarian" : "Non-Vegetarian"}</span>
+                </div>
+              )}
+              {isBestseller && (
+                <span className="bg-yellow-100 text-yellow-800 px-3 py-1.5 rounded-lg border border-yellow-200 text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                  <Star className="w-4 h-4 fill-current" /> Bestseller
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-4xl xl:text-5xl font-black text-foreground leading-[1.15] mb-5 tracking-tight">
+              {item.itemname}
+            </h1>
+
+            <div className="flex items-center gap-5 text-muted-foreground text-sm font-bold mb-6">
+              <span className="flex items-center gap-1.5 bg-yellow-50 px-3 py-1.5 rounded-lg text-yellow-800 border border-yellow-100 shadow-sm">
+                <Star className="w-4 h-4 fill-current" /> {rating} Ratings
+              </span>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-white border rounded-lg shadow-sm">
+                <Clock className="w-4 h-4 text-primary" /> 25-30 mins delivery
+              </span>
+            </div>
+
+            <div className="flex items-end gap-3 p-5 bg-white rounded-2xl border border-black/5 shadow-sm inline-flex">
+              <div className="flex flex-col">
+                {hasBasePrice && (
+                  <p className="text-sm font-bold text-muted-foreground line-through mb-0.5">
+                    {org?.currency || "₹"}{item.basePrice}
+                  </p>
+                )}
+                <p className="text-4xl font-black text-foreground leading-none">
+                  {org?.currency || "₹"}{item.sellingPrice || item.basePrice}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
               {/* Variations */}
               {item.variations && item.variations.length > 0 && (
                 <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-black/5">
@@ -513,7 +514,7 @@ export const ProductPage = () => {
                         <div
                           key={v.variationid}
                           className={cn(
-                            "flex items-center justify-between p-4 rounded-[16px] border-2 transition-all cursor-pointer group",
+                            "flex items-center justify-between p-4 rounded-full border-2 transition-all cursor-pointer group",
                             isActive
                               ? "border-primary bg-primary/5 shadow-sm"
                               : "border-border hover:border-primary/40 hover:bg-muted/30",
@@ -655,6 +656,16 @@ export const ProductPage = () => {
                 </div>
               )}
 
+              {/* Information Tabs */}
+              <div className="pt-6">
+                <ProductInfoTabs product={item as any} />
+              </div>
+
+              {/* Recommended Products */}
+              <div className="pt-6">
+                <RecommendedProducts />
+              </div>
+
               {/* Bottom Bar Desktop embedded in right column */}
               <div className="hidden lg:block bg-white rounded-3xl p-6 shadow-sm border border-black/5 mt-8 sticky bottom-8">
                 {renderAddToCartBar()}
@@ -662,7 +673,6 @@ export const ProductPage = () => {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Bottom Bar Mobile */}
       <div
