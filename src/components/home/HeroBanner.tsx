@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useBanners } from "@/hooks/queries/useBanners";
@@ -30,6 +30,8 @@ export const HeroBanner = () => {
     { loop: true },
     hasBanners && activeBanners.length > 1 && isAutoScrollEnabled ? [Autoplay({ delay: 5000, stopOnInteraction: false })] : []
   );
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;

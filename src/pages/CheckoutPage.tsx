@@ -4,6 +4,8 @@ import { ChevronLeft, MapPin, Plus, Clock } from 'lucide-react';
 import { CreditCard as CreditCardIcon, Banknote, Smartphone } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
 import { useCartDetails } from '@/hooks/queries/useCart';
+import { useAddresses } from '@/hooks/queries/useAddresses';
+import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { useCartStore } from '@/store/CartStore';
 import { PageLoader } from '@/components/common/PageLoader';
@@ -27,6 +29,7 @@ export const CheckoutPage = () => {
   const urlPreOrderTime = searchParams.get('preOrderTime');
 
   const { user } = useAuthStore();
+  const org = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   
   const { 
@@ -386,7 +389,7 @@ export const CheckoutPage = () => {
                           <h4 className="font-bold text-[14px] text-foreground">Select Address</h4>
                         </div>
                         {addresses && addresses.length > 0 ? (
-                          addresses.map((addr) => (
+                          addresses.map((addr: any) => (
                             <div 
                               key={addr._id} 
                               className={`relative p-3 border rounded-[12px] cursor-pointer transition-all ${

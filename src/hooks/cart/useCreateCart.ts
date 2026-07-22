@@ -17,18 +17,19 @@ export const useCreateCart = () => {
  return useMutation({
  mutationFn: async (payload: CartCreateRequest) => {
       const state = useCartStore.getState();
-      const isPreOrder = !!(state.preBookingId || payload.preBookingId);
+      const p = payload as any;
+      const isPreOrder = !!(state.preBookingId || p.preBookingId);
 
       if (isPreOrder && payload.deliveryType === 'Door Delivery') {
         const org = useOrganizationStore.getState().organization;
         const addrStore = useAddressStore.getState();
         const locStore = useLocationStore.getState();
-        const activeAddr = addrStore.selectedAddress || addrStore.deliveryAddress || state.customerAddress;
+        const activeAddr: any = addrStore.selectedAddress || addrStore.deliveryAddress || state.customerAddress;
 
         const addressId = activeAddr?._id || payload.addressId || locStore.addressId || state.addressId;
-        const latitude = activeAddr?.latitude ?? payload.latitude ?? locStore.latitude;
-        const longitude = activeAddr?.longitude ?? payload.longitude ?? locStore.longitude;
-        const pincode = activeAddr?.pincode || (activeAddr as any)?.zipCode || locStore.postalCode;
+        const latitude = activeAddr?.latitude ?? p.latitude ?? locStore.latitude;
+        const longitude = activeAddr?.longitude ?? p.longitude ?? locStore.longitude;
+        const pincode = activeAddr?.pincode || activeAddr?.zipCode || locStore.postalCode;
         const stateName = activeAddr?.state || locStore.state;
         const countryName = activeAddr?.country || locStore.country;
         const city = activeAddr?.city || locStore.city;

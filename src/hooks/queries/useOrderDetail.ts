@@ -9,10 +9,16 @@ export const useOrderDetail = (orderId?: string) => {
     queryKey: ['order', orderId],
     queryFn: async () => {
       if (!orderId) throw new Error('Order ID is required');
-      console.log('[Order Details] Fetching for ID:', orderId);
-      const data = await orderService.getOrderDetail(orderId);
-      if (data) {
-        return data;
+      try {
+        const order = await orderService.getOrderById(orderId);
+        if (order) return order;
+      } catch (_err) {
+        const response = await orderService.getOrdersByCustomer(1, 100);
+        const orders = response?.data || [];
+        const matchingOrder = orders.find(
+          (o: any) => o._id === orderId || o.orderId === orderId || o.orderNo === orderId
+        );
+        if (matchingOrder) return matchingOrder;
       }
       throw new Error('Order not found');
     },

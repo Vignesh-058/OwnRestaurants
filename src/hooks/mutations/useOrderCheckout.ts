@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { cartService } from '@/services/cart.service';
 import { toast } from 'sonner';
+import { useCartStore } from '@/store/CartStore';
 
-interface OrderCheckoutPayload {
+export interface OrderCheckoutPayload {
   orderId: string;
   outletId: string;
   customerPhoneNo: string;

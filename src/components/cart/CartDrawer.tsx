@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Trash2, ShoppingBag, Clock, Percent, Info, ChevronRight, Tag, Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCartStore } from "@/store/CartStore";
 import { useOrganizationStore } from "@/store/OrganizationStore";
 import { useUpdateCart } from "@/hooks/cart/useUpdateCart";
@@ -54,7 +54,8 @@ const AnimatedQuantity = ({ quantity, onIncrease, onDecrease, disabled }: any) =
 
 export const CartDrawer = () => {
   const navigate = useNavigate();
-  const { isDrawerOpen, closeDrawer, cartItems, orderTotal, deliveryCharge, totalTax, grandTotal, savedAmount, orderId, orderType, updateItemQuantity, preOrderDate, preOrderTime } = useCartStore();
+  const [searchParams] = useSearchParams();
+  const { isDrawerOpen, closeDrawer, cartItems, orderTotal, deliveryCharge, totalTax, grandTotal, savedAmount, orderId, orderType, updateItemQuantity, preBookingId, preOrderDate, preOrderTime } = useCartStore();
   const currency = useOrganizationStore((state) => state.organization?.currency || "₹");
   const { user } = useAuthStore();
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
