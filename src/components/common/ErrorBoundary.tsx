@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
  }
 
  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
- console.error('Uncaught error:', error, errorInfo);
+ console.error('Uncaught error caught by ErrorBoundary:', error, errorInfo);
  }
 
  public render() {
@@ -31,9 +31,17 @@ export class ErrorBoundary extends Component<Props, State> {
  <div className="flex flex-col items-center justify-center min-h-[400px] p-6 text-center">
  <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
  <h2 className="text-xl font-bold tracking-tight mb-2">Something went wrong</h2>
- <p className="text-muted-foreground mb-6 max-w-md">
+ <p className="text-muted-foreground mb-4 max-w-md">
  We encountered an unexpected error while rendering this page.
  </p>
+ {this.state.error && (
+ <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-left max-w-lg overflow-auto text-xs font-mono text-destructive">
+ <p className="font-bold mb-1">{this.state.error.name}: {this.state.error.message}</p>
+ {this.state.error.stack && (
+ <pre className="whitespace-pre-wrap text-[11px] text-muted-foreground mt-2">{this.state.error.stack}</pre>
+ )}
+ </div>
+ )}
  <Button onClick={() => window.location.reload()}>
  Reload Page
  </Button>

@@ -7,15 +7,19 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 export const FloatingCart = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { cartItemCount, grandTotal } = useCartStore();
+  const { cartItemCount, grandTotal, cartItems } = useCartStore();
   const organization = useOrganizationStore((state) => state.organization);
-  const currency = organization?.currency || '₹';
+  const currency = (organization?.currency && organization.currency !== '$') ? organization.currency.replace(/\$/g, '') : '₹';
 
   const hideRoutes = ['/', '/cart', '/checkout', '/payment', '/order-success']; // removed /orders and /profile/orders to allow Repeat Order to show it
   if (hideRoutes.some(route => location.pathname === route || location.pathname.startsWith('/profile') && !location.pathname.includes('orders'))) return null;
 
   const itemCount = cartItemCount;
-  const totalAmount = grandTotal;
+  const itemsCalculatedTotal = (cartItems || []).reduce((acc, item) => {
+    const itemPrice = (item as any).price ?? (item as any).sellingPrice ?? (item as any).defaultSellingPrice ?? (item as any).basePrice ?? 0;
+    return acc + (itemPrice * (item.quantity || 1));
+  }, 0);
+  const totalAmount = grandTotal > 0 ? grandTotal : itemsCalculatedTotal;
 
   return (
     <AnimatePresence>

@@ -150,8 +150,48 @@ export const CartDrawer = () => {
   };
 
   const handleCheckout = () => {
+    console.log('[DEBUG Checkout Flow] Button clicked (CartDrawer)');
+    console.log('[DEBUG Checkout Flow] Validation started', {
+      cartItemsCount: cartItems.length,
+      preBookingId,
+      preOrderDate,
+      preOrderTime,
+      checkoutEnable: useCartStore.getState().checkoutEnable,
+      checkOutMessage: useCartStore.getState().checkOutMessage
+    });
+
+    if (cartItems.length === 0) {
+      toast.error('Your cart is empty.');
+      return;
+    }
+
+    const currentPreBookingId = preBookingId || searchParams.get('preBookingId');
+    const currentPreOrderDate = preOrderDate || searchParams.get('preOrderDate');
+    const currentPreOrderTime = preOrderTime || searchParams.get('preOrderTime');
+
+    if (currentPreBookingId && (!currentPreOrderDate || !currentPreOrderTime)) {
+      toast.error('Pre-order date and time are required for pre-booking.');
+      return;
+    }
+
+    const currentCheckoutEnable = useCartStore.getState().checkoutEnable;
+    const currentCheckoutMsg = useCartStore.getState().checkOutMessage;
+
+    if (!currentCheckoutEnable && currentCheckoutMsg && !currentPreBookingId) {
+      toast.error(currentCheckoutMsg || 'Checkout is currently disabled.');
+      return;
+    }
+
+    console.log('[DEBUG Checkout Flow] Validation passed');
+    console.log('[DEBUG Checkout Flow] Navigation/API triggered');
+
     closeDrawer();
-    navigate('/checkout');
+
+    if (currentPreBookingId) {
+      navigate(`/checkout?preBookingId=${currentPreBookingId}&preOrderDate=${currentPreOrderDate}&preOrderTime=${currentPreOrderTime}`);
+    } else {
+      navigate('/checkout');
+    }
   };
 
   const handleContinueShopping = () => {

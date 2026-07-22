@@ -1,49 +1,63 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useOutletStore } from '@/store/OutletStore';
-import { useSettingsStore } from '@/store/SettingsStore';
 import { useActivePreBooking } from '@/hooks/queries/usePreBooking';
 import { X, Calendar, Clock, Flame, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const PreBookingPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   
   const org = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
-  const settings = useSettingsStore((state) => state.settings);
 
+  // Enable for all outlets whenever org and selectedOutlet are available
   const { data: activePreBookingRes, isLoading } = useActivePreBooking(
     { belongsTo: org?._id || '', outletId: selectedOutlet?._id || '' },
-    !!settings?.preBookingEnabled
+    !!(org?._id && selectedOutlet?._id)
   );
 
   const campaigns = activePreBookingRes?.data || [];
   const activeCampaign = campaigns.length > 0 ? campaigns[0] : null;
 
   useEffect(() => {
-    if (!isLoading && activeCampaign && settings?.preBookingEnabled) {
+    if (!isLoading && activeCampaign) {
       const hasShown = sessionStorage.getItem('preBookingPopupShown');
       if (!hasShown) {
+        // Trigger popup 60 seconds (1 minute) after user lands on application
         const timer = setTimeout(() => {
           setIsOpen(true);
           sessionStorage.setItem('preBookingPopupShown', 'true');
-        }, 2000);
+        }, 60000);
         return () => clearTimeout(timer);
       }
     }
-  }, [isLoading, activeCampaign, settings?.preBookingEnabled]);
+  }, [isLoading, activeCampaign, selectedOutlet?._id]);
 
   if (!isOpen || !activeCampaign) return null;
 
-  const handleExplore = () => {
+  const handleClose = () => {
     setIsOpen(false);
-    // Give time for modal close animation before scrolling
-    setTimeout(() => {
-      document.getElementById('prebooking-section')?.scrollIntoView({ behavior: 'smooth' });
-    }, 300);
+    sessionStorage.setItem('preBookingPopupShown', 'true');
   };
+
+  const handleExplore = () => {
+    handleClose();
+    // Scroll smoothly to pre-booking section if on home page or navigate
+    const el = document.getElementById('prebooking-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/?explorePreOrder=true#prebooking-section');
+    }
+  };
+
+  const campaignTitle = activeCampaign.preBookingName || (activeCampaign as any).name || (activeCampaign as any).title || 'Special Pre-Order Campaign';
+  const campaignImage = activeCampaign.image || (activeCampaign as any).imageUrl || '/placeholder-food.jpg';
+  const campaignDescription = (activeCampaign as any).description || (activeCampaign as any).shortDescription || 'Reserve your favourite dishes in advance before they sell out!';
 
   return (
     <AnimatePresence>
@@ -55,7 +69,7 @@ export const PreBookingPopup = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setIsOpen(false)}
+            onClick={handleClose}
           />
           
           <motion.div
@@ -63,86 +77,86 @@ export const PreBookingPopup = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.3, type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-[500px] bg-background rounded-3xl shadow-2xl overflow-hidden flex flex-col z-[201]"
+            className="relative w-full max-w-[480px] bg-background rounded-3xl shadow-2xl overflow-hidden flex flex-col z-[201] border border-border/50"
           >
             {/* Close Button */}
             <button 
-              onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-md hover:bg-black/40 transition-colors"
+              onClick={handleClose}
+              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-md hover:bg-black/50 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
             {/* Hero Banner */}
-            <div className="relative w-full h-[240px]">
+            <div className="relative w-full h-[220px] bg-muted">
               <img 
-                src={activeCampaign.image || '/placeholder-food.jpg'} 
-                alt={activeCampaign.preBookingName}
+                src={campaignImage} 
+                alt={campaignTitle}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
               
               {/* Badge */}
               <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
                 <Flame className="w-3.5 h-3.5" />
-                LIMITED TIME
+                LIMITED TIME PRE-ORDER
               </div>
 
               {/* Title Overlay */}
-              <div className="absolute bottom-0 left-0 w-full p-6">
-                <h3 className="text-white text-2xl font-bold leading-tight mb-1">
-                  {activeCampaign.preBookingName}
+              <div className="absolute bottom-0 left-0 w-full p-5">
+                <h3 className="text-white text-2xl font-black leading-tight drop-shadow-sm">
+                  {campaignTitle}
                 </h3>
               </div>
             </div>
 
             {/* Content Body */}
             <div className="p-6">
-              <div className="mb-6 text-center">
-                <h2 className="text-xl font-bold text-foreground mb-2 flex items-center justify-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary" /> Special Pre-Order
-                </h2>
-                <p className="text-muted-foreground text-sm">
-                  Reserve your favourite dishes before they're gone.
+              <div className="mb-5">
+                <h4 className="text-sm font-bold text-foreground mb-1 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary" /> Special Campaign Details
+                </h4>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  {campaignDescription}
                 </p>
               </div>
 
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Calendar className="w-5 h-5 text-primary" />
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center gap-3 p-3 bg-muted/60 rounded-2xl border border-border/40">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Calendar className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm">Available for limited dates</h4>
-                    <p className="text-xs text-muted-foreground">Exclusive pre-booking menu</p>
+                    <h5 className="font-bold text-xs">Flexible Pre-Order Dates</h5>
+                    <p className="text-[11px] text-muted-foreground">Select your preferred date during booking</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Clock className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 p-3 bg-muted/60 rounded-2xl border border-border/40">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm">Freshly prepared on schedule</h4>
-                    <p className="text-xs text-muted-foreground">Pickup or dine exactly when you want</p>
+                    <h5 className="font-bold text-xs">Freshly Prepared on Schedule</h5>
+                    <p className="text-[11px] text-muted-foreground">Door delivery or self pickup on time</p>
                   </div>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <Button 
                   onClick={handleExplore} 
-                  className="w-full h-12 text-base font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all"
+                  className="w-full h-12 text-base font-bold rounded-2xl shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all bg-primary text-primary-foreground hover:bg-primary/90"
                 >
-                  Explore Pre-Order
+                  Explore Now
                 </Button>
                 <Button 
                   variant="ghost" 
-                  onClick={() => setIsOpen(false)}
-                  className="w-full h-12 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  onClick={handleClose}
+                  className="w-full h-10 text-xs font-semibold text-muted-foreground hover:text-foreground rounded-xl"
                 >
-                  Maybe Later
+                  Close
                 </Button>
               </div>
             </div>

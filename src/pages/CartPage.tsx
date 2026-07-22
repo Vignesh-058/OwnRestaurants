@@ -18,12 +18,57 @@ import { CartSkeleton } from '@/components/cart/CartSkeleton';
 import type { CartItem } from '@/types/cart.types';
 import { useCart as useCartDetails } from '@/hooks/cart/useCart';
 
+import { useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
+
 /* ── Mobile-only fixed footer: Grand Total + Checkout button ── */
 const MobileCheckoutFooter = () => {
   const navigate = useNavigate();
-  const { grandTotal, checkoutEnable, checkOutMessage, cartItemCount } = useCartStore();
+  const [searchParams] = useSearchParams();
+  const { grandTotal, checkoutEnable, checkOutMessage, cartItemCount, cartItems, preBookingId, preOrderDate, preOrderTime } = useCartStore();
   const organization = useOrganizationStore(state => state.organization);
   const currency = organization?.currency || '₹';
+
+  const handleCheckout = () => {
+    console.log('[DEBUG Checkout Flow] Button clicked (MobileCheckoutFooter)');
+    console.log('[DEBUG Checkout Flow] Validation started', {
+      cartItemCount,
+      checkoutEnable,
+      checkOutMessage,
+      preBookingId,
+      preOrderDate,
+      preOrderTime
+    });
+
+    if (cartItemCount === 0) {
+      toast.error('Your cart is empty.');
+      return;
+    }
+
+    const currentPreBookingId = preBookingId || searchParams.get('preBookingId');
+    const currentPreOrderDate = preOrderDate || searchParams.get('preOrderDate');
+    const currentPreOrderTime = preOrderTime || searchParams.get('preOrderTime');
+
+    if (currentPreBookingId && (!currentPreOrderDate || !currentPreOrderTime)) {
+      toast.error('Pre-order date and time are required for pre-booking.');
+      return;
+    }
+
+    if (!checkoutEnable && checkOutMessage && !currentPreBookingId) {
+      toast.error(checkOutMessage || 'Checkout is currently disabled.');
+      return;
+    }
+
+    console.log('[DEBUG Checkout Flow] Validation passed');
+    console.log('[DEBUG Checkout Flow] Navigation/API triggered');
+
+    if (currentPreBookingId) {
+      navigate(`/checkout?preBookingId=${currentPreBookingId}&preOrderDate=${currentPreOrderDate}&preOrderTime=${currentPreOrderTime}`);
+    } else {
+      navigate('/checkout');
+    }
+  };
+
   if (cartItemCount === 0) return null;
   return (
     <div className="lg:hidden fixed left-0 right-0 z-50 bg-white border-t border-[#FFE2CC] shadow-[0_-4px_24px_rgba(0,0,0,0.06)] px-4 py-3 transition-all duration-300" style={{ bottom: 'var(--floating-nav-height, 0px)' }}>
@@ -34,8 +79,8 @@ const MobileCheckoutFooter = () => {
         </div>
         <Button
           className="flex-1 h-[48px] rounded-[16px] text-[15px] font-bold bg-[#FF6B00] hover:bg-[#FF7A1A] text-white shadow-[0_4px_16px_rgba(255,107,0,0.2)] transition-all"
-          disabled={!checkoutEnable}
-          onClick={() => navigate('/checkout')}
+          disabled={cartItemCount === 0}
+          onClick={handleCheckout}
         >
           Proceed to Checkout
         </Button>

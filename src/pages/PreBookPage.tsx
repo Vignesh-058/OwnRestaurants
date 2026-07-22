@@ -21,17 +21,32 @@ const allCategory: Category = {
 export const PreBookPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { setPreBooking } = useCartStore();
+  const { setPreBooking, setOrderType, setTableInfo, setNumberOfGuests } = useCartStore();
   
   const preBookingId = searchParams.get('preBookingId') || '';
   const preOrderDate = searchParams.get('preOrderDate') || '';
   const preOrderTime = searchParams.get('preOrderTime') || '';
+  const orderType = searchParams.get('orderType') || '';
+  const tableId = searchParams.get('tableId') || '';
+  const tableName = searchParams.get('tableName') || '';
+  const numberOfGuestsStr = searchParams.get('numberOfGuests') || '';
+  const numberOfGuests = numberOfGuestsStr ? parseInt(numberOfGuestsStr, 10) : null;
 
   useEffect(() => {
     if (preBookingId && preOrderDate && preOrderTime) {
-      setPreBooking({ preBookingId, preOrderDate, preOrderTime });
+      setPreBooking({
+        preBookingId,
+        preOrderDate,
+        preOrderTime,
+        orderType: (orderType as any) || null,
+        tableInfo: tableId ? { tableId, tableName: tableName || 'Table' } : null,
+        numberOfGuests,
+      });
+      if (orderType) setOrderType(orderType as any);
+      if (tableId) setTableInfo({ tableId, tableName: tableName || 'Table' });
+      if (numberOfGuests) setNumberOfGuests(numberOfGuests);
     }
-  }, [preBookingId, preOrderDate, preOrderTime, setPreBooking]);
+  }, [preBookingId, preOrderDate, preOrderTime, orderType, tableId, tableName, numberOfGuests, setPreBooking, setOrderType, setTableInfo, setNumberOfGuests]);
 
   const { data: originalCategories, isLoading, isError } = usePreOrderCategories({
     preBookId: preBookingId,
@@ -74,7 +89,7 @@ export const PreBookPage = () => {
             <h1 className="text-xl font-bold text-foreground leading-tight">Pre-Order Menu</h1>
           </div>
           <div className="ml-11">
-            <div className="inline-flex items-center gap-3 px-3 py-1.5 bg-primary/5 rounded-lg border border-primary/10">
+            <div className="inline-flex flex-wrap items-center gap-3 px-3 py-1.5 bg-primary/5 rounded-lg border border-primary/10">
               <span className="flex items-center gap-1.5 text-sm font-medium text-primary">
                 <Calendar className="w-4 h-4" /> {new Date(preOrderDate).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}
               </span>
@@ -82,6 +97,14 @@ export const PreBookPage = () => {
               <span className="flex items-center gap-1.5 text-sm font-medium text-primary">
                 <Clock className="w-4 h-4" /> {preOrderTime}
               </span>
+              {orderType && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-primary/40" />
+                  <span className="flex items-center gap-1.5 text-sm font-bold text-primary">
+                    <Utensils className="w-4 h-4" /> {orderType} {orderType === 'Dine In' && tableName ? `(${tableName}${numberOfGuests ? `, ${numberOfGuests} Guests` : ''})` : ''}
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -167,7 +190,7 @@ export const PreBookPage = () => {
 
       {/* Product Details Drawer for items with variations */}
       <ProductDrawer
-        productId={selectedProductId}
+        itemId={selectedProductId}
         isOpen={!!selectedProductId}
         onClose={() => setSelectedProductId(null)}
       />

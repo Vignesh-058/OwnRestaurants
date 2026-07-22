@@ -17,6 +17,11 @@ interface OrderCheckoutPayload {
   pincode?: string;
   latitude?: number;
   longitude?: number;
+  preBookingId?: string;
+  preOrderDate?: string;
+  preOrderTime?: string;
+  tableId?: string;
+  numberOfGuests?: number;
 }
 
 export const useOrderCheckout = () => {
@@ -31,10 +36,14 @@ export const useOrderCheckout = () => {
       return res;
     },
     onSuccess: () => {
-      console.log('Checkout Success');
-      // Set cart data to null to prevent refetching the old cart from backend
+      // Clear Zustand CartStore completely
+      const { clearCart } = useCartStore.getState();
+      clearCart();
+
+      // Wipe out React Query cart cache so no old items remain
       queryClient.setQueriesData({ queryKey: ['cart'] }, null);
-      // Invalidate orders and discounts to reflect the new order status
+      queryClient.resetQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       queryClient.invalidateQueries({ queryKey: ['discounts'] });
     },

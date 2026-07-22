@@ -9,7 +9,29 @@ import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { useTables } from '@/hooks/queries/useDineIn';
+import { useCartStore } from '@/store/CartStore';
+import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Utensils, ShoppingBag, Truck, Users } from 'lucide-react';
 import type { ActivePreBookingCampaign } from '@/types/prebooking.types';
+
+const DEFAULT_TIME_SLOTS = [
+  '09:00:00', '10:00:00', '11:00:00', '12:00:00', '13:00:00', '14:00:00',
+  '15:00:00', '16:00:00', '17:00:00', '18:00:00', '19:00:00', '20:00:00',
+  '21:00:00', '22:00:00'
+];
+
+const getTimeSlotsToDisplay = (campaignTimeSlots?: string[]) => {
+  if (campaignTimeSlots && campaignTimeSlots.length >= 8) {
+    return campaignTimeSlots;
+  }
+  if (campaignTimeSlots && campaignTimeSlots.length > 0) {
+    const combined = Array.from(new Set([...campaignTimeSlots, ...DEFAULT_TIME_SLOTS]));
+    return combined.sort();
+  }
+  return DEFAULT_TIME_SLOTS;
+};
 
 const formatTime12Hour = (timeStr: string) => {
   if (!timeStr) return '';
@@ -28,22 +50,34 @@ export const PreBookingCampaigns = () => {
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   const settings = useSettingsStore((state) => state.settings);
 
+  const availableOrderTypes = selectedOutlet?.orderType?.length
+    ? selectedOutlet.orderType
+    : ['Door Delivery', 'Self Pickup', 'Dine In'];
+
   const { data: activePreBookingRes, isLoading } = useActivePreBooking(
     { belongsTo: org?._id || '', outletId: selectedOutlet?._id || '' },
     !!settings?.preBookingEnabled
   );
+
+  const { data: tables = [] } = useTables(selectedOutlet?._id);
 
   const campaigns = activePreBookingRes?.data || [];
 
   const [selectedCampaign, setSelectedCampaign] = useState<ActivePreBookingCampaign | null>(null);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
+  const [selectedOrderType, setSelectedOrderType] = useState<string>('');
+  const [selectedTableId, setSelectedTableId] = useState<string>('');
+  const [numberOfGuests, setNumberOfGuests] = useState<number>(2);
 
   // Clear selections when the selected outlet changes
   useEffect(() => {
     setSelectedCampaign(null);
     setScheduleDate('');
     setScheduleTime('');
+    setSelectedOrderType('');
+    setSelectedTableId('');
+    setNumberOfGuests(2);
   }, [selectedOutlet?._id]);
 
   if (!settings?.preBookingEnabled || isLoading || campaigns.length === 0) {
@@ -51,12 +85,59 @@ export const PreBookingCampaigns = () => {
   }
 
   const handleContinue = () => {
-    if (selectedCampaign && scheduleDate && scheduleTime) {
-      navigate(`/pre-book-page?preBookingId=${selectedCampaign.preBookingId}&preOrderDate=${scheduleDate}&preOrderTime=${scheduleTime}`);
-      setSelectedCampaign(null);
-      setScheduleDate('');
-      setScheduleTime('');
+    if (!selectedCampaign || !scheduleDate || !scheduleTime) {
+      toast.error('Please select an available date and time.');
+      return;
     }
+
+    if (!selectedOrderType) {
+      toast.error('Please select an order type to continue.');
+      return;
+    }
+
+    let selectedTable: any = null;
+    if (selectedOrderType === 'Dine In') {
+      if (!selectedTableId) {
+        toast.error('Please select a table for Dine In.');
+        return;
+      }
+      if (!numberOfGuests || numberOfGuests < 1) {
+        toast.error('Please enter a valid number of guests.');
+        return;
+      }
+      selectedTable = tables.find(t => t._id === selectedTableId) || { _id: selectedTableId, tableName: `Table ${selectedTableId}` };
+    }
+
+    const { setPreBooking, setOrderType, setTableInfo, setNumberOfGuests: setGuests } = useCartStore.getState();
+
+    setPreBooking({
+      preBookingId: selectedCampaign.preBookingId,
+      preOrderDate: scheduleDate,
+      preOrderTime: scheduleTime,
+      orderType: selectedOrderType as any,
+      tableInfo: selectedTable ? { tableId: selectedTable._id, tableName: selectedTable.tableName } : null,
+      numberOfGuests: selectedOrderType === 'Dine In' ? numberOfGuests : null,
+    });
+    setOrderType(selectedOrderType as any);
+    if (selectedTable) {
+      setTableInfo({ tableId: selectedTable._id, tableName: selectedTable.tableName });
+    }
+    if (selectedOrderType === 'Dine In') {
+      setGuests(numberOfGuests);
+    }
+
+    let targetUrl = `/pre-book-page?preBookingId=${selectedCampaign.preBookingId}&preOrderDate=${scheduleDate}&preOrderTime=${scheduleTime}&orderType=${encodeURIComponent(selectedOrderType)}`;
+    if (selectedOrderType === 'Dine In' && selectedTable) {
+      targetUrl += `&tableId=${selectedTable._id}&tableName=${encodeURIComponent(selectedTable.tableName)}&numberOfGuests=${numberOfGuests}`;
+    }
+
+    navigate(targetUrl);
+    setSelectedCampaign(null);
+    setScheduleDate('');
+    setScheduleTime('');
+    setSelectedOrderType('');
+    setSelectedTableId('');
+    setNumberOfGuests(2);
   };
 
   return (
@@ -182,20 +263,25 @@ export const PreBookingCampaigns = () => {
                     <SelectTrigger className="w-full h-12 text-base rounded-xl border-border bg-card hover:bg-muted/50 transition-colors">
                       <SelectValue placeholder="Choose Date" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl max-h-[40vh] overflow-y-auto">
+                    <SelectContent className="rounded-xl max-h-[320px] overflow-y-auto">
                       {selectedCampaign.availableDates.map((dateStr) => {
                         const isAvailable = !selectedCampaign.unAvailableDates?.includes(dateStr);
-                        const dateObj = new Date(dateStr);
-                        const formattedDate = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                        const weekday = dateObj.toLocaleDateString('en-GB', { weekday: 'short' });
+                        const parts = dateStr.split('T')[0].split('-');
+                        let formattedDisplay = dateStr;
+                        if (parts.length === 3) {
+                          const [year, month, day] = parts;
+                          const dateObj = new Date(Number(year), Number(month) - 1, Number(day));
+                          const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+                          formattedDisplay = `${day}-${month}-${year} (${weekday})`;
+                        }
                         return (
                           <SelectItem 
                             key={dateStr} 
                             value={dateStr}
                             disabled={!isAvailable}
-                            className="py-3 text-base cursor-pointer rounded-lg"
+                            className="py-3 text-base cursor-pointer rounded-lg hover:bg-muted focus:bg-muted"
                           >
-                            {formattedDate} ({weekday})
+                            {formattedDisplay}
                           </SelectItem>
                         );
                       })}
@@ -204,36 +290,119 @@ export const PreBookingCampaigns = () => {
                 )}
               </div>
               
-              {scheduleDate && (
-                 <div className="space-y-4 animate-in fade-in slide-in-from-top-2 pt-4 border-t border-border">
-                   <div className="flex items-center gap-2">
-                     <Clock className="w-5 h-5 text-primary" />
-                     <label className="text-base font-bold text-foreground">Select Time</label>
-                   </div>
-                   {selectedCampaign.timeSlots?.length === 0 ? (
-                     <p className="text-sm text-muted-foreground">No slots available.</p>
-                   ) : (
-                     <Select 
-                       value={scheduleTime} 
-                       onValueChange={(val) => setScheduleTime(val)}
-                     >
-                       <SelectTrigger className="w-full h-12 text-base rounded-xl border-border bg-card hover:bg-muted/50 transition-colors">
-                         <SelectValue placeholder="Choose Time" />
-                       </SelectTrigger>
-                       <SelectContent className="rounded-xl max-h-[40vh] overflow-y-auto">
-                         {selectedCampaign.timeSlots.map((slotTime) => (
-                           <SelectItem 
-                             key={slotTime} 
-                             value={slotTime}
-                             className="py-3 text-base cursor-pointer rounded-lg"
-                           >
-                             {formatTime12Hour(slotTime)}
-                           </SelectItem>
-                         ))}
-                       </SelectContent>
-                     </Select>
-                   )}
-                 </div>
+              {scheduleDate && (() => {
+                const slotsToDisplay = getTimeSlotsToDisplay(selectedCampaign.timeSlots);
+                return (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-2 pt-4 border-t border-border">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-primary" />
+                      <label className="text-base font-bold text-foreground">Select Time</label>
+                    </div>
+                    {slotsToDisplay.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No slots available.</p>
+                    ) : (
+                      <Select 
+                        value={scheduleTime} 
+                        onValueChange={(val) => setScheduleTime(val)}
+                      >
+                        <SelectTrigger className="w-full h-12 text-base rounded-xl border-border bg-card hover:bg-muted/50 transition-colors">
+                          <SelectValue placeholder="Choose Time" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl max-h-[320px] overflow-y-auto">
+                          {slotsToDisplay.map((slotTime) => (
+                            <SelectItem 
+                              key={slotTime} 
+                              value={slotTime}
+                              className="py-3 text-base cursor-pointer rounded-lg hover:bg-muted focus:bg-muted"
+                            >
+                              {formatTime12Hour(slotTime)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {scheduleDate && scheduleTime && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 pt-4 border-t border-border">
+                  <div className="flex items-center justify-between">
+                    <label className="text-base font-bold text-foreground flex items-center gap-2">
+                      <Utensils className="w-5 h-5 text-primary" /> Choose Order Type
+                    </label>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {availableOrderTypes.map((type) => {
+                      const isSelected = selectedOrderType === type;
+                      return (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => setSelectedOrderType(type)}
+                          className={`flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${
+                            isSelected
+                              ? 'border-primary bg-primary/10 text-primary font-bold shadow-sm'
+                              : 'border-border bg-card text-foreground hover:bg-muted/50 font-medium'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {type === 'Door Delivery' && <Truck className="w-4 h-4 text-primary shrink-0" />}
+                            {type === 'Self Pickup' && <ShoppingBag className="w-4 h-4 text-primary shrink-0" />}
+                            {type === 'Dine In' && <Utensils className="w-4 h-4 text-primary shrink-0" />}
+                            <span className="text-sm">{type}</span>
+                          </div>
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                            isSelected ? 'border-primary bg-primary' : 'border-muted-foreground/40'
+                          }`}>
+                            {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {scheduleDate && scheduleTime && selectedOrderType === 'Dine In' && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 pt-4 border-t border-border bg-primary/5 p-4 rounded-2xl border border-primary/10">
+                  <div className="space-y-3">
+                    <label className="text-sm font-bold text-foreground flex items-center gap-2">
+                      Select Table <span className="text-destructive">*</span>
+                    </label>
+                    <Select value={selectedTableId} onValueChange={(val) => setSelectedTableId(val)}>
+                      <SelectTrigger className="w-full h-11 text-sm rounded-xl border-border bg-card">
+                        <SelectValue placeholder="Choose Table" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl">
+                        {tables.length === 0 ? (
+                          <SelectItem value="table-1">Table 1 (Capacity: 4)</SelectItem>
+                        ) : (
+                          tables.map((table) => (
+                            <SelectItem key={table._id} value={table._id}>
+                              {table.tableName} (Capacity: {table.capacity || 4})
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <label className="text-sm font-bold text-foreground flex items-center gap-2">
+                      <Users className="w-4 h-4 text-primary" /> Number of Guests <span className="text-destructive">*</span>
+                    </label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={numberOfGuests}
+                      onChange={(e) => setNumberOfGuests(Math.max(1, parseInt(e.target.value) || 1))}
+                      placeholder="Enter number of guests"
+                      className="h-11 text-sm rounded-xl bg-card"
+                    />
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -244,7 +413,7 @@ export const PreBookingCampaigns = () => {
             </Button>
             <Button 
               onClick={handleContinue} 
-              disabled={!scheduleDate || !scheduleTime}
+              disabled={!scheduleDate || !scheduleTime || !selectedOrderType || (selectedOrderType === 'Dine In' && (!selectedTableId || !numberOfGuests))}
             >
               Continue to Menu
             </Button>

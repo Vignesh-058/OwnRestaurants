@@ -13,6 +13,7 @@ import { PageLoader } from '@/components/common/PageLoader';
 import { ErrorState } from '@/components/common/ErrorState';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { useAuthStore } from '@/store/AuthStore';
+import { useAddressStore } from '@/store/AddressStore';
 import { isValidMongoId } from '@/utils/cartPayload';
 import { useOrderCheckout } from '@/hooks/mutations/useOrderCheckout';
 import { toast } from 'sonner';
@@ -20,14 +21,35 @@ import { DiscountList } from '@/components/discount/DiscountList';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useActivePreBooking } from '@/hooks/queries/usePreBooking';
 
+import { useSearchParams } from 'react-router-dom';
+
 export const CheckoutPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const org = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
-  const { clearCart, orderId, tableInfo, preBookingId, preOrderDate, preOrderTime } = useCartStore();
+  const { clearCart, orderId, tableInfo, preBookingId: storePreBookingId, preOrderDate: storePreOrderDate, preOrderTime: storePreOrderTime, setPreBooking } = useCartStore();
   const { user } = useAuthStore();
   const { mutateAsync: checkoutOrder } = useOrderCheckout();
   const { mutate: updateCart } = useUpdateCart();
+
+  const urlPreBookingId = searchParams.get('preBookingId');
+  const urlPreOrderDate = searchParams.get('preOrderDate');
+  const urlPreOrderTime = searchParams.get('preOrderTime');
+
+  const preBookingId = storePreBookingId || urlPreBookingId;
+  const preOrderDate = storePreOrderDate || urlPreOrderDate;
+  const preOrderTime = storePreOrderTime || urlPreOrderTime;
+
+  useEffect(() => {
+    if (urlPreBookingId && urlPreOrderDate && urlPreOrderTime) {
+      setPreBooking({
+        preBookingId: urlPreBookingId,
+        preOrderDate: urlPreOrderDate,
+        preOrderTime: urlPreOrderTime
+      });
+    }
+  }, [urlPreBookingId, urlPreOrderDate, urlPreOrderTime, setPreBooking]);
 
   const settings = useSettingsStore((state) => state.settings);
 
@@ -37,6 +59,9 @@ export const CheckoutPage = () => {
     
   const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
   const [deliveryType, setDeliveryType] = useState<string>(availableOrderTypes[0]);
+  const [orderTiming, setOrderTiming] = useState<'now' | 'later'>('now');
+  const [scheduleDate, setScheduleDate] = useState<string>('');
+  const [scheduleTime, setScheduleTime] = useState<string>('');
 
   // Make sure deliveryType updates if available order types change (e.g. outlet switch)
   useEffect(() => {
@@ -72,6 +97,7 @@ export const CheckoutPage = () => {
   };
 
   const handleAddressChange = (addr: any) => {
+    useAddressStore.getState().selectAndUseAddressForDelivery(addr);
     setSelectedAddress(addr);
     setIsAddressListOpen(false);
 
@@ -114,11 +140,26 @@ export const CheckoutPage = () => {
   });
   const { data: addresses, isLoading: isAddrLoading } = useAddresses();
 
+  // Auto-initialize selected address if not yet set
+  useEffect(() => {
+    if (!selectedAddress) {
+      const addrStore = useAddressStore.getState();
+      const active = addrStore.selectedAddress || addrStore.deliveryAddress || (addresses && addresses.length > 0 ? addresses[0] : null);
+      if (active) {
+        setSelectedAddress(active);
+      }
+    }
+  }, [addresses, selectedAddress]);
 
 
-  const discountAmount = cart?.discountAmount ?? cart?.couponDiscount ?? cart?.savedAmount ?? 0;
-  const calculatedGrandTotal = (cart?.orderTotal || 0) + (cart?.deliveryCharge || 0) + (cart?.totalTax || 0) - discountAmount;
-  const finalTotal = cart?.grandTotal || (cart as any)?.totalAmount || (cart as any)?.payableAmount || (cart as any)?.finalAmount || calculatedGrandTotal;
+
+  const subtotal = cart?.orderTotal || 0;
+  const hasCouponOrOffer = !!(cart?.appliedOfferId || cart?.couponName || (cart as any)?.appliedCoupon);
+  const rawDiscount = hasCouponOrOffer ? (cart?.discountAmount ?? cart?.couponDiscount ?? cart?.savedAmount ?? 0) : 0;
+  const discountAmount = Math.min(subtotal, Math.max(0, rawDiscount));
+
+  const calculatedGrandTotal = Math.max(0, subtotal + (cart?.deliveryCharge || 0) + (cart?.totalTax || 0) - discountAmount);
+  const finalTotal = Math.max(0, (hasCouponOrOffer && cart?.grandTotal) ? cart.grandTotal : calculatedGrandTotal);
 
   if (import.meta.env.DEV) {
     console.log('[DEBUG Checkout] Derived Final Total:', {
@@ -133,16 +174,12 @@ export const CheckoutPage = () => {
   }
 
   const handlePlaceOrder = async () => {
-    if (!user) {
-      toast.error('You must be logged in to checkout');
-      return;
-    }
-    if (!selectedOutlet?._id) {
-      toast.error('Please select an outlet');
-      return;
-    }
-    if (!cart || cart.items.length === 0) {
-      toast.error('Your cart is empty');
+    const cartObj = Array.isArray(cart) ? cart[0] : cart;
+    const activeOrderId = orderId || cartObj?.orderId || cartObj?._id || new Date().toISOString().replace(/\D/g, '');
+    const activeOutletId = selectedOutlet?._id;
+
+    if (!selectedOutlet || !activeOutletId) {
+      toast.error('Please select an outlet to continue.');
       return;
     }
     if (!deliveryType) {
@@ -150,29 +187,22 @@ export const CheckoutPage = () => {
       return;
     }
     if (deliveryType === 'Door Delivery' && !selectedAddress) {
-      toast.error('Please select a delivery address.');
+      toast.error('Please select a delivery address to continue.');
+      setIsAddressListOpen(true);
       return;
     }
-    if (deliveryType === 'Dine In' && !tableInfo) {
-      toast.error('Please scan a QR code on a table to select your Dine-In table.');
+    if (deliveryType === 'Dine In' && !tableInfo && !searchParams.get('tableId')) {
+      toast.error('Please select or scan a Dine-In table.');
       return;
     }
     if (selectedPaymentMode === 'Online Payment' && !onlineMethod) {
-      toast.error('Please select an online payment method');
+      toast.error('Please select an online payment method.');
       return;
-    }
-    if (!orderId) {
-      toast.error('Invalid cart order ID');
-      return;
-    }
-    if (finalTotal <= 0 && cart.orderTotal <= 0) {
-       toast.error('Cart total must be greater than zero');
-       return;
     }
 
     const payload: any = {
-      orderId,
-      outletId: selectedOutlet._id,
+      orderId: activeOrderId,
+      outletId: activeOutletId,
       customerPhoneNo: user?.phone || '0000000000',
       orderType: deliveryType,
       paymentMode: selectedPaymentMode,
@@ -188,6 +218,18 @@ export const CheckoutPage = () => {
     if (preOrderDate) payload.preOrderDate = preOrderDate;
     if (preOrderTime) payload.preOrderTime = preOrderTime;
     
+    if (deliveryType === 'Dine In') {
+      const storeGuests = useCartStore.getState().numberOfGuests;
+      const urlGuests = searchParams.get('numberOfGuests');
+      const urlTableId = searchParams.get('tableId');
+      
+      const activeTableId = tableInfo?.tableId || urlTableId;
+      const activeGuests = storeGuests || (urlGuests ? parseInt(urlGuests, 10) : null);
+      
+      if (activeTableId) payload.tableId = activeTableId;
+      if (activeGuests) payload.numberOfGuests = activeGuests;
+    }
+
     if (selectedAddress && deliveryType === 'Door Delivery') {
       if (isValidMongoId(selectedAddress._id)) {
         payload.addressId = selectedAddress._id;
@@ -202,27 +244,21 @@ export const CheckoutPage = () => {
     setIsProcessing(true);
     
     try {
-      console.log('--- TEMPORARY PAYLOAD CHECK ---');
-      console.log('Order ID', orderId);
-      console.log('Customer Phone', user?.phone);
-      console.log('Outlet ID', selectedOutlet._id);
-      console.log('Final Payload:', JSON.stringify(payload, null, 2));
-      console.log('-------------------------------');
-      
-      await checkoutOrder(payload);
-      
-      // Success handling
-      clearCart();
-      if (selectedPaymentMode === 'COD') {
-        toast.success("Order Placed Successfully!");
-        navigate(`/order-success/${orderId}`);
-      } else {
-        toast.success(`Redirecting to ${onlineMethod} Gateway...`);
-        navigate(`/order-success/${orderId}`);
+      if (import.meta.env.DEV) {
+        console.log('[Order Checkout API Request]:', JSON.stringify(payload, null, 2));
       }
+      
+      const res = await checkoutOrder(payload);
+      
+      const createdOrderId = res?.data?.orderId || res?.data?.data?.orderId || activeOrderId;
+      const successMessage = res?.message || (selectedPaymentMode === 'COD' ? "Order Placed Successfully!" : `Redirecting to ${onlineMethod} Gateway...`);
+
+      clearCart();
+      toast.success(successMessage);
+      navigate(`/order-success/${createdOrderId}`);
     } catch (error: any) {
-      // Do not clear cart on error
-      toast.error(error?.response?.data?.message || 'Unable to place order. Please try again.');
+      console.error('[Order Checkout API Error]:', error);
+      toast.error(error?.response?.data?.message || 'Unable to complete order checkout. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -497,25 +533,25 @@ export const CheckoutPage = () => {
               <div className="space-y-2.5 mb-5">
                 <div className="flex justify-between items-start text-[14px]">
                   <span className="text-muted-foreground font-medium">Subtotal</span>
-                  <span className="text-foreground font-bold">{org?.currency || '₹'}{cart.orderTotal.toFixed(2)}</span>
+                  <span className="text-foreground font-bold">{(org?.currency || '₹').replace(/\$/g, '')}{cart.orderTotal.toFixed(2)}</span>
                 </div>
 
                 {cart.deliveryCharge > 0 && (
                   <div className="flex justify-between items-start text-[14px]">
                     <span className="text-muted-foreground font-medium">Delivery</span>
-                    <span className="text-foreground font-bold">{org?.currency || '₹'}{cart.deliveryCharge?.toFixed(2) || '0.00'}</span>
+                    <span className="text-foreground font-bold">{(org?.currency || '₹').replace(/\$/g, '')}{cart.deliveryCharge?.toFixed(2) || '0.00'}</span>
                   </div>
                 )}
 
                 <div className="flex justify-between items-start text-[14px]">
                   <span className="text-muted-foreground font-medium">Tax</span>
-                  <span className="text-foreground font-bold">{org?.currency || '₹'}{cart.totalTax.toFixed(2)}</span>
+                  <span className="text-foreground font-bold">{(org?.currency || '₹').replace(/\$/g, '')}{cart.totalTax.toFixed(2)}</span>
                 </div>
 
                 {discountAmount > 0 && (
                   <div className="flex justify-between items-start text-[14px]">
                     <span className="text-green-600 font-bold">Discount</span>
-                    <span className="text-green-600 font-bold">-{org?.currency || '₹'}{discountAmount.toFixed(2)}</span>
+                    <span className="text-green-600 font-bold">-{(org?.currency || '₹').replace(/\$/g, '')}{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
               </div>
@@ -524,7 +560,7 @@ export const CheckoutPage = () => {
                 <div className="flex justify-between items-end">
                   <span className="font-bold text-[16px] text-foreground">Grand Total</span>
                   <span className="font-bold text-[32px] text-primary leading-none">
-                    {org?.currency || '₹'}{finalTotal.toFixed(2)}
+                    {(org?.currency || '₹').replace(/\$/g, '')}{finalTotal.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -536,12 +572,7 @@ export const CheckoutPage = () => {
                     selectedPaymentMode === 'Online Payment' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-primary hover:bg-primary/90 text-primary-foreground'
                   }`}
                   onClick={handlePlaceOrder}
-                  disabled={
-                    isProcessing ||
-                    (deliveryType === 'Door Delivery' && !selectedAddress) ||
-                    (deliveryType === 'Dine In' && !tableInfo) ||
-                    (selectedPaymentMode === 'Online Payment' && !onlineMethod)
-                  }
+                  disabled={isProcessing}
                 >
                   {isProcessing ? (
                     <span className="font-extrabold text-[16px] text-primary-foreground flex items-center justify-center gap-2 w-full">
@@ -552,14 +583,9 @@ export const CheckoutPage = () => {
                       Processing...
                     </span>
                   ) : (
-                    <div className="flex items-center justify-between w-full">
-                      <span className="font-bold text-[16px] text-primary-foreground">
-                        {selectedPaymentMode === 'Online Payment' ? 'Proceed to Pay' : 'Proceed to Checkout'}
-                      </span>
-                      <span className="font-bold text-[18px] text-primary-foreground bg-black/10 px-3 py-1 rounded-[10px]">
-                        {org?.currency || '₹'}{finalTotal.toFixed(2)}
-                      </span>
-                    </div>
+                    <span className="font-extrabold text-[16px] text-primary-foreground flex items-center justify-center gap-2 w-full">
+                      {selectedPaymentMode === 'Online Payment' ? 'Proceed to Pay' : 'Proceed to Checkout'} • {(!org?.currency || org.currency === '$') ? '₹' : org.currency.replace(/\$/g, '₹')}{finalTotal.toFixed(2)}
+                    </span>
                   )}
                 </Button>
                 

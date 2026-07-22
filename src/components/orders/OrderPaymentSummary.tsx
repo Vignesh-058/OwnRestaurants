@@ -14,7 +14,8 @@ export const OrderPaymentSummary = ({ order }: OrderPaymentSummaryProps) => {
   const orderAny = order as any;
   
   const formatCurrency = (amount: number = 0) => {
-    return `${org?.currency || '₹'}${amount.toFixed(2)}`;
+    const symbol = (org?.currency || '₹').replace(/\$/g, '');
+    return `${symbol}${amount.toFixed(2)}`;
   };
 
   return (

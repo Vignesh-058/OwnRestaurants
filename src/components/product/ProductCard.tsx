@@ -17,6 +17,8 @@ import { getCartAddressPayload } from '@/utils/cartPayload';
 import { useAddressFlow } from '@/hooks/cart/useAddressFlow';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { ReplaceCartModal } from '@/components/cart/ReplaceCartModal';
+
 interface ProductCardProps {
   product: CategoryItem;
   className?: string;
@@ -27,6 +29,8 @@ interface ProductCardProps {
 export const ProductCard = React.memo(({ product, className, onClick: _onClick, layout = 'vertical' }: ProductCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [showReplaceModal, setShowReplaceModal] = useState(false);
+  const [isPreOrderToPreOrder, setIsPreOrderToPreOrder] = useState(false);
   const navigate = useNavigate();
   const cartItems = useCartStore((state) => state.cartItems) || [];
   const currency = useOrganizationStore((state) => state.organization?.currency || '₹');
@@ -99,9 +103,9 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick, 
     if (urlPreBookingId) {
       const isDifferentPreBooking = storePreBookingId !== urlPreBookingId || storePreOrderDate !== urlPreOrderDate || storePreOrderTime !== urlPreOrderTime;
       if (cartItems.length > 0 && (!storePreBookingId || isDifferentPreBooking)) {
-        clearCart();
-        finalOrderId = null;
-        finalExistingItems = [];
+        setIsPreOrderToPreOrder(!!storePreBookingId);
+        setShowReplaceModal(true);
+        return;
       }
     }
 
@@ -165,6 +169,60 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick, 
           }
         });
       }
+    };
+
+    if (currentOrderType === 'Door Delivery') {
+      handleAddressAndProceed(proceedWithAdd);
+    } else {
+      proceedWithAdd();
+    }
+  };
+
+  const confirmReplaceCartAndAdd = () => {
+    clearCart();
+    
+    const cartCurrency = currency === '₹' ? 'INR' : currency;
+    const finalExistingItems = [{
+      itemId: product._id,
+      quantity: 1,
+      variationId: "",
+      addOnDetails: [],
+      currency: cartCurrency
+    }];
+
+    const currentOrderType = orderType || 'Door Delivery';
+    const urlPreBookingId = searchParams.get('preBookingId');
+    const urlPreOrderDate = searchParams.get('preOrderDate');
+    const urlPreOrderTime = searchParams.get('preOrderTime');
+
+    const proceedWithAdd = () => {
+      const addressPayload = getCartAddressPayload();
+
+      const payload: any = {
+        items: finalExistingItems,
+        deliveryType: currentOrderType,
+        orderType: currentOrderType,
+        customerName: user?.name || 'Guest',
+        customerPhoneNo: user?.phone || '0000000000',
+        instruction: currentOrderType === 'Dine In' && tableInfo ? `Table: ${tableInfo.tableName}` : '',
+        outletId: selectedOutlet!._id,
+        ...addressPayload,
+      };
+
+      if (urlPreBookingId) {
+        payload.preBookingId = urlPreBookingId;
+        payload.preOrderDate = urlPreOrderDate;
+        payload.preOrderTime = urlPreOrderTime;
+      }
+
+      optimisticSetQuantity(product, 1);
+
+      createCart(payload, {
+        onSuccess: () => {
+          toast.success("Product added to cart.");
+          if (urlPreBookingId) openDrawer();
+        }
+      });
     };
 
     if (currentOrderType === 'Door Delivery') {
@@ -452,6 +510,12 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick, 
           </div>
         </div>
       </div>
+      <ReplaceCartModal
+        isOpen={showReplaceModal}
+        onClose={() => setShowReplaceModal(false)}
+        onConfirm={confirmReplaceCartAndAdd}
+        isPreOrderToPreOrder={isPreOrderToPreOrder}
+      />
     </div>
   );
 });

@@ -22,10 +22,10 @@ type SortOption = 'newest' | 'oldest' | 'recently_used' | 'city';
 export const AddressList = ({ addresses }: AddressListProps) => {
  const [searchQuery, setSearchQuery] = useState('');
  const [sortBy, setSortBy] = useState<SortOption>('newest');
- const setDeliveryAddress = useAddressStore((state) => state.setDeliveryAddress);
+ const selectAndUseAddressForDelivery = useAddressStore((state) => state.selectAndUseAddressForDelivery);
 
  const handleUseForDelivery = (address: CustomerAddress) => {
- setDeliveryAddress(address);
+  selectAndUseAddressForDelivery(address);
  };
 
  const filteredAndSortedAddresses = useMemo(() => {

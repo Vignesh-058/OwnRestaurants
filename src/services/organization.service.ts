@@ -16,7 +16,7 @@ export const organizationService = {
           brandName: orgData.name || orgData.brandName,
           logo: orgData.logoImage || orgData.logo,
           storeType: orgData.type || orgData.storeType,
-          currency: orgData.currencySymbol || '₹',
+          currency: (orgData.currencySymbol && orgData.currencySymbol !== '$') ? orgData.currencySymbol.replace(/\$/g, '') : '₹',
         }
       };
     }
