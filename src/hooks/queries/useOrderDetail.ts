@@ -10,22 +10,11 @@ export const useOrderDetail = (orderId?: string) => {
     queryFn: async () => {
       if (!orderId) throw new Error('Order ID is required');
       console.log('[Order Details] Fetching for ID:', orderId);
-      try {
-        // Since backend doesn't have a direct /order/:id endpoint, 
-        // we fetch the customer orders and search for the matching ID
-        const response = await orderService.getOrdersByCustomer(1, 100);
-        const responseAny = response as any;
-        const orders = responseAny?.data || responseAny?.orders || response || [];
-        const matchingOrder = (Array.isArray(orders) ? orders : []).find(
-          (o: any) => o._id === orderId || o.orderId === orderId || o.orderNo === orderId
-        );
-        if (matchingOrder) {
-          return matchingOrder;
-        }
-        throw new Error('Order not found');
-      } catch (err) {
-        throw err;
+      const data = await orderService.getOrderDetail(orderId);
+      if (data) {
+        return data;
       }
+      throw new Error('Order not found');
     },
     enabled: isAuthenticated && !!orderId,
     staleTime: 1000 * 30, // 30 seconds

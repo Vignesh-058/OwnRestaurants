@@ -1,4 +1,4 @@
-import { MapPin, ShoppingCart, Bell, Search, Mic } from 'lucide-react';
+import { MapPin, ShoppingCart, Search, Mic } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,13 +18,11 @@ export const Navbar = () => {
   const currentPath = location.pathname;
   const [activeSection, setActiveSection] = useState("home");
 
-  const { grandTotal, cartItemCount } = useCartStore();
-  const cartTotal = grandTotal;
+  const { cartItemCount } = useCartStore();
   const totalCartQuantity = cartItemCount;
 
   const { isAuthenticated, user } = useAuthStore();
   const organization = useOrganizationStore((state) => state.organization);
-  const currency = organization?.currency || "₹";
 
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
 

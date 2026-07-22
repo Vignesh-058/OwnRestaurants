@@ -1,6 +1,3 @@
-import { axiosInstance } from '@/api/axios';
-import ENV from '@/config/env';
-
 import { orderService } from './order.service';
 
 export interface ProfileStats {
@@ -10,7 +7,7 @@ export interface ProfileStats {
 }
 
 export const profileService = {
-  getProfileStats: async (belongsTo: string, customerPhoneNo: string): Promise<ProfileStats> => {
+  getProfileStats: async (_belongsTo: string, _customerPhoneNo: string): Promise<ProfileStats> => {
     try {
       // Future dedicated API Endpoint could be used here
       // const response = await axiosInstance.get(`${ENV.CUSTOMER_API}/stats`, { params: { belongsTo, customerPhoneNo } });

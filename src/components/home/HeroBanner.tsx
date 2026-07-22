@@ -1,7 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useBanners } from "@/hooks/queries/useBanners";
 import { useOrganizationStore } from "@/store/OrganizationStore";
@@ -33,23 +31,17 @@ export const HeroBanner = () => {
     hasBanners && activeBanners.length > 1 && isAutoScrollEnabled ? [Autoplay({ delay: 5000, stopOnInteraction: false })] : []
   );
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  if (!isBannerEnabled) {
-    return null;
-  }
-
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setSelectedIndex(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
 
   useEffect(() => {
-    if (!emblaApi) return;
+    if (!isBannerEnabled || !emblaApi) return;
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
-  }, [emblaApi, onSelect]);
+  }, [emblaApi, onSelect, isBannerEnabled]);
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -58,6 +50,10 @@ export const HeroBanner = () => {
   const scrollNext = useCallback(() => {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
+
+  if (!isBannerEnabled) {
+    return null;
+  }
 
   const getImageUrl = (path?: string) => {
     if (!path) return '';

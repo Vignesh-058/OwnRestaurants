@@ -12,7 +12,6 @@ import { useSettings } from '@/hooks/queries/useSettings';
 import { useStoreStatus } from '@/hooks/queries/useStoreStatus';
 import { useBanners } from '@/hooks/queries/useBanners';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { LoadingState } from '@/components/common/LoadingState';
 import { ApiErrorState } from '@/components/common/ApiErrorState';
 import { useOutletStore } from '@/store/OutletStore';
 import { EmptyStoreState } from '@/components/common/EmptyStoreState';

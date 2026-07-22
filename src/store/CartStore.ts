@@ -181,7 +181,7 @@ export const useCartStore = create<CartState>()(
       clearCart: () => {
         try {
           useCouponStore.getState().clearCoupon();
-        } catch (e) {
+        } catch {
           // Ignore if store uninitialized
         }
 

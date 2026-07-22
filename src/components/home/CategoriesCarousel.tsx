@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LayoutGrid, ChevronRight, ArrowRight } from 'lucide-react';
+import { LayoutGrid, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types/category.types';
 import defaultIcon from '@/assets/category-icons/default.png';

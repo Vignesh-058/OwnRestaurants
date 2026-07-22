@@ -9,7 +9,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
-import { ShoppingBag, AlertTriangle } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 
 interface ReplaceCartModalProps {
   isOpen: boolean;

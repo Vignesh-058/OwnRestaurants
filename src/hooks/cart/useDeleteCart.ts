@@ -6,7 +6,6 @@ import type { RemoveFromCartPayload } from '@/types/cart.types';
 
 export const useDeleteCart = () => {
   const queryClient = useQueryClient();
-  const { removeCartItem } = useCartStore();
 
   return useMutation({
     mutationFn: (payload: RemoveFromCartPayload) => {

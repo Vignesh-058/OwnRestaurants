@@ -34,12 +34,6 @@ export const QuantitySelector = ({
     lg:  'w-5   h-5',
   }[size];
 
-  const roundCls = {
-    sm:  'rounded-[10px]',
-    md:  'rounded-[12px]',
-    lg:  'rounded-[14px]',
-  }[size];
-
   return (
     <div className={cn(
       'inline-flex items-center gap-1 sm:gap-2 select-none',

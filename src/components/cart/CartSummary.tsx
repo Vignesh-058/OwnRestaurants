@@ -42,7 +42,7 @@ const PriceRow = ({
 
 export const CartSummary = ({
   currency,
-  isUpdating,
+  isUpdating: _isUpdating,
   hideMobileActions = false,
 }: CartSummaryProps) => {
   const navigate = useNavigate();
@@ -122,7 +122,6 @@ export const CartSummary = ({
   const organization = useOrganizationStore(state => state.organization);
   const cartConfig = organization?.theme?.config?.cart?.config;
   const showSavings = cartConfig?.showSavings ?? true;
-  const showOffers = cartConfig?.showOffers ?? true;
   const showBillDetails = cartConfig?.showBillDetails ?? true;
 
 

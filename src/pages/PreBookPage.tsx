@@ -1,22 +1,12 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { usePreOrderCategories } from '@/hooks/queries/usePreOrderCategories';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ProductDrawer } from '@/components/product/ProductDrawer';
-import { ProductSkeleton } from '@/components/product/ProductSkeleton';
 import { AlertCircle, ArrowLeft, Calendar, Clock, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/CartStore';
-import type { Category } from '@/types/category.types';
-
-const allCategory: Category = {
-  _id: 'all',
-  name: 'All',
-  items: [],
-  iconImage: undefined,
-  image: undefined,
-} as unknown as Category;
 
 export const PreBookPage = () => {
   const navigate = useNavigate();

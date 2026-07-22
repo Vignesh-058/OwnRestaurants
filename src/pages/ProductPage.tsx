@@ -16,8 +16,6 @@ import { getCartAddressPayload } from "@/utils/cartPayload";
 import { useAddressFlow } from "@/hooks/cart/useAddressFlow";
 import { useCartStore } from "@/store/CartStore";
 import { useOrganizationStore } from "@/store/OrganizationStore";
-import { PageLoader } from "@/components/common/PageLoader";
-import { ErrorState } from "@/components/common/ErrorState";
 import { ProductInfoTabs } from "@/components/product/ProductInfoTabs";
 import { RecommendedProducts } from "@/components/product/RecommendedProducts";
 import { cn } from "@/lib/utils";
@@ -47,7 +45,6 @@ export const ProductPage = () => {
     data: item,
     isLoading,
     isError,
-    refetch,
   } = useItemDetail(id || null, selectedVariation);
   const { mutate: addToCart, isPending: isAdding } = useAddToCart();
   const { mutate: updateCart, isPending: isUpdating } = useUpdateCart();

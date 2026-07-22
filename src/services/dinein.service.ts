@@ -10,7 +10,7 @@ const MOCK_TABLES: Table[] = [
 ];
 
 export const dineInService = {
-  async getTables(outletId: string): Promise<Table[]> {
+  async getTables(_outletId: string): Promise<Table[]> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 800));
     

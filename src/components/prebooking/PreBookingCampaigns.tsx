@@ -4,7 +4,7 @@ import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { useActivePreBooking } from '@/hooks/queries/usePreBooking';
-import { Calendar, Clock, ChevronRight, Star, Flame, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Star, Flame, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

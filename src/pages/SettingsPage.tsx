@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronRight, CircleHelp, Phone, Info, 
@@ -17,7 +16,6 @@ import { LegalDocument } from '@/components/settings/LegalDocument';
 type ActivePanel = 'contact' | 'about' | 'faq' | 'privacy' | 'terms' | null;
 
 export const SettingsPage = () => {
-  const navigate = useNavigate();
   const organization = useOrganizationStore((state) => state.organization);
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
 
@@ -96,7 +94,7 @@ export const SettingsPage = () => {
                   {group.group}
                 </h3>
                 <div className="bg-white rounded-3xl border border-[#FFE2CC] shadow-sm overflow-hidden divide-y divide-[#FFE2CC]">
-                  {group.items.map((item, iIdx) => (
+                  {group.items.map((item, _iIdx) => (
                     <button
                       key={item.id}
                       onClick={item.onClick}

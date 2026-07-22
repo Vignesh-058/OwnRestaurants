@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { 
-  Package, MapPinned, TicketPercent, Wallet, CreditCard, 
-  HelpCircle, Info, LogOut, Bell, Globe, UserRound, ChevronRight
+  Package, MapPinned, TicketPercent, Wallet, 
+  HelpCircle, Info, LogOut, UserRound, ChevronRight
 } from 'lucide-react';
 import { useAuthStore } from '@/store/AuthStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import { cn } from '@/lib/utils';
-import { Switch } from '@/components/ui/switch';
 import { LogoutDialog } from '@/components/auth/LogoutDialog';
 
 interface ProfileMenuProps {

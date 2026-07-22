@@ -1,12 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Calendar, Plus, Clock } from 'lucide-react';
+import { ChevronLeft, MapPin, Plus, Clock } from 'lucide-react';
 import { CreditCard as CreditCardIcon, Banknote, Smartphone } from 'lucide-react'; 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useCartDetails } from '@/hooks/queries/useCart';
-import { useAddresses } from '@/hooks/queries/useAddresses';
-import { useOrganizationStore } from '@/store/OrganizationStore';
 import { useOutletStore } from '@/store/OutletStore';
 import { useCartStore } from '@/store/CartStore';
 import { PageLoader } from '@/components/common/PageLoader';
@@ -19,27 +16,37 @@ import { useOrderCheckout } from '@/hooks/mutations/useOrderCheckout';
 import { toast } from 'sonner';
 import { DiscountList } from '@/components/discount/DiscountList';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
-import { useActivePreBooking } from '@/hooks/queries/usePreBooking';
 
 import { useSearchParams } from 'react-router-dom';
 
 export const CheckoutPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const org = useOrganizationStore((state) => state.organization);
-  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
-  const { clearCart, orderId, tableInfo, preBookingId: storePreBookingId, preOrderDate: storePreOrderDate, preOrderTime: storePreOrderTime, setPreBooking } = useCartStore();
-  const { user } = useAuthStore();
-  const { mutateAsync: checkoutOrder } = useOrderCheckout();
-  const { mutate: updateCart } = useUpdateCart();
-
   const urlPreBookingId = searchParams.get('preBookingId');
   const urlPreOrderDate = searchParams.get('preOrderDate');
   const urlPreOrderTime = searchParams.get('preOrderTime');
 
+  const { user } = useAuthStore();
+  const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
+  
+  const { 
+    orderId, 
+    tableInfo,
+    clearCart,
+    setPreBooking,
+    preBookingId: storePreBookingId,
+    preOrderDate: storePreOrderDate,
+    preOrderTime: storePreOrderTime,
+  } = useCartStore();
+
+  const { mutateAsync: checkoutOrder } = useOrderCheckout();
+  const { mutate: updateCart } = useUpdateCart();
+
   const preBookingId = storePreBookingId || urlPreBookingId;
   const preOrderDate = storePreOrderDate || urlPreOrderDate;
   const preOrderTime = storePreOrderTime || urlPreOrderTime;
+
+  const { data: addresses, isLoading: isAddrLoading } = useAddresses();
 
   useEffect(() => {
     if (urlPreBookingId && urlPreOrderDate && urlPreOrderTime) {
@@ -53,15 +60,17 @@ export const CheckoutPage = () => {
 
   const settings = useSettingsStore((state) => state.settings);
 
-  const availableOrderTypes = selectedOutlet?.orderType?.length 
-    ? selectedOutlet.orderType 
-    : ['Door Delivery', 'Self Pickup', 'Dine In'];
+  const availableOrderTypes = useMemo(() => {
+    return selectedOutlet?.orderType?.length 
+      ? selectedOutlet.orderType 
+      : ['Door Delivery', 'Self Pickup', 'Dine In'];
+  }, [selectedOutlet?.orderType]);
     
   const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
   const [deliveryType, setDeliveryType] = useState<string>(availableOrderTypes[0]);
-  const [orderTiming, setOrderTiming] = useState<'now' | 'later'>('now');
-  const [scheduleDate, setScheduleDate] = useState<string>('');
-  const [scheduleTime, setScheduleTime] = useState<string>('');
+  const [orderTiming, _setOrderTiming] = useState<'now' | 'later'>('now');
+  const [scheduleDate, _setScheduleDate] = useState<string>('');
+  const [scheduleTime, _setScheduleTime] = useState<string>('');
 
   // Make sure deliveryType updates if available order types change (e.g. outlet switch)
   useEffect(() => {
@@ -138,7 +147,6 @@ export const CheckoutPage = () => {
     customerPhoneNo: user?.phone || '0000000000',
     outletId: selectedOutlet?._id || ''
   });
-  const { data: addresses, isLoading: isAddrLoading } = useAddresses();
 
   // Auto-initialize selected address if not yet set
   useEffect(() => {

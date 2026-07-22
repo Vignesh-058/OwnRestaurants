@@ -1,6 +1,5 @@
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useOrganizationStore } from "@/store/OrganizationStore";
 import { useOutletStore } from "@/store/OutletStore";
@@ -9,9 +8,7 @@ import { useCoupons } from "@/hooks/queries/useCoupons";
 import { useGeoLocation } from "@/hooks/queries/useLocation";
 import { useStoreStatus } from "@/hooks/queries/useStoreStatus";
 import { ProductDrawer } from "@/components/product/ProductDrawer";
-import { StoreStatusLoader } from "@/components/common/StoreStatusLoader";
 import { StoreClosedPage } from "@/components/common/StoreClosedPage";
-import { SettingsLoader } from "@/components/common/SettingsLoader";
 import { StoreConfig } from "@/components/home/StoreConfig";
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { OrganizationAndOutletInfo } from "@/components/home/OrganizationAndOutletInfo";
@@ -21,22 +18,18 @@ import { TodaysOffers } from "@/components/home/TodaysOffers";
 import { PreBookingCampaigns } from "@/components/prebooking/PreBookingCampaigns";
 import { PreBookingPopup } from "@/components/prebooking/PreBookingPopup";
 
-import { Button } from "@/components/ui/button";
 import { useProductsQuery } from "@/hooks/queries/useProducts";
 import type { FilterState } from "@/types/product.types";
 
 export const LandingPage = () => {
-  const navigate = useNavigate();
   const organization = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);
   const belongsTo = organization?._id || "";
 
-  const { data: storeStatusData, isLoading: isStoreStatusLoading } =
+  const { data: storeStatusData } =
     useStoreStatus(belongsTo, selectedOutlet?._id || "");
   const {
     categories,
-    isLoading: isCategoriesLoading,
-    isError: isCategoriesError,
   } = useCategories();
 
   const {
@@ -64,11 +57,6 @@ export const LandingPage = () => {
       setActiveCategoryId(categories[0]._id);
     }
   }, [categories, activeCategoryId]);
-
-  const handleCategorySelect = useCallback((id: string) => {
-    navigate(`/products?category=${id}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [navigate]);
 
   useCoupons();
   useGeoLocation();

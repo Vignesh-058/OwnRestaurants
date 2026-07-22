@@ -1,5 +1,5 @@
 // Override console logs to prevent excessive printing in the console, as requested
-if (import.meta.env.MODE === 'development' || true) {
+if (import.meta.env.MODE === 'development') {
   console.log = () => {};
   console.info = () => {};
   console.debug = () => {};

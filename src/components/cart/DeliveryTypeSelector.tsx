@@ -1,5 +1,5 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Bike, Store, ChevronDown, MapPin } from 'lucide-react';
+import { Bike, Store, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Props {

@@ -1,6 +1,6 @@
 import { useRewards } from '@/hooks/queries/useRewards';
 import { useAuthStore } from '@/store/AuthStore';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { RewardBalanceCard } from '@/components/rewards/RewardBalanceCard';
 import { TransactionHistory } from '@/components/rewards/TransactionHistory';
@@ -14,7 +14,6 @@ import { AlertCircle, RefreshCw, Gift } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const RewardsPage = () => {
-  const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const organization = useOrganizationStore((state) => state.organization);
   const selectedOutlet = useOutletStore((state) => state.selectedOutlet);

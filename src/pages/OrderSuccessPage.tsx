@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   CircleCheckBig, 
@@ -7,10 +7,8 @@ import {
   Truck, 
   ShoppingBag, 
   ArrowRight, 
-  FileText,
   AlertCircle,
-  MapPin,
-  Clock,
+  Clock, 
   Store
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';

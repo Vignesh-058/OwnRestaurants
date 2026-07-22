@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { CartList } from '@/components/cart/CartList';
 import { CartSummary } from '@/components/cart/CartSummary';
-import { DiscountList } from '@/components/discount/DiscountList';
 import { EmptyCart } from '@/components/cart/EmptyCart';
 import { CartSkeleton } from '@/components/cart/CartSkeleton';
 import type { CartItem } from '@/types/cart.types';
@@ -25,7 +24,7 @@ import { toast } from 'sonner';
 const MobileCheckoutFooter = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { grandTotal, checkoutEnable, checkOutMessage, cartItemCount, cartItems, preBookingId, preOrderDate, preOrderTime } = useCartStore();
+  const { grandTotal, checkoutEnable, checkOutMessage, cartItemCount, preBookingId, preOrderDate, preOrderTime } = useCartStore();
   const organization = useOrganizationStore(state => state.organization);
   const currency = organization?.currency || '₹';
 

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/CartStore';
 import { useOrganizationStore } from '@/store/OrganizationStore';
 import type { CategoryItem } from '@/types/category.types';
 import { cn } from '@/lib/utils';
 import { AddToCartButton } from '@/components/ui/add-to-cart-button';
-import { Loader2, Minus, Plus, Star, ImageOff } from 'lucide-react';
+import { Star, ImageOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateCart } from '@/hooks/cart/useUpdateCart';
 import { useCreateCart } from '@/hooks/cart/useCreateCart';

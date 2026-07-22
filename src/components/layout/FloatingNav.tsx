@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Store, Tag, Receipt, User } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/AuthStore';
 import { useEffect, useRef } from 'react';
