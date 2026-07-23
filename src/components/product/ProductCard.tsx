@@ -484,13 +484,13 @@ export const ProductCard = React.memo(({ product, className, onClick: _onClick, 
           layout === 'vertical' ? "" : ""
         )}>
           <div className="flex flex-col">
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex items-baseline gap-1.5 tabular-nums">
               <span className="text-[18px] font-extrabold text-foreground leading-none">
-                {currency}{sellingPrice.toLocaleString()}
+                {currency}{sellingPrice.toFixed(2)}
               </span>
               {originalPrice > sellingPrice && (
                 <span className="text-[13px] font-semibold text-muted-foreground line-through leading-none">
-                  {currency}{originalPrice.toLocaleString()}
+                  {currency}{originalPrice.toFixed(2)}
                 </span>
               )}
             </div>

@@ -12,7 +12,7 @@ export const useOrderDetail = (orderId?: string) => {
       try {
         const order = await orderService.getOrderById(orderId);
         if (order) return order;
-      } catch (_err) {
+      } catch {
         const response = await orderService.getOrdersByCustomer(1, 100);
         const orders = response?.data || [];
         const matchingOrder = orders.find(

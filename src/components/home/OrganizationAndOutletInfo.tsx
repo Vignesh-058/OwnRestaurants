@@ -21,16 +21,16 @@ export const OrganizationAndOutletInfo = () => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-6 mb-8"
+      className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-4 mb-6"
     >
-      <div className="bg-white rounded-[24px] p-6 md:p-8 shadow-sm border border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+      <div className="bg-white rounded-2xl p-4 md:p-5 shadow-xs border border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden">
         
         {/* Subtle Background Pattern */}
         <div className="absolute -top-12 -right-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="flex items-center gap-5 md:gap-6 relative z-10">
+        <div className="flex items-center gap-4 relative z-10">
           {organization.logoImage ? (
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-[3px] border-muted shadow-sm overflow-hidden shrink-0 bg-white p-1">
+            <div className="size-14 md:size-16 rounded-full border border-muted shadow-xs overflow-hidden shrink-0 bg-white p-0.5">
               <img 
                 src={organization.logoImage} 
                 alt={organization.name} 
@@ -38,23 +38,23 @@ export const OrganizationAndOutletInfo = () => {
               />
             </div>
           ) : (
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-[3px] border-muted bg-muted flex items-center justify-center shadow-sm shrink-0">
-              <Utensils className="w-10 h-10 text-primary" />
+            <div className="size-14 md:size-16 rounded-full border border-muted bg-muted flex items-center justify-center shadow-xs shrink-0">
+              <Utensils className="size-7 text-primary" />
             </div>
           )}
 
           <div className="flex flex-col">
-            <h1 className="text-2xl md:text-[28px] font-black text-[#1e1b4b] tracking-tight mb-0.5">
+            <h1 className="text-lg md:text-xl font-extrabold text-[#1e1b4b] tracking-tight leading-tight">
               {organization.name || organization.brandName}
             </h1>
-            <h2 className="text-lg md:text-[18px] font-bold text-primary mb-3">
+            <h2 className="text-xs md:text-sm font-bold text-primary mb-1.5">
               {selectedOutlet.outletName}
             </h2>
             
-            <div className="flex flex-wrap items-center gap-3 md:gap-5 text-[12px] md:text-[13px] font-bold text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-muted-foreground">
               {selectedOutlet.address && (
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
+                <div className="flex items-center gap-1">
+                  <MapPin className="size-3.5 text-primary shrink-0" />
                   <span className="truncate max-w-[200px] md:max-w-[300px]">{selectedOutlet.address}</span>
                 </div>
               )}

@@ -28,43 +28,44 @@ export const AddressList = ({ addresses }: AddressListProps) => {
   selectAndUseAddressForDelivery(address);
  };
 
- const filteredAndSortedAddresses = useMemo(() => {
- let result = [...addresses];
+  const filteredAndSortedAddresses = useMemo(() => {
+    let result = [...(addresses || [])];
 
- // Search
- if (searchQuery.trim()) {
- const q = searchQuery.toLowerCase();
- result = result.filter(a => 
- a.city.toLowerCase().includes(q) || 
- a.pincode.toLowerCase().includes(q) || 
- a.address1.toLowerCase().includes(q) || 
- a.customerName.toLowerCase().includes(q)
- );
- }
+    // Search
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(a => {
+        const city = (a.city || '').toLowerCase();
+        const pincode = (a.pincode || '').toLowerCase();
+        const address1 = (a.address1 || (a as any).address || (a as any).street || '').toLowerCase();
+        const customerName = (a.customerName || (a as any).name || '').toLowerCase();
+        return city.includes(q) || pincode.includes(q) || address1.includes(q) || customerName.includes(q);
+      });
+    }
 
- // Sort
- result.sort((a, b) => {
- switch (sortBy) {
- case 'newest':
- return (b.createdAt ? new Date(b.createdAt).getTime() : 0) - (a.createdAt ? new Date(a.createdAt).getTime() : 0);
- case 'oldest':
- return (a.createdAt ? new Date(a.createdAt).getTime() : 0) - (b.createdAt ? new Date(b.createdAt).getTime() : 0);
- case 'recently_used':
- return (b.lastUsedAt ? new Date(b.lastUsedAt).getTime() : 0) - (a.lastUsedAt ? new Date(a.lastUsedAt).getTime() : 0);
- case 'city':
- return a.city.localeCompare(b.city);
- default:
- return 0;
- }
- });
+    // Sort
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return (b.createdAt ? new Date(b.createdAt).getTime() : 0) - (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+        case 'oldest':
+          return (a.createdAt ? new Date(a.createdAt).getTime() : 0) - (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+        case 'recently_used':
+          return ((b as any).lastUsedAt ? new Date((b as any).lastUsedAt).getTime() : 0) - ((a as any).lastUsedAt ? new Date((a as any).lastUsedAt).getTime() : 0);
+        case 'city':
+          return (a.city || '').localeCompare(b.city || '');
+        default:
+          return 0;
+      }
+    });
 
- // Always put default address first if not actively searching
- if (!searchQuery.trim()) {
- result.sort((a, b) => (a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1));
- }
+    // Always put default address first if not actively searching
+    if (!searchQuery.trim()) {
+      result.sort((a, b) => (a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1));
+    }
 
- return result;
- }, [addresses, searchQuery, sortBy]);
+    return result;
+  }, [addresses, searchQuery, sortBy]);
 
  return (
  <div className="flex flex-col space-y-6">

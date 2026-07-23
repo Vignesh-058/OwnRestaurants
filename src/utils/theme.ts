@@ -20,7 +20,8 @@ export const applyOrganizationTheme = (themeConfig?: ThemeColors) => {
   }
   
   if (themeConfig.textColor) {
-    root.style.setProperty('--foreground', themeConfig.textColor);
+    // We ignore backend textColor to preserve high-contrast dark text readability
+    // root.style.setProperty('--foreground', themeConfig.textColor);
   }
   
   if (themeConfig.borderColor) {
@@ -40,8 +41,8 @@ export const applyOrganizationTheme = (themeConfig?: ThemeColors) => {
   }
 
   if (themeConfig.fontSize) {
-    // Assuming root font size
-    document.documentElement.style.fontSize = themeConfig.fontSize;
+    // We preserve the default 16px root font size for proper UI scale
+    // document.documentElement.style.fontSize = themeConfig.fontSize;
   }
 
   if (themeConfig.buttonRadius) {

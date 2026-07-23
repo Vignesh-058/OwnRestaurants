@@ -17,6 +17,7 @@ import { ProductCollection } from "@/components/home/ProductCollection";
 import { TodaysOffers } from "@/components/home/TodaysOffers";
 import { PreBookingCampaigns } from "@/components/prebooking/PreBookingCampaigns";
 import { PreBookingPopup } from "@/components/prebooking/PreBookingPopup";
+import { AppDownloadBanner } from "@/components/home/AppDownloadBanner";
 
 import { useProductsQuery } from "@/hooks/queries/useProducts";
 import type { FilterState } from "@/types/product.types";
@@ -135,6 +136,7 @@ export const LandingPage = () => {
                 <HeroBanner />
                 <OrganizationAndOutletInfo />
                 <PreBookingCampaigns />
+                <AppDownloadBanner />
                 <HotDealsBanner />
                 
                 <ProductCollection 

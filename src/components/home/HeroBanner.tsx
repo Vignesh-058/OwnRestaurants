@@ -85,7 +85,7 @@ export const HeroBanner = () => {
     <section id="home" className="relative w-full pt-[80px] lg:pt-[24px] pb-6 bg-background flex justify-center">
       <div className="w-full max-w-[1440px] px-4 md:px-6 lg:px-8">
         
-        <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] flex items-center justify-center">
+        <div className="relative w-full h-[160px] sm:h-[220px] md:h-[280px] lg:h-[320px] flex items-center justify-center">
           {isLoading ? (
              <Skeleton className="w-full h-full rounded-[24px] opacity-50 bg-muted" />
           ) : hasBanners ? (

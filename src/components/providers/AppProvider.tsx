@@ -51,7 +51,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
  return (
  <AppErrorBoundary>
- <ThemeProvider defaultTheme="system" storageKey="owncart-theme">
+ <ThemeProvider defaultTheme="light" storageKey="owncart-theme">
  <QueryProvider>
  {/* Offline banner sits above everything */}
  <OfflineBanner />

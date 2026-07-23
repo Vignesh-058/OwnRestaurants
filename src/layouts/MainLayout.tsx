@@ -48,10 +48,8 @@ export const MainLayout = () => {
         root.style.setProperty('--primary', theme.primaryColor);
         root.style.setProperty('--ring', theme.primaryColor);
       }
-      if (theme.textColor) root.style.setProperty('--foreground', theme.textColor);
       if (theme.borderColor) root.style.setProperty('--border', theme.borderColor);
       if (theme.secondaryColor) root.style.setProperty('--secondary', theme.secondaryColor);
-      if (theme.secondaryTextColor) root.style.setProperty('--muted-foreground', theme.secondaryTextColor);
     }
   }, [
     belongsTo, outletId, outletsQuery.isSuccess, bannersQuery.isSuccess, orgQuery.isSuccess, orgQuery.data
